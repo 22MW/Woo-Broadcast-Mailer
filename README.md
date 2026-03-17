@@ -55,6 +55,13 @@ Sistema de envío masivo de emails para WooCommerce: envía a compradores de pro
 - Monitoriza el progreso en WooCommerce > Estado > Acciones programadas
 - Los envíos programados guardan logs detallados por lote
 
+## Idiomas
+
+Este plugin filtra compradores por idioma solo cuando WPML está activo.
+El idioma se determina por el meta del pedido `wpml_language`.
+Si el pedido no tiene idioma, se incluye para no perder datos antiguos.
+Otros plugins de idiomas no están soportados por ahora.
+
 ## Estructura del Plugin
 
 ```
@@ -96,6 +103,9 @@ Para eliminar completamente:
 Este plugin fue desarrollado como proyecto personalizado. Para modificaciones o consultas, contacta al autor.
 
 ## Changelog
+
+### 1.0.9
+- Filtrado por idioma usando WPML en pedidos
 
 ### 1.0.8.4
 - Filtrar compradores por idioma WPML
