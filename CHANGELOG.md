@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.0.8.4
+- Filter recipients by WPML order language.
+
 ## 1.0.8.3
 - Revert preview without AJAX.
 

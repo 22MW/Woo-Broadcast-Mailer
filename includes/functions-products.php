@@ -75,9 +75,10 @@ function get_recipients_from_orders($product_id)
     }
 
     $product_ids = get_product_and_variation_ids($product);
+    $target_lang = get_wpml_language_code($product_id);
 
     if (is_hpos_enabled()) {
-        return get_recipients_from_order_lookup($product_ids);
+        return get_recipients_from_order_lookup($product_ids, $target_lang);
     }
 
     // Obtener pedidos por páginas para evitar consumo excesivo de memoria
@@ -94,7 +95,7 @@ function get_recipients_from_orders($product_id)
         ));
 
         foreach ($orders as $order) {
-            if (order_contains_product($order, $product_ids)) {
+            if (order_contains_product($order, $product_ids) && order_matches_language($order, $target_lang)) {
                 $email = extract_email_from_order($order);
 
                 if ($email && ! isset($recipients[$email])) {
@@ -132,7 +133,7 @@ function is_hpos_enabled()
  * @param array $product_ids IDs del producto y variaciones.
  * @return array
  */
-function get_recipients_from_order_lookup($product_ids)
+function get_recipients_from_order_lookup($product_ids, $target_lang = '')
 {
     $recipients = array();
     $order_ids = get_order_ids_from_lookup($product_ids);
@@ -149,6 +150,9 @@ function get_recipients_from_order_lookup($product_ids)
     ));
 
     foreach ($orders as $order) {
+        if (! order_matches_language($order, $target_lang)) {
+            continue;
+        }
         $email = extract_email_from_order($order);
         if ($email && ! isset($recipients[$email])) {
             $recipients[$email] = array(
@@ -299,8 +303,24 @@ function get_orders_count_for_product($product_id)
     }
 
     $product_ids = get_product_and_variation_ids($product);
+    $target_lang = get_wpml_language_code($product_id);
     if (is_hpos_enabled()) {
-        return count(get_order_ids_from_lookup($product_ids));
+        $ids = get_order_ids_from_lookup($product_ids);
+        if (empty($ids)) {
+            return 0;
+        }
+        $count = 0;
+        $orders = wc_get_orders(array(
+            'include' => $ids,
+            'limit'   => -1,
+            'suppress_filters' => true,
+        ));
+        foreach ($orders as $order) {
+            if (order_matches_language($order, $target_lang)) {
+                $count++;
+            }
+        }
+        return $count;
     }
 
     $count = 0;
@@ -317,7 +337,7 @@ function get_orders_count_for_product($product_id)
         ));
 
         foreach ($orders as $order) {
-            if (order_contains_product($order, $product_ids)) {
+            if (order_contains_product($order, $product_ids) && order_matches_language($order, $target_lang)) {
                 $count++;
             }
         }
@@ -556,6 +576,27 @@ function get_wpml_language_code($post_id)
     }
 
     return (string) $details['language_code'];
+}
+
+/**
+ * Verifica si un pedido coincide con un idioma objetivo (WPML)
+ *
+ * @param \WC_Order $order Objeto pedido.
+ * @param string    $target_lang Código de idioma.
+ * @return bool
+ */
+function order_matches_language($order, $target_lang)
+{
+    if ($target_lang === '') {
+        return true;
+    }
+
+    $order_lang = (string) $order->get_meta('wpml_language', true);
+    if ($order_lang === '') {
+        return true;
+    }
+
+    return $order_lang === $target_lang;
 }
 
 /**

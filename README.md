@@ -97,6 +97,9 @@ Este plugin fue desarrollado como proyecto personalizado. Para modificaciones o 
 
 ## Changelog
 
+### 1.0.8.4
+- Filtrar compradores por idioma WPML
+
 ### 1.0.8.3
 - Revertir vista previa sin AJAX
 
