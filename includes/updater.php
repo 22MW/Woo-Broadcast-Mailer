@@ -95,12 +95,43 @@ function get_remote_version($release)
  */
 function get_package_url($release)
 {
+    $asset_url = find_asset_url($release, 'woo-broadcast-mailer.zip');
+    if ($asset_url !== '') {
+        return $asset_url;
+    }
+
     $tag = isset($release['tag_name']) ? (string) $release['tag_name'] : '';
     if ($tag === '') {
         return '';
     }
 
     return 'https://github.com/22MW/Woo-Broadcast-Mailer/archive/refs/tags/' . $tag . '.zip';
+}
+
+/**
+ * Busca un asset por nombre y devuelve su URL
+ *
+ * @param array  $release   Release data.
+ * @param string $asset_name Asset name.
+ * @return string
+ */
+function find_asset_url($release, $asset_name)
+{
+    if (empty($release['assets']) || ! is_array($release['assets'])) {
+        return '';
+    }
+
+    foreach ($release['assets'] as $asset) {
+        if (! is_array($asset)) {
+            continue;
+        }
+
+        if (! empty($asset['name']) && $asset['name'] === $asset_name) {
+            return isset($asset['browser_download_url']) ? (string) $asset['browser_download_url'] : '';
+        }
+    }
+
+    return '';
 }
 
 /**

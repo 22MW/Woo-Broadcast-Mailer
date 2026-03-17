@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.0.6
+- Use release asset zip when available to preserve folder name.
+
 ## 1.0.5
 - Use GitHub tag ZIP for updates to avoid API download issues.
 
