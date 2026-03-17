@@ -22,19 +22,10 @@ Sistema de envío masivo de emails para WooCommerce: envía a compradores de pro
 
 ## Instalación
 
-### Método 1: Desde el código fuente
-
 1. Sube la carpeta `woo-broadcast-mailer` a `/wp-content/plugins/`
 2. Activa el plugin desde el menú Plugins en WordPress
 3. Las tablas de base de datos se crearán automáticamente al activar
 
-### Método 2: Migración desde MU-Plugin
-
-Si ya tienes el código funcionando como MU-Plugin:
-
-1. Elimina el archivo `/wp-content/mu-plugins/wc-product-emailer.php`
-2. Instala el plugin regular siguiendo el Método 1
-3. Las tablas y datos existentes se mantendrán intactos
 
 ## Uso
 
@@ -105,6 +96,9 @@ Para eliminar completamente:
 Este plugin fue desarrollado como proyecto personalizado. Para modificaciones o consultas, contacta al autor.
 
 ## Changelog
+
+### 1.0.3
+- Updater con GitHub Releases
 
 ### 1.0.2
 - Borrado opcional al desinstalar
