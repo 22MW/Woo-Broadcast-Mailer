@@ -29,11 +29,12 @@ function render_product_selector()
     echo '<option value="">' . esc_html__('Selecciona un producto...', 'wc-pbm') . '</option>';
 
     foreach ($products as $product) {
+        $lang_label = get_wpml_language_label($product->get_id());
+        $label = $product->get_name() . ' (#' . $product->get_id() . ')' . $lang_label;
         printf(
-            '<option value="%d">%s (#%d)</option>',
+            '<option value="%d">%s</option>',
             esc_attr($product->get_id()),
-            esc_html($product->get_name()),
-            esc_html($product->get_id())
+            esc_html($label)
         );
     }
 
@@ -81,7 +82,11 @@ function get_recipients_from_orders($product_id)
 
     $product_ids = get_product_and_variation_ids($product);
 
-    // Obtener TODOS los pedidos con estados válidos
+    if (is_hpos_enabled()) {
+        return get_recipients_from_order_lookup($product_ids);
+    }
+
+    // Obtener TODOS los pedidos con estados válidos (modo clásico)
     $orders = wc_get_orders(array(
         'limit'   => -1,
         'status'  => array('completed', 'processing', 'on-hold'),
@@ -104,6 +109,84 @@ function get_recipients_from_orders($product_id)
     }
 
     return $recipients;
+}
+
+/**
+ * Comprueba si HPOS está activo
+ *
+ * @return bool
+ */
+function is_hpos_enabled()
+{
+    if (class_exists('\\Automattic\\WooCommerce\\Utilities\\OrderUtil')) {
+        return (bool) \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
+    }
+
+    return false;
+}
+
+/**
+ * Obtiene destinatarios desde la tabla de lookup (HPOS)
+ *
+ * @param array $product_ids IDs del producto y variaciones.
+ * @return array
+ */
+function get_recipients_from_order_lookup($product_ids)
+{
+    $recipients = array();
+    $order_ids = get_order_ids_from_lookup($product_ids);
+    if (empty($order_ids)) {
+        return $recipients;
+    }
+
+    $orders = wc_get_orders(array(
+        'include' => $order_ids,
+        'limit'   => -1,
+        'orderby' => 'date',
+        'order'   => 'DESC',
+    ));
+
+    foreach ($orders as $order) {
+        $email = extract_email_from_order($order);
+        if ($email && ! isset($recipients[$email])) {
+            $recipients[$email] = array(
+                'name'  => trim($order->get_billing_first_name() . ' ' . $order->get_billing_last_name()),
+                'email' => $email,
+            );
+        }
+    }
+
+    return $recipients;
+}
+
+/**
+ * Obtiene IDs de pedidos desde la tabla de lookup
+ *
+ * @param array $product_ids IDs del producto y variaciones.
+ * @return array
+ */
+function get_order_ids_from_lookup($product_ids)
+{
+    global $wpdb;
+
+    $ids = array_values(array_filter(array_map('absint', (array) $product_ids)));
+    if (empty($ids)) {
+        return array();
+    }
+
+    $table = $wpdb->prefix . 'wc_order_product_lookup';
+    $id_placeholders = implode(',', array_fill(0, count($ids), '%d'));
+    $status = array('wc-completed', 'wc-processing', 'wc-on-hold');
+    $status_placeholders = implode(',', array_fill(0, count($status), '%s'));
+
+    $sql = "SELECT DISTINCT order_id
+            FROM {$table}
+            WHERE (product_id IN ({$id_placeholders}) OR variation_id IN ({$id_placeholders}))
+              AND order_status IN ({$status_placeholders})";
+
+    $query_args = array_merge($ids, $ids, $status);
+
+    return array_map('absint', $wpdb->get_col($wpdb->prepare($sql, ...$query_args)));
 }
 
 /**
@@ -184,7 +267,7 @@ function get_product_and_variation_ids($product)
         $ids = array_merge($ids, $product->get_children());
     }
 
-    return $ids;
+    return get_wpml_translated_ids($ids);
 }
 
 /**
@@ -214,6 +297,10 @@ function get_orders_count_for_product($product_id)
     }
 
     $product_ids = get_product_and_variation_ids($product);
+    if (is_hpos_enabled()) {
+        return count(get_order_ids_from_lookup($product_ids));
+    }
+
     $count = 0;
 
     $orders = wc_get_orders(array(
@@ -287,4 +374,64 @@ function get_users_by_role($role)
     }
 
     return $recipients;
+}
+
+/**
+ * Devuelve etiqueta de idioma para WPML
+ *
+ * @param int $post_id ID del post.
+ * @return string
+ */
+function get_wpml_language_label($post_id)
+{
+    if (! function_exists('wpml_post_language_details')) {
+        return '';
+    }
+
+    $details = wpml_post_language_details($post_id);
+    if (empty($details['language_code'])) {
+        return '';
+    }
+
+    return ' [' . $details['language_code'] . ']';
+}
+
+/**
+ * Agrega IDs traducidos por WPML a una lista de IDs
+ *
+ * @param array $ids IDs base.
+ * @return array
+ */
+function get_wpml_translated_ids($ids)
+{
+    if (! function_exists('wpml_object_id')) {
+        return array_values(array_unique(array_map('absint', (array) $ids)));
+    }
+
+    $languages = apply_filters('wpml_active_languages', null, array('skip_missing' => 0));
+    if (empty($languages) || ! is_array($languages)) {
+        return array_values(array_unique(array_map('absint', (array) $ids)));
+    }
+
+    $all = array();
+    foreach ($ids as $id) {
+        $id = absint($id);
+        if (! $id) {
+            continue;
+        }
+        $all[] = $id;
+        foreach ($languages as $lang) {
+            $code = isset($lang['code']) ? $lang['code'] : '';
+            if ($code === '') {
+                continue;
+            }
+            $type = get_post_type($id) === 'product_variation' ? 'product_variation' : 'product';
+            $translated = wpml_object_id($id, $type, false, $code);
+            if ($translated) {
+                $all[] = absint($translated);
+            }
+        }
+    }
+
+    return array_values(array_unique($all));
 }
