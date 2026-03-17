@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Woo Broadcast Mailer
  * Description: Sistema de envío masivo de emails: envía a compradores de productos específicos o programa envíos por rol de usuario. Compatible con HPOS y Action Scheduler.
- * Version: 1.0.8.1
+ * Version: 1.0.8.2
  * Author: 22MW ( Veri*Fac*WOO TEAM )
  * Author URI: https://22mw.online
  * License: GPLv2 or later
@@ -240,6 +240,26 @@ function render_admin_page()
     // URL a las Acciones Programadas
     $scheduled_actions_url = admin_url('admin.php?page=wc-status&tab=action-scheduler&s=pbm_process_email_batch');
 
+    $use_ajax_preview = false;
+    $preview_data = null;
+    $preview_error = '';
+
+    if ($current_tab === 'broadcast' && isset($_POST['pbm_preview_submit'])) {
+        check_admin_referer('pbm_broadcast_action', 'pbm_nonce');
+        $product_id = absint($_POST['pbm_product_id'] ?? 0);
+        if (! $product_id) {
+            $preview_error = __('ID de producto inválido', 'wc-pbm');
+        } else {
+            $recipients = get_product_purchasers($product_id);
+            $preview_data = array(
+                'total'               => count($recipients),
+                'orders_count'        => get_orders_count_for_product($product_id),
+                'subscriptions_count' => get_subscriptions_count_for_product($product_id),
+                'emails'              => array_keys($recipients),
+            );
+        }
+    }
+
 ?>
     <div class="wrap" style=" background: #ffffff; padding: 20px; ">
         <h1>
@@ -277,18 +297,34 @@ function render_admin_page()
                                 <?php esc_html_e('Selecciona el producto. Se incluirán automáticamente todas las variaciones y suscripciones relacionadas.', 'wc-pbm'); ?>
                             </p>
                             <p style="margin-top: 10px;">
-                                <button type="button" id="pbm-preview-btn" class="button">
+                                <button type="submit" name="pbm_preview_submit" id="pbm-preview-btn" class="button">
                                     <?php esc_html_e('Vista Previa de Destinatarios', 'wc-pbm'); ?>
                                 </button>
                             </p>
 
                             <!-- Resumen de destinatarios (inline después del selector) -->
-                            <div id="pbm-preview-results" style="display:none; margin-top: 15px;padding: 15px;background: rgb(240 240 240);border-radius: 10px;">
+                            <div id="pbm-preview-results" style="<?php echo $preview_data || $preview_error ? '' : 'display:none;'; ?> margin-top: 15px;padding: 15px;background: rgb(240 240 240);border-radius: 10px;">
                                 <h4 style="margin-top: 0; margin-bottom: 10px;"><?php esc_html_e('Resumen de Destinatarios', 'wc-pbm'); ?></h4>
-                                <div id="pbm-preview-content"></div>
+                                <div id="pbm-preview-content">
+                                    <?php if ($preview_error) : ?>
+                                        <p><?php echo esc_html($preview_error); ?></p>
+                                    <?php elseif ($preview_data) : ?>
+                                        <p style="margin: 0 0 5px;"><strong><?php esc_html_e('Total de destinatarios únicos:', 'wc-pbm'); ?></strong> <?php echo esc_html($preview_data['total']); ?></p>
+                                        <p style="margin: 0 0 5px;"><strong><?php esc_html_e('Pedidos encontrados:', 'wc-pbm'); ?></strong> <?php echo esc_html($preview_data['orders_count']); ?></p>
+                                        <p style="margin: 0;"><strong><?php esc_html_e('Suscripciones activas:', 'wc-pbm'); ?></strong> <?php echo esc_html($preview_data['subscriptions_count']); ?></p>
+                                    <?php endif; ?>
+                                </div>
                                 <div id="pbm-emails-list" style="margin-top: 12px; padding: 10px; background: #fff; border: 1px solid #ddd; border-radius: 3px; max-height: 150px; overflow-y: auto; font-size: 12px; line-height: 1.6;">
                                     <strong><?php esc_html_e('Emails:', 'wc-pbm'); ?></strong><br>
-                                    <span id="pbm-emails-content" style="color: #555;"></span>
+                                    <span id="pbm-emails-content" style="color: #555;">
+                                        <?php
+                                        if ($preview_data && ! empty($preview_data['emails'])) {
+                                            echo esc_html(implode(', ', $preview_data['emails']));
+                                        } elseif ($preview_data) {
+                                            esc_html_e('No se encontraron emails', 'wc-pbm');
+                                        }
+                                        ?>
+                                    </span>
                                 </div>
                             </div>
                         </td>
@@ -359,7 +395,8 @@ function render_admin_page()
 
             <script type="text/javascript">
                 jQuery(document).ready(function($) {
-                    let recipientsData = null;
+                    let recipientsData = <?php echo $preview_data ? wp_json_encode($preview_data) : 'null'; ?>;
+                    const pbmUseAjaxPreview = <?php echo $use_ajax_preview ? 'true' : 'false'; ?>;
 
                     // Calcular y mostrar intervalo en tiempo real
                     function updateIntervalPreview() {
@@ -376,52 +413,57 @@ function render_admin_page()
                     $('#pbm_batch_size, #pbm_emails_per_hour').on('input', updateIntervalPreview);
                     updateIntervalPreview();
 
-                    // Vista previa
-                    $('#pbm-preview-btn').on('click', function(e) {
-                        e.preventDefault();
+                    // Vista previa AJAX (opcional)
+                    if (pbmUseAjaxPreview) {
+                        $('#pbm-preview-btn').on('click', function(e) {
+                            e.preventDefault();
 
-                        const productId = $('#pbm_product_id').val();
-                        if (!productId) {
-                            alert('<?php echo esc_js(__('Por favor selecciona un producto', 'wc-pbm')); ?>');
-                            return;
-                        }
-
-                        $(this).prop('disabled', true).text('<?php echo esc_js(__('Cargando...', 'wc-pbm')); ?>');
-
-                        $.post(ajaxurl, {
-                            action: 'pbm_preview_recipients',
-                            product_id: productId,
-                            nonce: $('#pbm_nonce').val()
-                        }, function(response) {
-                            if (response.success) {
-                                recipientsData = response.data;
-
-                                // Mostrar estadísticas
-                                $('#pbm-preview-content').html(
-                                    '<p style="margin: 0 0 5px;"><strong><?php echo esc_js(__('Total de destinatarios únicos:', 'wc-pbm')); ?></strong> ' + response.data.total + '</p>' +
-                                    '<p style="margin: 0 0 5px;"><strong><?php echo esc_js(__('Pedidos encontrados:', 'wc-pbm')); ?></strong> ' + response.data.orders_count + '</p>' +
-                                    '<p style="margin: 0;"><strong><?php echo esc_js(__('Suscripciones activas:', 'wc-pbm')); ?></strong> ' + response.data.subscriptions_count + '</p>'
-                                );
-
-                                // Mostrar lista de emails separados por coma
-                                if (response.data.emails && response.data.emails.length > 0) {
-                                    $('#pbm-emails-content').text(response.data.emails.join(', '));
-                                } else {
-                                    $('#pbm-emails-content').text('<?php echo esc_js(__('No se encontraron emails', 'wc-pbm')); ?>');
-                                }
-
-                                $('#pbm-preview-results').slideDown();
-                                $('#pbm-send-btn').prop('disabled', false);
-                            } else {
-                                alert(response.data.message || '<?php echo esc_js(__('Error al obtener destinatarios', 'wc-pbm')); ?>');
+                            const productId = $('#pbm_product_id').val();
+                            if (!productId) {
+                                alert('<?php echo esc_js(__('Por favor selecciona un producto', 'wc-pbm')); ?>');
+                                return;
                             }
-                        }).always(function() {
-                            $('#pbm-preview-btn').prop('disabled', false).text('<?php echo esc_js(__('Vista Previa de Destinatarios', 'wc-pbm')); ?>');
+
+                            $(this).prop('disabled', true).text('<?php echo esc_js(__('Cargando...', 'wc-pbm')); ?>');
+
+                            $.post(ajaxurl, {
+                                action: 'pbm_preview_recipients',
+                                product_id: productId,
+                                nonce: $('#pbm_nonce').val()
+                            }, function(response) {
+                                if (response.success) {
+                                    recipientsData = response.data;
+
+                                    // Mostrar estadísticas
+                                    $('#pbm-preview-content').html(
+                                        '<p style="margin: 0 0 5px;"><strong><?php echo esc_js(__('Total de destinatarios únicos:', 'wc-pbm')); ?></strong> ' + response.data.total + '</p>' +
+                                        '<p style="margin: 0 0 5px;"><strong><?php echo esc_js(__('Pedidos encontrados:', 'wc-pbm')); ?></strong> ' + response.data.orders_count + '</p>' +
+                                        '<p style="margin: 0;"><strong><?php echo esc_js(__('Suscripciones activas:', 'wc-pbm')); ?></strong> ' + response.data.subscriptions_count + '</p>'
+                                    );
+
+                                    // Mostrar lista de emails separados por coma
+                                    if (response.data.emails && response.data.emails.length > 0) {
+                                        $('#pbm-emails-content').text(response.data.emails.join(', '));
+                                    } else {
+                                        $('#pbm-emails-content').text('<?php echo esc_js(__('No se encontraron emails', 'wc-pbm')); ?>');
+                                    }
+
+                                    $('#pbm-preview-results').slideDown();
+                                    $('#pbm-send-btn').prop('disabled', false);
+                                } else {
+                                    alert(response.data.message || '<?php echo esc_js(__('Error al obtener destinatarios', 'wc-pbm')); ?>');
+                                }
+                            }).always(function() {
+                                $('#pbm-preview-btn').prop('disabled', false).text('<?php echo esc_js(__('Vista Previa de Destinatarios', 'wc-pbm')); ?>');
+                            });
                         });
-                    });
+                    }
 
                     // Enviar broadcast
                     $('#pbm-broadcast-form').on('submit', function(e) {
+                        if (!pbmUseAjaxPreview && $(e.originalEvent?.submitter).is('#pbm-preview-btn')) {
+                            return;
+                        }
                         e.preventDefault();
 
                         if (!recipientsData || recipientsData.total === 0) {

@@ -97,6 +97,9 @@ Este plugin fue desarrollado como proyecto personalizado. Para modificaciones o 
 
 ## Changelog
 
+### 1.0.8.2
+- Vista previa sin AJAX para evitar límites
+
 ### 1.0.8.1
 - Soporte WPML para IDs traducidos y etiqueta de idioma
 

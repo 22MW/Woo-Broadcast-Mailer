@@ -17,13 +17,7 @@ defined('ABSPATH') || exit;
  */
 function render_product_selector()
 {
-    $products = wc_get_products(array(
-        'limit'   => -1,
-        'status'  => 'publish',
-        'orderby' => 'name',
-        'order'   => 'ASC',
-        'return'  => 'objects',
-    ));
+    $products = get_products_for_selector();
 
     echo '<select id="pbm_product_id" name="pbm_product_id" required>';
     echo '<option value="">' . esc_html__('Selecciona un producto...', 'wc-pbm') . '</option>';
@@ -86,27 +80,34 @@ function get_recipients_from_orders($product_id)
         return get_recipients_from_order_lookup($product_ids);
     }
 
-    // Obtener TODOS los pedidos con estados válidos (modo clásico)
-    $orders = wc_get_orders(array(
-        'limit'   => -1,
-        'status'  => array('completed', 'processing', 'on-hold'),
-        'orderby' => 'date',
-        'order'   => 'DESC',
-    ));
+    // Obtener pedidos por páginas para evitar consumo excesivo de memoria
+    $page = 1;
+    $limit = 200;
+    do {
+        $orders = wc_get_orders(array(
+            'limit'   => $limit,
+            'page'    => $page,
+            'status'  => array('completed', 'processing', 'on-hold'),
+            'orderby' => 'date',
+            'order'   => 'DESC',
+            'suppress_filters' => true,
+        ));
 
-    // Iterar y filtrar por producto
-    foreach ($orders as $order) {
-        if (order_contains_product($order, $product_ids)) {
-            $email = extract_email_from_order($order);
+        foreach ($orders as $order) {
+            if (order_contains_product($order, $product_ids)) {
+                $email = extract_email_from_order($order);
 
-            if ($email && ! isset($recipients[$email])) {
-                $recipients[$email] = array(
-                    'name'  => trim($order->get_billing_first_name() . ' ' . $order->get_billing_last_name()),
-                    'email' => $email,
-                );
+                if ($email && ! isset($recipients[$email])) {
+                    $recipients[$email] = array(
+                        'name'  => trim($order->get_billing_first_name() . ' ' . $order->get_billing_last_name()),
+                        'email' => $email,
+                    );
+                }
             }
         }
-    }
+
+        $page++;
+    } while (count($orders) === $limit);
 
     return $recipients;
 }
@@ -144,6 +145,7 @@ function get_recipients_from_order_lookup($product_ids)
         'limit'   => -1,
         'orderby' => 'date',
         'order'   => 'DESC',
+        'suppress_filters' => true,
     ));
 
     foreach ($orders as $order) {
@@ -267,7 +269,7 @@ function get_product_and_variation_ids($product)
         $ids = array_merge($ids, $product->get_children());
     }
 
-    return get_wpml_translated_ids($ids);
+    return $ids;
 }
 
 /**
@@ -303,17 +305,25 @@ function get_orders_count_for_product($product_id)
 
     $count = 0;
 
-    $orders = wc_get_orders(array(
-        'limit'   => -1,
-        'status'  => array('completed', 'processing', 'on-hold'),
-        'return'  => 'objects',
-    ));
+    $page = 1;
+    $limit = 200;
+    do {
+        $orders = wc_get_orders(array(
+            'limit'   => $limit,
+            'page'    => $page,
+            'status'  => array('completed', 'processing', 'on-hold'),
+            'return'  => 'objects',
+            'suppress_filters' => true,
+        ));
 
-    foreach ($orders as $order) {
-        if (order_contains_product($order, $product_ids)) {
-            $count++;
+        foreach ($orders as $order) {
+            if (order_contains_product($order, $product_ids)) {
+                $count++;
+            }
         }
-    }
+
+        $page++;
+    } while (count($orders) === $limit);
 
     return $count;
 }
@@ -377,6 +387,146 @@ function get_users_by_role($role)
 }
 
 /**
+ * Obtiene productos en todos los idiomas si WPML está activo
+ *
+ * @return array
+ */
+function get_products_for_selector()
+{
+    $args = get_products_query_args();
+    $languages = get_wpml_active_languages();
+    if (empty($languages)) {
+        return wc_get_products($args);
+    }
+
+    $current = get_wpml_current_language();
+    if ($current && $current !== 'all') {
+        return get_products_for_language($args, $current);
+    }
+
+    return get_products_all_languages_grouped($args, $languages);
+}
+
+/**
+ * Obtiene args base para productos
+ *
+ * @return array
+ */
+function get_products_query_args()
+{
+    return array(
+        'limit'   => -1,
+        'status'  => 'publish',
+        'orderby' => 'name',
+        'order'   => 'ASC',
+        'return'  => 'objects',
+    );
+}
+
+/**
+ * Obtiene productos para un idioma
+ *
+ * @param array  $args Args base.
+ * @param string $code Código de idioma.
+ * @return array
+ */
+function get_products_for_language($args, $code)
+{
+    $lang_args = $args;
+    $lang_args['lang'] = $code;
+    $lang_args['suppress_filters'] = false;
+    return wc_get_products($lang_args);
+}
+
+/**
+ * Obtiene productos agrupados por idioma (WPML)
+ *
+ * @param array $args Args base.
+ * @param array $languages Idiomas activos.
+ * @return array
+ */
+function get_products_all_languages_grouped($args, $languages)
+{
+    $all = array();
+    foreach ($languages as $code) {
+        $all = array_merge($all, get_products_for_language($args, $code));
+    }
+
+    return group_products_by_trid($all);
+}
+
+/**
+ * Agrupa productos por TRID y mantiene uno por grupo
+ *
+ * @param array $products Productos.
+ * @return array
+ */
+function group_products_by_trid($products)
+{
+    $default = get_wpml_default_language();
+    $grouped = array();
+    $fallback = array();
+
+    foreach ($products as $product) {
+        $id = $product->get_id();
+        $trid = get_wpml_trid($id);
+        if (! $trid) {
+            $fallback[$id] = $product;
+            continue;
+        }
+        if (! isset($grouped[$trid]) || is_default_language_product($id, $default)) {
+            $grouped[$trid] = $product;
+        }
+    }
+
+    return array_values($grouped + $fallback);
+}
+
+/**
+ * Obtiene idiomas activos desde WPML
+ *
+ * @return array
+ */
+function get_wpml_active_languages()
+{
+    $languages = apply_filters('wpml_active_languages', null, array('skip_missing' => 0));
+    if (empty($languages) || ! is_array($languages)) {
+        return array();
+    }
+
+    $codes = array();
+    foreach ($languages as $lang) {
+        if (! empty($lang['code'])) {
+            $codes[] = $lang['code'];
+        }
+    }
+
+    return array_values(array_unique($codes));
+}
+
+/**
+ * Obtiene el idioma actual de WPML
+ *
+ * @return string
+ */
+function get_wpml_current_language()
+{
+    $code = apply_filters('wpml_current_language', null);
+    return is_string($code) ? $code : '';
+}
+
+/**
+ * Obtiene el idioma por defecto de WPML
+ *
+ * @return string
+ */
+function get_wpml_default_language()
+{
+    $code = apply_filters('wpml_default_language', null);
+    return is_string($code) ? $code : '';
+}
+
+/**
  * Devuelve etiqueta de idioma para WPML
  *
  * @param int $post_id ID del post.
@@ -384,54 +534,54 @@ function get_users_by_role($role)
  */
 function get_wpml_language_label($post_id)
 {
-    if (! function_exists('wpml_post_language_details')) {
+    $code = get_wpml_language_code($post_id);
+    if ($code === '') {
         return '';
     }
 
-    $details = wpml_post_language_details($post_id);
+    return ' [' . strtoupper($code) . ']';
+}
+
+/**
+ * Obtiene el código de idioma de un post
+ *
+ * @param int $post_id ID del post.
+ * @return string
+ */
+function get_wpml_language_code($post_id)
+{
+    $details = apply_filters('wpml_post_language_details', null, $post_id);
     if (empty($details['language_code'])) {
         return '';
     }
 
-    return ' [' . $details['language_code'] . ']';
+    return (string) $details['language_code'];
 }
 
 /**
- * Agrega IDs traducidos por WPML a una lista de IDs
+ * Obtiene TRID de WPML
  *
- * @param array $ids IDs base.
- * @return array
+ * @param int $post_id ID del post.
+ * @return int
  */
-function get_wpml_translated_ids($ids)
+function get_wpml_trid($post_id)
 {
-    if (! function_exists('wpml_object_id')) {
-        return array_values(array_unique(array_map('absint', (array) $ids)));
+    $trid = apply_filters('wpml_element_trid', null, $post_id, 'post_product');
+    return $trid ? (int) $trid : 0;
+}
+
+/**
+ * Verifica si el producto es del idioma por defecto
+ *
+ * @param int    $post_id ID del post.
+ * @param string $default Código por defecto.
+ * @return bool
+ */
+function is_default_language_product($post_id, $default)
+{
+    if ($default === '') {
+        return false;
     }
 
-    $languages = apply_filters('wpml_active_languages', null, array('skip_missing' => 0));
-    if (empty($languages) || ! is_array($languages)) {
-        return array_values(array_unique(array_map('absint', (array) $ids)));
-    }
-
-    $all = array();
-    foreach ($ids as $id) {
-        $id = absint($id);
-        if (! $id) {
-            continue;
-        }
-        $all[] = $id;
-        foreach ($languages as $lang) {
-            $code = isset($lang['code']) ? $lang['code'] : '';
-            if ($code === '') {
-                continue;
-            }
-            $type = get_post_type($id) === 'product_variation' ? 'product_variation' : 'product';
-            $translated = wpml_object_id($id, $type, false, $code);
-            if ($translated) {
-                $all[] = absint($translated);
-            }
-        }
-    }
-
-    return array_values(array_unique($all));
+    return get_wpml_language_code($post_id) === $default;
 }

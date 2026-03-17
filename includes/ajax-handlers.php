@@ -23,23 +23,30 @@ function ajax_preview_recipients()
         wp_send_json_error(array('message' => __('Permisos insuficientes', 'wc-pbm')));
     }
 
-    $product_id = absint($_POST['product_id'] ?? 0);
+    try {
+        $product_id = absint($_POST['product_id'] ?? 0);
 
-    if (! $product_id) {
-        wp_send_json_error(array('message' => __('ID de producto inválido', 'wc-pbm')));
+        if (! $product_id) {
+            wp_send_json_error(array('message' => __('ID de producto inválido', 'wc-pbm')));
+        }
+
+        $recipients = get_product_purchasers($product_id);
+
+        // Extraer solo los emails para la lista separada por comas
+        $emails = array_keys($recipients);
+
+        wp_send_json_success(array(
+            'total'                => count($recipients),
+            'orders_count'         => get_orders_count_for_product($product_id),
+            'subscriptions_count'  => get_subscriptions_count_for_product($product_id),
+            'emails'               => $emails,
+        ));
+    } catch (\Throwable $e) {
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log('PBM preview error: ' . $e->getMessage());
+        }
+        wp_send_json_error(array('message' => __('Error interno. Revisa el log.', 'wc-pbm')));
     }
-
-    $recipients = get_product_purchasers($product_id);
-
-    // Extraer solo los emails para la lista separada por comas
-    $emails = array_keys($recipients);
-
-    wp_send_json_success(array(
-        'total'                => count($recipients),
-        'orders_count'         => get_orders_count_for_product($product_id),
-        'subscriptions_count'  => get_subscriptions_count_for_product($product_id),
-        'emails'               => $emails,
-    ));
 }
 
 /**

@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.0.8.2
+- Preview recipients without AJAX to avoid server limits.
+
 ## 1.0.8.1
 - WPML translated IDs and language label in selector.
 
