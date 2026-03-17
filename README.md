@@ -2,6 +2,13 @@
 
 Sistema de envío masivo de emails para WooCommerce: envía a compradores de productos específicos o programa envíos por rol de usuario.
 
+## Descripción
+
+Woo Broadcast Mailer te permite comunicarte con tus clientes de forma segmentada y segura.
+Puedes enviar un email a quienes compraron un producto concreto, o programar campañas por rol de usuario.
+Incluye vista previa de destinatarios, control de lotes y límite de envíos por hora para evitar saturar el servidor.
+Todo se procesa en segundo plano, con logs para revisar el progreso.
+
 ## Requisitos
 
 - WordPress 6.5 o superior
@@ -58,8 +65,8 @@ Sistema de envío masivo de emails para WooCommerce: envía a compradores de pro
 ## Idiomas
 
 Este plugin filtra compradores por idioma solo cuando WPML está activo.
-El idioma se determina por el meta del pedido `wpml_language`.
-Si el pedido no tiene idioma, se incluye para no perder datos antiguos.
+El idioma se toma del pedido, para que cada producto muestre sus compradores del mismo idioma.
+Si un pedido no tiene idioma guardado, se incluye para no perder datos antiguos.
 Otros plugins de idiomas no están soportados por ahora.
 
 ## Estructura del Plugin
