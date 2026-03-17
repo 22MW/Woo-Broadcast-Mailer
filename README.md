@@ -97,6 +97,9 @@ Este plugin fue desarrollado como proyecto personalizado. Para modificaciones o 
 
 ## Changelog
 
+### 1.0.4
+- Mostrar versión en el título del admin
+
 ### 1.0.3
 - Updater con GitHub Releases
 

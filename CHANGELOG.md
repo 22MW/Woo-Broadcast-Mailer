@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.0.4
+- Show plugin version in admin title.
+
 ## 1.0.3
 - GitHub Releases updater (automatic update checks).
 

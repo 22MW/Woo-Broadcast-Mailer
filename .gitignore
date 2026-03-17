@@ -12,3 +12,7 @@ Thumbs.db
 *.log
 error_log
 debug.log
+
+# Local-only notes
+LOCAL_RELEASE_INSTRUCTIONS.md
+LOCAL_GIT_COMMANDS.md
