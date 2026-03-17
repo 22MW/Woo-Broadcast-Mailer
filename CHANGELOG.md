@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.0.7
+- Test release for automatic asset upload.
+
 ## 1.0.6
 - Use release asset zip when available to preserve folder name.
 

@@ -97,6 +97,9 @@ Este plugin fue desarrollado como proyecto personalizado. Para modificaciones o 
 
 ## Changelog
 
+### 1.0.7
+- Release de prueba para asset automático
+
 ### 1.0.6
 - ZIP de asset en release para actualizaciones
 
