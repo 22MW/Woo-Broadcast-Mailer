@@ -97,6 +97,9 @@ Este plugin fue desarrollado como proyecto personalizado. Para modificaciones o 
 
 ## Changelog
 
+### 1.0.8.3
+- Revertir vista previa sin AJAX
+
 ### 1.0.8.2
 - Vista previa sin AJAX para evitar límites
 
