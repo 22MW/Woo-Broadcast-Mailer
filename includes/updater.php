@@ -95,7 +95,12 @@ function get_remote_version($release)
  */
 function get_package_url($release)
 {
-    return isset($release['zipball_url']) ? (string) $release['zipball_url'] : '';
+    $tag = isset($release['tag_name']) ? (string) $release['tag_name'] : '';
+    if ($tag === '') {
+        return '';
+    }
+
+    return 'https://github.com/22MW/Woo-Broadcast-Mailer/archive/refs/tags/' . $tag . '.zip';
 }
 
 /**

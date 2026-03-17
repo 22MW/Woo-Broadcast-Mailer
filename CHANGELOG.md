@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.0.5
+- Use GitHub tag ZIP for updates to avoid API download issues.
+
 ## 1.0.4
 - Show plugin version in admin title.
 
