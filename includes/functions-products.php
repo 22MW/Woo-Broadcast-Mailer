@@ -19,7 +19,7 @@ function render_product_selector()
 {
     $products = get_products_for_selector();
 
-    echo '<select id="pbm_product_id" name="pbm_product_id" required>';
+    echo '<select id="pbm_product_id" name="pbm_product_id">';
     echo '<option value="">' . esc_html__('Selecciona un producto...', 'wc-pbm') . '</option>';
 
     foreach ($products as $product) {
@@ -33,6 +33,117 @@ function render_product_selector()
     }
 
     echo '</select>';
+}
+
+/**
+ * Obtiene fuentes de destinatarios registradas.
+ *
+ * @return array
+ */
+function get_recipient_sources()
+{
+    $mailmint_available = is_mailmint_available();
+
+    $sources = array(
+        'product' => array(
+            'label' => __('Producto Woo', 'wc-pbm'),
+            'enabled' => true,
+        ),
+        'role' => array(
+            'label' => __('Rol WP', 'wc-pbm'),
+            'enabled' => true,
+        ),
+        'mailmint' => array(
+            'label' => __('Lista Mail Mint', 'wc-pbm'),
+            'enabled' => $mailmint_available,
+        ),
+    );
+
+    return apply_filters('pbm_recipient_sources', $sources);
+}
+
+/**
+ * Comprueba si Mail Mint está disponible.
+ *
+ * @return bool
+ */
+function is_mailmint_available()
+{
+    global $wpdb;
+
+    $required_tables = array(
+        $wpdb->prefix . 'mint_contacts',
+        $wpdb->prefix . 'mint_contact_groups',
+        $wpdb->prefix . 'mint_contact_group_relationship',
+    );
+
+    foreach ($required_tables as $table_name) {
+        $exists = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $table_name));
+        if (! $exists) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/**
+ * Renderiza selector de listas de Mail Mint.
+ *
+ * @return void
+ */
+function render_mailmint_list_selector()
+{
+    if (! is_mailmint_available()) {
+        echo '<select id="pbm_mailmint_list" name="pbm_mailmint_list" disabled>';
+        echo '<option value="">' . esc_html__('Mail Mint no disponible', 'wc-pbm') . '</option>';
+        echo '</select>';
+        return;
+    }
+
+    $lists = get_mailmint_lists_for_selector();
+
+    echo '<select id="pbm_mailmint_list" name="pbm_mailmint_list">';
+    echo '<option value="">' . esc_html__('Selecciona una lista...', 'wc-pbm') . '</option>';
+
+    foreach ($lists as $list) {
+        printf(
+            '<option value="%d">%s</option>',
+            absint($list['id']),
+            esc_html($list['title'] . ' (#' . $list['id'] . ')')
+        );
+    }
+
+    echo '</select>';
+}
+
+/**
+ * Obtiene listas de Mail Mint para selector.
+ *
+ * @return array
+ */
+function get_mailmint_lists_for_selector()
+{
+    global $wpdb;
+
+    $groups_table = $wpdb->prefix . 'mint_contact_groups';
+    $exists = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $groups_table));
+    if (! $exists) {
+        return array();
+    }
+
+    $rows = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT id, title
+             FROM {$groups_table}
+             WHERE type = %s
+             ORDER BY title ASC",
+            'lists'
+        ),
+        ARRAY_A
+    );
+
+    return is_array($rows) ? $rows : array();
 }
 
 /**
@@ -399,6 +510,128 @@ function get_users_by_role($role)
             $recipients[$user->user_email] = array(
                 'email' => $user->user_email,
                 'name'  => $user->display_name,
+            );
+        }
+    }
+
+    return $recipients;
+}
+
+/**
+ * Resuelve destinatarios según la fuente seleccionada.
+ *
+ * @param string $source Fuente (product|role|mailmint).
+ * @param array  $args   Parámetros de la fuente.
+ * @return array
+ */
+function get_recipients_by_source($source, $args = array())
+{
+    if ('product' === $source) {
+        return get_recipients_from_product(absint($args['product_id'] ?? 0));
+    }
+
+    if ('role' === $source) {
+        return get_recipients_from_role(sanitize_text_field($args['role'] ?? ''));
+    }
+
+    if ('mailmint' === $source) {
+        return get_recipients_from_mailmint_list(absint($args['mailmint_list_id'] ?? 0));
+    }
+
+    return array();
+}
+
+/**
+ * Obtiene destinatarios desde compras de producto.
+ *
+ * @param int $product_id ID del producto.
+ * @return array
+ */
+function get_recipients_from_product($product_id)
+{
+    if (! $product_id) {
+        return array();
+    }
+
+    return get_product_purchasers($product_id);
+}
+
+/**
+ * Obtiene destinatarios desde un rol de WordPress.
+ *
+ * @param string $role Slug del rol.
+ * @return array
+ */
+function get_recipients_from_role($role)
+{
+    if (! $role) {
+        return array();
+    }
+
+    return get_users_by_role($role);
+}
+
+/**
+ * Obtiene destinatarios desde una lista de Mail Mint.
+ *
+ * @param int $list_id ID de lista.
+ * @return array
+ */
+function get_recipients_from_mailmint_list($list_id)
+{
+    global $wpdb;
+
+    if (! $list_id) {
+        return array();
+    }
+
+    $contacts_table = $wpdb->prefix . 'mint_contacts';
+    $groups_table = $wpdb->prefix . 'mint_contact_groups';
+    $pivot_table = $wpdb->prefix . 'mint_contact_group_relationship';
+
+    $contacts_exists = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $contacts_table));
+    $groups_exists = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $groups_table));
+    $pivot_exists = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $pivot_table));
+
+    if (! $contacts_exists || ! $groups_exists || ! $pivot_exists) {
+        return array();
+    }
+
+    $results = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT DISTINCT c.email, c.first_name, c.last_name
+             FROM {$contacts_table} c
+             INNER JOIN {$pivot_table} r ON r.contact_id = c.id
+             INNER JOIN {$groups_table} g ON g.id = r.group_id
+             WHERE g.id = %d
+               AND g.type = %s
+               AND c.status = %s
+               AND c.email <> ''",
+            $list_id,
+            'lists',
+            'subscribed'
+        )
+    );
+
+    if (empty($results)) {
+        return array();
+    }
+
+    $recipients = array();
+    foreach ($results as $row) {
+        $email = sanitize_email((string) $row->email);
+        if (! is_email($email)) {
+            continue;
+        }
+
+        $first_name = sanitize_text_field((string) $row->first_name);
+        $last_name = sanitize_text_field((string) $row->last_name);
+        $full_name = trim($first_name . ' ' . $last_name);
+
+        if (! isset($recipients[$email])) {
+            $recipients[$email] = array(
+                'email' => $email,
+                'name'  => $full_name,
             );
         }
     }

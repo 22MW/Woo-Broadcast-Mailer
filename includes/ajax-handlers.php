@@ -24,21 +24,52 @@ function ajax_preview_recipients()
     }
 
     try {
+        $source = sanitize_text_field($_POST['source'] ?? 'product');
+        $available_sources = get_recipient_sources();
         $product_id = absint($_POST['product_id'] ?? 0);
+        $role = sanitize_text_field($_POST['role'] ?? '');
+        $mailmint_list_id = absint($_POST['mailmint_list_id'] ?? 0);
 
-        if (! $product_id) {
+        if (! isset($available_sources[$source])) {
+            wp_send_json_error(array('message' => __('Fuente inválida', 'wc-pbm')));
+        }
+
+        if (isset($available_sources[$source]['enabled']) && ! $available_sources[$source]['enabled']) {
+            wp_send_json_error(array('message' => __('La fuente seleccionada no está disponible', 'wc-pbm')));
+        }
+
+        if ('product' === $source && ! $product_id) {
             wp_send_json_error(array('message' => __('ID de producto inválido', 'wc-pbm')));
         }
 
-        $recipients = get_product_purchasers($product_id);
+        if ('role' === $source && ! $role) {
+            wp_send_json_error(array('message' => __('Rol inválido', 'wc-pbm')));
+        }
+
+        if ('mailmint' === $source && ! $mailmint_list_id) {
+            wp_send_json_error(array('message' => __('Lista de Mail Mint inválida', 'wc-pbm')));
+        }
+
+        $recipients = get_recipients_by_source($source, array(
+            'product_id'      => $product_id,
+            'role'            => $role,
+            'mailmint_list_id' => $mailmint_list_id,
+        ));
 
         // Extraer solo los emails para la lista separada por comas
         $emails = array_keys($recipients);
 
+        $orders_count = 0;
+        $subscriptions_count = 0;
+        if ('product' === $source && $product_id) {
+            $orders_count = get_orders_count_for_product($product_id);
+            $subscriptions_count = get_subscriptions_count_for_product($product_id);
+        }
+
         wp_send_json_success(array(
             'total'                => count($recipients),
-            'orders_count'         => get_orders_count_for_product($product_id),
-            'subscriptions_count'  => get_subscriptions_count_for_product($product_id),
+            'orders_count'         => $orders_count,
+            'subscriptions_count'  => $subscriptions_count,
             'emails'               => $emails,
         ));
     } catch (\Throwable $e) {
@@ -62,39 +93,144 @@ function ajax_send_broadcast()
         wp_send_json_error(array('message' => __('Permisos insuficientes', 'wc-pbm')));
     }
 
+    $source = sanitize_text_field($_POST['source'] ?? 'product');
+    $available_sources = get_recipient_sources();
     $product_id = absint($_POST['product_id'] ?? 0);
+    $role = sanitize_text_field($_POST['role'] ?? '');
+    $mailmint_list_id = absint($_POST['mailmint_list_id'] ?? 0);
     $subject    = sanitize_text_field($_POST['subject'] ?? '');
     $message    = wp_kses_post($_POST['message'] ?? '');
     $batch_size = absint($_POST['batch_size'] ?? 30);
     $emails_per_hour = absint($_POST['emails_per_hour'] ?? 200);
+    $schedule_enabled = ! empty($_POST['schedule_enabled']) && '1' === sanitize_text_field(wp_unslash($_POST['schedule_enabled']));
+    $scheduled_datetime = sanitize_text_field($_POST['scheduled_datetime'] ?? '');
 
-    if (! $product_id || ! $subject || ! $message) {
+    if (! $subject || ! $message) {
         wp_send_json_error(array('message' => __('Faltan datos requeridos', 'wc-pbm')));
     }
 
-    $recipients = get_product_purchasers($product_id);
+    if (! isset($available_sources[$source])) {
+        wp_send_json_error(array('message' => __('Fuente inválida', 'wc-pbm')));
+    }
+
+    if (isset($available_sources[$source]['enabled']) && ! $available_sources[$source]['enabled']) {
+        wp_send_json_error(array('message' => __('La fuente seleccionada no está disponible', 'wc-pbm')));
+    }
+
+    if ($batch_size < 1 || $emails_per_hour < 1) {
+        wp_send_json_error(array('message' => __('Parámetros de envío inválidos', 'wc-pbm')));
+    }
+
+    if ('product' === $source && ! $product_id) {
+        wp_send_json_error(array('message' => __('ID de producto inválido', 'wc-pbm')));
+    }
+
+    if ('role' === $source && ! $role) {
+        wp_send_json_error(array('message' => __('Rol inválido', 'wc-pbm')));
+    }
+
+    if ('mailmint' === $source && ! $mailmint_list_id) {
+        wp_send_json_error(array('message' => __('Lista de Mail Mint inválida', 'wc-pbm')));
+    }
+
+    $recipients = get_recipients_by_source($source, array(
+        'product_id'       => $product_id,
+        'role'             => $role,
+        'mailmint_list_id' => $mailmint_list_id,
+    ));
+    $audience_label = get_source_audience_label($source, $product_id, $role, $mailmint_list_id);
 
     if (empty($recipients)) {
         wp_send_json_error(array('message' => __('No se encontraron destinatarios', 'wc-pbm')));
     }
 
-    $batches = array_chunk($recipients, $batch_size);
-    $scheduled_count = 0;
-    $interval_seconds = ceil(($batch_size / $emails_per_hour) * 3600);
+    if ($schedule_enabled) {
+        if (! $scheduled_datetime) {
+            wp_send_json_error(array('message' => __('La fecha de programación es obligatoria', 'wc-pbm')));
+        }
 
-    foreach ($batches as $batch) {
+        $local_datetime = str_replace('T', ' ', $scheduled_datetime) . ':00';
+        $gmt_datetime = get_gmt_from_date($local_datetime);
+        $scheduled_timestamp = strtotime($gmt_datetime . ' UTC');
+
+        if ($scheduled_timestamp <= time()) {
+            wp_send_json_error(array('message' => __('La fecha debe ser futura', 'wc-pbm')));
+        }
+
+        global $wpdb;
+        $table = $wpdb->prefix . 'pbm_scheduled_emails';
+
+        $inserted = $wpdb->insert(
+            $table,
+            array(
+                'user_role'       => 'scheduled',
+                'subject'         => $subject,
+                'message'         => $message,
+                'scheduled_at'    => $gmt_datetime,
+                'batch_size'      => $batch_size,
+                'emails_per_hour' => $emails_per_hour,
+                'status'          => 'pending',
+                'created_at'      => current_time('mysql', true),
+            ),
+            array('%s', '%s', '%s', '%s', '%d', '%d', '%s', '%s')
+        );
+
+        if (! $inserted) {
+            wp_send_json_error(array('message' => __('Error al guardar en base de datos', 'wc-pbm')));
+        }
+
+        $scheduled_id = (int) $wpdb->insert_id;
+        add_option('pbm_scheduled_recipients_' . $scheduled_id, $recipients, '', false);
+        add_option('pbm_delivery_meta_' . $scheduled_id, array(
+            'type'     => 'scheduled',
+            'source'   => $source,
+            'audience' => $audience_label,
+        ), '', false);
+
         if (function_exists('as_schedule_single_action')) {
-            $run_at = time() + ($scheduled_count * $interval_seconds);
-
             as_schedule_single_action(
-                $run_at,
-                'pbm_process_email_batch',
-                array($batch, $subject, $message),
+                $scheduled_timestamp,
+                'pbm_execute_scheduled_email',
+                array($scheduled_id),
                 'product-broadcast-mailer'
             );
-            $scheduled_count++;
         }
+
+        wp_send_json_success(array(
+            'message' => __('Envío programado correctamente', 'wc-pbm'),
+        ));
     }
+
+    global $wpdb;
+    $table = $wpdb->prefix . 'pbm_scheduled_emails';
+    $inserted = $wpdb->insert(
+        $table,
+        array(
+            'user_role'       => 'instant',
+            'subject'         => $subject,
+            'message'         => $message,
+            'scheduled_at'    => current_time('mysql', true),
+            'batch_size'      => $batch_size,
+            'emails_per_hour' => $emails_per_hour,
+            'status'          => 'running',
+            'created_at'      => current_time('mysql', true),
+        ),
+        array('%s', '%s', '%s', '%s', '%d', '%d', '%s', '%s')
+    );
+
+    if (! $inserted) {
+        wp_send_json_error(array('message' => __('Error al guardar en base de datos', 'wc-pbm')));
+    }
+
+    $delivery_id = (int) $wpdb->insert_id;
+    add_option('pbm_delivery_meta_' . $delivery_id, array(
+        'type'     => 'instant',
+        'source'   => $source,
+        'audience' => $audience_label,
+    ), '', false);
+
+    $scheduled_count = schedule_email_batches($recipients, $subject, $message, $batch_size, $emails_per_hour, $delivery_id);
+    update_scheduled_email_status($delivery_id, 'completed');
 
     wp_send_json_success(array(
         'message' => sprintf(
@@ -104,6 +240,32 @@ function ajax_send_broadcast()
             count($recipients)
         ),
     ));
+}
+
+/**
+ * Devuelve una etiqueta legible de audiencia según fuente.
+ *
+ * @param string $source Fuente seleccionada.
+ * @param int    $product_id ID de producto.
+ * @param string $role Rol WP.
+ * @param int    $mailmint_list_id ID de lista Mail Mint.
+ * @return string
+ */
+function get_source_audience_label($source, $product_id, $role, $mailmint_list_id)
+{
+    if ('product' === $source && $product_id > 0) {
+        return sprintf(__('Producto #%d', 'wc-pbm'), $product_id);
+    }
+
+    if ('role' === $source && $role) {
+        return sprintf(__('Rol: %s', 'wc-pbm'), $role);
+    }
+
+    if ('mailmint' === $source && $mailmint_list_id > 0) {
+        return sprintf(__('Lista Mail Mint #%d', 'wc-pbm'), $mailmint_list_id);
+    }
+
+    return __('Audiencia no definida', 'wc-pbm');
 }
 
 /**
