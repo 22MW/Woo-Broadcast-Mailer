@@ -1,5 +1,5 @@
-import { Card, CardBody } from '@wordpress/components';
-import { useEffect, useMemo, useState } from '@wordpress/element';
+import { Button, Card, CardBody, CheckboxControl, TextControl } from '@wordpress/components';
+import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import SourceSelector from './components/SourceSelector';
 import DependentSelector from './components/DependentSelector';
@@ -45,6 +45,15 @@ function parseEmails(input) {
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function getClassicEditorMessage() {
+  if (typeof window.tinyMCE !== 'undefined' && window.tinyMCE.get('pbm_message')) {
+    window.tinyMCE.get('pbm_message').save();
+  }
+
+  const textarea = document.getElementById('pbm_message');
+  return textarea ? String(textarea.value || '') : '';
 }
 
 async function postAjax(params) {
@@ -115,12 +124,21 @@ async function fetchSelectorItems(source, query, nonce) {
 }
 
 export default function App() {
+  const messageHostRef = useRef(null);
   const [source, setSource] = useState(getCurrentValue('pbm_recipient_source') || 'product');
   const [globalAudience, setGlobalAudience] = useState([]);
   const [manualEmails, setManualEmails] = useState([]);
   const [message, setMessage] = useState(null);
   const [itemDetails, setItemDetails] = useState({});
   const [countByKey, setCountByKey] = useState({});
+  const [subject, setSubject] = useState('');
+  const [batchSize, setBatchSize] = useState('30');
+  const [emailsPerHour, setEmailsPerHour] = useState('200');
+  const [scheduleEnabled, setScheduleEnabled] = useState(false);
+  const [scheduledDatetime, setScheduledDatetime] = useState('');
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewData, setPreviewData] = useState(null);
+  const [sending, setSending] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [topItemsBySource, setTopItemsBySource] = useState({ product: [], role: [], mailmint: [] });
@@ -392,6 +410,111 @@ export default function App() {
     }
   }, [globalAudience, manualEmails]);
 
+  useEffect(() => {
+    const host = messageHostRef.current;
+    const row = document.getElementById('pbm-message-row-legacy');
+    if (!host || !row) {
+      return;
+    }
+
+    const editorWrap = row.querySelector('#wp-pbm_message-wrap');
+    const description = row.querySelector('.description');
+    if (editorWrap && !host.contains(editorWrap)) {
+      host.appendChild(editorWrap);
+    }
+    if (description && !host.contains(description)) {
+      host.appendChild(description);
+    }
+
+    row.style.display = 'none';
+  }, []);
+
+  const previewAudience = async () => {
+    if (listItems.length === 0) {
+      window.alert(__('Añade destinatarios antes de previsualizar.', 'wc-pbm'));
+      return;
+    }
+
+    setPreviewLoading(true);
+    const nonceField = document.getElementById('pbm_nonce');
+    const nonce = nonceField ? nonceField.value : '';
+    const params = new URLSearchParams();
+    params.append('action', 'pbm_preview_recipients');
+    params.append('source', source);
+    params.append('product_id', '');
+    params.append('role', '');
+    params.append('mailmint_list_id', '');
+    params.append('audience_items', JSON.stringify(globalAudience.map((item) => ({ source: item.source, selectorValue: item.selectorValue }))));
+    params.append('manual_emails', JSON.stringify(manualEmails));
+    params.append('nonce', nonce);
+
+    const data = await postAjax(params);
+    setPreviewLoading(false);
+
+    if (!data || !data.success || !data.data) {
+      window.alert(data?.data?.message || __('Error al obtener destinatarios', 'wc-pbm'));
+      return;
+    }
+
+    setPreviewData(data.data);
+  };
+
+  const sendBroadcast = async () => {
+    if (listItems.length === 0) {
+      window.alert(__('Añade destinatarios antes de enviar.', 'wc-pbm'));
+      return;
+    }
+    if (!previewData || Number(previewData.total || 0) < 1) {
+      window.alert(__('Primero debes hacer una vista previa.', 'wc-pbm'));
+      return;
+    }
+
+    const messageContent = getClassicEditorMessage();
+    if (!subject.trim() || !messageContent.trim()) {
+      window.alert(__('Asunto y mensaje son obligatorios.', 'wc-pbm'));
+      return;
+    }
+
+    if (scheduleEnabled && !scheduledDatetime) {
+      window.alert(__('Debes indicar fecha y hora para programar.', 'wc-pbm'));
+      return;
+    }
+
+    if (!window.confirm(__('¿Confirmas el envío a la audiencia seleccionada?', 'wc-pbm'))) {
+      return;
+    }
+
+    setSending(true);
+    const nonceField = document.getElementById('pbm_nonce');
+    const nonce = nonceField ? nonceField.value : '';
+    const params = new URLSearchParams();
+    params.append('action', 'pbm_send_broadcast');
+    params.append('source', source);
+    params.append('product_id', '');
+    params.append('role', '');
+    params.append('mailmint_list_id', '');
+    params.append('audience_items', JSON.stringify(globalAudience.map((item) => ({ source: item.source, selectorValue: item.selectorValue }))));
+    params.append('manual_emails', JSON.stringify(manualEmails));
+    params.append('subject', subject);
+    params.append('message', messageContent);
+    params.append('batch_size', String(parseInt(batchSize || '30', 10) || 30));
+    params.append('emails_per_hour', String(parseInt(emailsPerHour || '200', 10) || 200));
+    params.append('schedule_enabled', scheduleEnabled ? '1' : '0');
+    params.append('scheduled_datetime', scheduledDatetime);
+    params.append('nonce', nonce);
+
+    const data = await postAjax(params);
+    setSending(false);
+
+    if (!data || !data.success) {
+      window.alert(data?.data?.message || __('Error al programar el envío', 'wc-pbm'));
+      return;
+    }
+
+    window.alert(data.data.message || __('Envío creado correctamente', 'wc-pbm'));
+    window.location.reload();
+  };
+
   return (
     <Card className="pbm-react-shell">
       <CardBody>
@@ -419,6 +542,43 @@ export default function App() {
           onClear={clearGlobalAudience}
           summary={summary}
         />
+        <div className="pbm-react-preview-panel">
+          <Button variant="secondary" onClick={previewAudience} disabled={previewLoading || listItems.length === 0}>
+            {previewLoading ? __('Cargando…', 'wc-pbm') : __('Vista Previa de Destinatarios', 'wc-pbm')}
+          </Button>
+          {previewData && (
+            <div className="pbm-react-preview-box">
+              <p><strong>{__('Total de destinatarios únicos:', 'wc-pbm')}</strong> {previewData.total || 0}</p>
+              <p><strong>{__('Fuente:', 'wc-pbm')}</strong> {__('Lista global combinada', 'wc-pbm')}</p>
+              <div className="pbm-react-preview-emails">{(previewData.emails || []).join(', ')}</div>
+            </div>
+          )}
+        </div>
+        <div className="pbm-react-send-config">
+          <TextControl label={__('Asunto', 'wc-pbm')} value={subject} onChange={setSubject} />
+          <div className="pbm-react-classic-editor">
+            <label htmlFor="pbm_message">{__('Mensaje', 'wc-pbm')}</label>
+            <div ref={messageHostRef} />
+          </div>
+          <div className="pbm-react-send-grid">
+            <TextControl label={__('Tamaño de lote', 'wc-pbm')} type="number" min={10} max={100} value={batchSize} onChange={setBatchSize} />
+            <TextControl label={__('Emails por hora', 'wc-pbm')} type="number" min={10} max={1000} value={emailsPerHour} onChange={setEmailsPerHour} />
+          </div>
+          <CheckboxControl label={__('Programar envío', 'wc-pbm')} checked={scheduleEnabled} onChange={setScheduleEnabled} />
+          {scheduleEnabled && (
+            <TextControl
+              label={__('Fecha y hora de envío', 'wc-pbm')}
+              type="datetime-local"
+              value={scheduledDatetime}
+              onChange={setScheduledDatetime}
+            />
+          )}
+          <div className="pbm-react-send-actions">
+            <Button variant="primary" onClick={sendBroadcast} disabled={sending || listItems.length === 0}>
+              {sending ? __('Programando envíos...', 'wc-pbm') : __('Enviar Emails', 'wc-pbm')}
+            </Button>
+          </div>
+        </div>
         <ScheduledLogsPanel />
       </CardBody>
     </Card>

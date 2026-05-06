@@ -182,21 +182,23 @@ function ajax_preview_recipients()
             wp_send_json_error(array('message' => __('La fuente seleccionada no está disponible', 'wc-pbm')));
         }
 
-        if ('product' === $source && ! $product_id) {
-            wp_send_json_error(array('message' => __('ID de producto inválido', 'wc-pbm')));
-        }
-
-        if ('role' === $source && ! $role) {
-            wp_send_json_error(array('message' => __('Rol inválido', 'wc-pbm')));
-        }
-
-        if ('mailmint' === $source && ! $mailmint_list_id) {
-            wp_send_json_error(array('message' => __('Lista de Mail Mint inválida', 'wc-pbm')));
-        }
-
         $audience_items = get_json_array_from_post('audience_items');
         $manual_emails = get_json_array_from_post('manual_emails');
         $is_global_audience = ! empty($audience_items) || ! empty($manual_emails);
+
+        if (! $is_global_audience) {
+            if ('product' === $source && ! $product_id) {
+                wp_send_json_error(array('message' => __('ID de producto inválido', 'wc-pbm')));
+            }
+
+            if ('role' === $source && ! $role) {
+                wp_send_json_error(array('message' => __('Rol inválido', 'wc-pbm')));
+            }
+
+            if ('mailmint' === $source && ! $mailmint_list_id) {
+                wp_send_json_error(array('message' => __('Lista de Mail Mint inválida', 'wc-pbm')));
+            }
+        }
 
         if ($is_global_audience) {
             $recipients = resolve_global_recipients($audience_items, $manual_emails);
@@ -496,21 +498,23 @@ function ajax_send_broadcast()
         wp_send_json_error(array('message' => __('Parámetros de envío inválidos', 'wc-pbm')));
     }
 
-    if ('product' === $source && ! $product_id) {
-        wp_send_json_error(array('message' => __('ID de producto inválido', 'wc-pbm')));
-    }
-
-    if ('role' === $source && ! $role) {
-        wp_send_json_error(array('message' => __('Rol inválido', 'wc-pbm')));
-    }
-
-    if ('mailmint' === $source && ! $mailmint_list_id) {
-        wp_send_json_error(array('message' => __('Lista de Mail Mint inválida', 'wc-pbm')));
-    }
-
     $audience_items = get_json_array_from_post('audience_items');
     $manual_emails = get_json_array_from_post('manual_emails');
     $is_global_audience = ! empty($audience_items) || ! empty($manual_emails);
+
+    if (! $is_global_audience) {
+        if ('product' === $source && ! $product_id) {
+            wp_send_json_error(array('message' => __('ID de producto inválido', 'wc-pbm')));
+        }
+
+        if ('role' === $source && ! $role) {
+            wp_send_json_error(array('message' => __('Rol inválido', 'wc-pbm')));
+        }
+
+        if ('mailmint' === $source && ! $mailmint_list_id) {
+            wp_send_json_error(array('message' => __('Lista de Mail Mint inválida', 'wc-pbm')));
+        }
+    }
 
     if ($is_global_audience) {
         $recipients = resolve_global_recipients($audience_items, $manual_emails);

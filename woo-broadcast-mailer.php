@@ -359,7 +359,7 @@ function render_admin_page()
                     </td>
                 </tr>
 
-                <tr>
+                <tr id="pbm-subject-row-legacy">
                     <th scope="row">
                         <label for="pbm_subject"><?php esc_html_e('Asunto', 'wc-pbm'); ?></label>
                     </th>
@@ -368,7 +368,7 @@ function render_admin_page()
                     </td>
                 </tr>
 
-                <tr>
+                <tr id="pbm-message-row-legacy">
                     <th scope="row">
                         <label for="pbm_message"><?php esc_html_e('Mensaje', 'wc-pbm'); ?></label>
                     </th>
@@ -387,7 +387,7 @@ function render_admin_page()
                     </td>
                 </tr>
 
-                <tr>
+                <tr id="pbm-batch-row-legacy">
                     <th scope="row">
                         <label for="pbm_batch_size"><?php esc_html_e('Tamaño de lote', 'wc-pbm'); ?></label>
                     </th>
@@ -399,7 +399,7 @@ function render_admin_page()
                     </td>
                 </tr>
 
-                <tr>
+                <tr id="pbm-hour-row-legacy">
                     <th scope="row">
                         <label for="pbm_emails_per_hour"><?php esc_html_e('Emails por hora', 'wc-pbm'); ?></label>
                     </th>
@@ -414,7 +414,7 @@ function render_admin_page()
                     </td>
                 </tr>
 
-                <tr>
+                <tr id="pbm-schedule-row-legacy">
                     <th scope="row">
                         <label for="pbm_schedule_enabled"><?php esc_html_e('Programación', 'wc-pbm'); ?></label>
                     </th>
@@ -439,7 +439,7 @@ function render_admin_page()
                 </tr>
             </table>
 
-            <p class="submit pbm-submit-wrap">
+            <p class="submit pbm-submit-wrap" id="pbm-submit-wrap-legacy">
                 <button type="submit" id="pbm-send-btn" class="button" disabled>
                     <?php esc_html_e('Enviar Emails', 'wc-pbm'); ?>
                 </button>

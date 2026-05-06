@@ -240,6 +240,27 @@
     display: none !important;
 }
 
+.pbm-admin #pbm-subject-row-legacy,
+.pbm-admin #pbm-batch-row-legacy,
+.pbm-admin #pbm-hour-row-legacy,
+.pbm-admin #pbm-schedule-row-legacy,
+.pbm-admin #pbm_schedule_datetime_row,
+.pbm-admin #pbm-submit-wrap-legacy,
+.pbm-admin #pbm-preview-btn,
+.pbm-admin #pbm-preview-results {
+    display: none !important;
+}
+
+.pbm-admin .pbm-react-classic-editor {
+    margin-bottom: 10px;
+}
+
+.pbm-admin .pbm-react-classic-editor > label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
 .pbm-admin .pbm-react-shell {
     margin-bottom: 16px;
 }
@@ -250,6 +271,36 @@
 .pbm-admin .pbm-react-manual-emails,
 .pbm-admin .pbm-react-global-list {
     margin-bottom: 14px;
+}
+
+.pbm-admin .pbm-react-preview-panel,
+.pbm-admin .pbm-react-send-config {
+    margin-bottom: 14px;
+}
+
+.pbm-admin .pbm-react-preview-box,
+.pbm-admin .pbm-react-send-config {
+    background: #f5f6fb;
+    border: 1px solid #d8def0;
+    border-radius: 12px;
+    margin-top: 10px;
+    padding: 12px;
+}
+
+.pbm-admin .pbm-react-preview-emails {
+    max-height: 110px;
+    overflow: auto;
+    word-break: break-word;
+}
+
+.pbm-admin .pbm-react-send-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pbm-admin .pbm-react-send-actions {
+    margin-top: 10px;
 }
 
 .pbm-admin .pbm-react-source h3,
