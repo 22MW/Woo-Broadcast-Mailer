@@ -94,11 +94,12 @@
 }
 
 .pbm-admin #pbm-broadcast-form {
-    background: var(--pbm-bg-card);
-    border-radius: 18px;
     margin: 0;
-    max-width: 100%;
-    padding: 14px 16px 18px;
+    padding: 0;
+}
+
+.pbm-admin .pbm-legacy-data {
+    display: none;
 }
 
 .pbm-admin .form-table th {
@@ -182,16 +183,6 @@
     background: var(--pbm-btn-danger-hover) !important;
 }
 
-.pbm-admin #pbm-send-btn.button {
-    background: var(--pbm-btn-dark);
-    border: none;
-    border-radius: 999px;
-    color: #fff;
-    min-height: 46px;
-    min-width: 140px;
-    padding: 10px 30px;
-}
-
 .pbm-admin #pbm-preview-results,
 .pbm-admin #pbm-interval-preview,
 .pbm-admin .pbm-info-box {
@@ -205,58 +196,6 @@
     margin-top: 8px;
 }
 
-.pbm-admin .pbm-preview-button-wrap {
-    margin-top: 10px;
-}
-
-.pbm-admin .pbm-preview-results {
-    margin-top: 15px;
-    padding: 15px;
-}
-
-.pbm-admin .pbm-preview-title {
-    margin: 0 0 10px;
-}
-
-.pbm-admin .pbm-emails-list {
-    background: #fff;
-    border: none;
-    border-radius: 10px;
-    font-size: 14px;
-    line-height: 1.6;
-    margin-top: 12px;
-    max-height: 150px;
-    overflow-y: auto;
-    padding: 10px;
-}
-
-.pbm-admin .pbm-emails-content {
-    color: var(--pbm-text-muted);
-}
-
-.pbm-admin .pbm-interval-preview {
-    margin-top: 8px;
-    padding: 8px;
-}
-
-.pbm-admin .pbm-submit-wrap {
-    text-align: right;
-}
-
-.pbm-admin .pbm-manage-wrap {
-    margin-top: 24px;
-}
-
-.pbm-admin .pbm-manage-summary {
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.pbm-admin .pbm-manage-content {
-    margin-top: 16px;
-}
-
 .pbm-admin .pbm-info-box {
     margin-top: 20px;
     padding: 20px 30px;
@@ -264,18 +203,6 @@
 
 .pbm-admin .pbm-info-box-compact {
     padding: 10px 30px;
-}
-
-.pbm-admin #pbm-emails-list {
-    border: none;
-    border-radius: 10px;
-}
-
-.pbm-admin details {
-    background: var(--pbm-bg-card);
-    border-radius: 18px;
-    margin-top: 18px;
-    padding: 14px 16px;
 }
 
 .pbm-admin .wp-list-table {
@@ -585,10 +512,14 @@
     border: none;
     border-radius: 10px;
     min-width: 0;
-    padding: 10px;
+    padding: 22px;
     width: auto;
 }
-
+.pbm-admin #inspector-textarea-control-0 {
+    background: var(--pbm-bg-pill);
+    border-radius: 10px;
+    border: none;
+}
 .pbm-admin .pbm-scheduled-card-head {
     align-items: center;
     display: flex;

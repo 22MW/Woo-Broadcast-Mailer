@@ -35,7 +35,6 @@ function syncSelectValue(selectId, value) {
   }
 
   element.value = value;
-  element.dispatchEvent(new Event('change', { bubbles: true }));
 }
 
 function parseEmails(input) {

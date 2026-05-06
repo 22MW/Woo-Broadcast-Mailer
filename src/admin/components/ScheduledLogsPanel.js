@@ -145,7 +145,7 @@ export default function ScheduledLogsPanel() {
         <h3>{__('Ver envíos programados y logs', 'wc-pbm')}</h3>
         <div className="pbm-react-scheduled-actions">
           <Button variant="secondary" onClick={toggleSelectAllPage}>
-            {allOnPageSelected ? __('Deseleccionar página', 'wc-pbm') : __('Seleccionar página', 'wc-pbm')}
+            {allOnPageSelected ? __('Deseleccionar todos', 'wc-pbm') : __('Seleccionar todos', 'wc-pbm')}
           </Button>
           <Button variant="secondary" onClick={bulkDeleteSelected} disabled={selectedIds.length === 0}>
             {__('Borrar seleccionados', 'wc-pbm')}
