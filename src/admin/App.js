@@ -13,11 +13,13 @@ function mapOptionsFromSelect(selectId) {
     return [];
   }
 
-  return Array.from(element.options).map((option) => ({
-    label: option.text,
-    value: option.value,
-    disabled: option.disabled,
-  }));
+  return Array.from(element.options)
+    .filter((option) => option.value)
+    .map((option) => ({
+      label: option.text,
+      value: option.value,
+      disabled: option.disabled,
+    }));
 }
 
 function getCurrentValue(selectId) {
@@ -33,32 +35,6 @@ function syncSelectValue(selectId, value) {
 
   element.value = value;
   element.dispatchEvent(new Event('change', { bubbles: true }));
-}
-
-function getSourceLabel(source, sourceOptions) {
-  const sourceMatch = sourceOptions.find((option) => option.value === source);
-  return sourceMatch ? sourceMatch.label : source;
-}
-
-function getSelectorForSource(source, values) {
-  if (source === 'role') {
-    return values.roleValue;
-  }
-  if (source === 'mailmint') {
-    return values.mailmintValue;
-  }
-  return values.productValue;
-}
-
-function getSelectorLabel(source, values, optionsMap) {
-  const selectorValue = getSelectorForSource(source, values);
-  if (!selectorValue) {
-    return '';
-  }
-
-  const options = optionsMap[source] || [];
-  const match = options.find((option) => option.value === selectorValue);
-  return match ? match.label : selectorValue;
 }
 
 function parseEmails(input) {
@@ -82,17 +58,17 @@ async function postAjax(params) {
   return response.json();
 }
 
-async function fetchRecipientCount(source, productId, role, mailmintListId, nonce) {
-  if (!window.ajaxurl) {
+async function fetchRecipientCount(source, selectorValue, nonce) {
+  if (!window.ajaxurl || !selectorValue) {
     return 0;
   }
 
   const params = new URLSearchParams();
   params.append('action', 'pbm_count_recipients');
-  params.append('source', source || 'product');
-  params.append('product_id', productId || '');
-  params.append('role', role || '');
-  params.append('mailmint_list_id', mailmintListId || '');
+  params.append('source', source);
+  params.append('product_id', source === 'product' ? selectorValue : '');
+  params.append('role', source === 'role' ? selectorValue : '');
+  params.append('mailmint_list_id', source === 'mailmint' ? selectorValue : '');
   params.append('nonce', nonce || '');
 
   const data = await postAjax(params);
@@ -104,7 +80,7 @@ async function fetchRecipientCount(source, productId, role, mailmintListId, nonc
 }
 
 async function fetchAudienceItemEmails(source, selectorValue, nonce) {
-  if (!window.ajaxurl) {
+  if (!window.ajaxurl || !selectorValue) {
     return [];
   }
 
@@ -122,142 +98,177 @@ async function fetchAudienceItemEmails(source, selectorValue, nonce) {
   return data.data.emails;
 }
 
+async function fetchSelectorItems(source, query, nonce) {
+  const params = new URLSearchParams();
+  params.append('action', 'pbm_search_selectors');
+  params.append('source', source);
+  params.append('q', query || '');
+  params.append('nonce', nonce || '');
+
+  const data = await postAjax(params);
+  if (!data || !data.success || !data.data || !Array.isArray(data.data.items)) {
+    return [];
+  }
+
+  return data.data.items;
+}
+
 export default function App() {
   const [source, setSource] = useState(getCurrentValue('pbm_recipient_source') || 'product');
-  const [productValue, setProductValue] = useState(getCurrentValue('pbm_product_id'));
-  const [roleValue, setRoleValue] = useState(getCurrentValue('pbm_user_role'));
-  const [mailmintValue, setMailmintValue] = useState(getCurrentValue('pbm_mailmint_list'));
   const [globalAudience, setGlobalAudience] = useState([]);
   const [manualEmails, setManualEmails] = useState([]);
   const [message, setMessage] = useState(null);
-  const [currentCount, setCurrentCount] = useState(0);
   const [itemDetails, setItemDetails] = useState({});
+  const [countByKey, setCountByKey] = useState({});
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [topItemsBySource, setTopItemsBySource] = useState({ product: [], role: [], mailmint: [] });
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedBySource, setSelectedBySource] = useState({ product: [], role: [], mailmint: [] });
+  const [labelsBySource, setLabelsBySource] = useState({ product: {}, role: {}, mailmint: {} });
 
   const sourceOptions = useMemo(() => mapOptionsFromSelect('pbm_recipient_source'), []);
-  const productOptions = useMemo(() => mapOptionsFromSelect('pbm_product_id'), []);
-  const roleOptions = useMemo(() => mapOptionsFromSelect('pbm_user_role'), []);
-  const mailmintOptions = useMemo(() => mapOptionsFromSelect('pbm_mailmint_list'), []);
-
-  const optionsMap = useMemo(
-    () => ({
-      product: productOptions,
-      role: roleOptions,
-      mailmint: mailmintOptions,
-    }),
-    [mailmintOptions, productOptions, roleOptions]
-  );
 
   useEffect(() => {
     syncSelectValue('pbm_recipient_source', source);
+    setSearchTerm('');
+    setSearchResults([]);
   }, [source]);
 
-  const activeSelector = useMemo(() => {
-    if (source === 'role') {
-      return {
-        value: roleValue,
-        options: roleOptions,
-        onChange: (value) => {
-          setRoleValue(value);
-          syncSelectValue('pbm_user_role', value);
-        },
-      };
-    }
-
-    if (source === 'mailmint') {
-      return {
-        value: mailmintValue,
-        options: mailmintOptions,
-        onChange: (value) => {
-          setMailmintValue(value);
-          syncSelectValue('pbm_mailmint_list', value);
-        },
-      };
-    }
-
-    return {
-      value: productValue,
-      options: productOptions,
-      onChange: (value) => {
-        setProductValue(value);
-        syncSelectValue('pbm_product_id', value);
-      },
-    };
-  }, [mailmintOptions, mailmintValue, productOptions, productValue, roleOptions, roleValue, source]);
-
-  const currentSelectorValue = getSelectorForSource(source, {
-    productValue,
-    roleValue,
-    mailmintValue,
-  });
-
-  const currentSelectorLabel = getSelectorLabel(
-    source,
-    { productValue, roleValue, mailmintValue },
-    optionsMap
-  );
-
   useEffect(() => {
-    let isMounted = true;
+    const nonceField = document.getElementById('pbm_nonce');
+    const nonce = nonceField ? nonceField.value : '';
 
     const run = async () => {
-      if (!currentSelectorValue) {
-        setCurrentCount(0);
-        return;
-      }
+      const items = await fetchSelectorItems(source, '', nonce);
+      setTopItemsBySource((prev) => ({ ...prev, [source]: items }));
 
-      const nonceField = document.getElementById('pbm_nonce');
-      const nonce = nonceField ? nonceField.value : '';
-
-      const total = await fetchRecipientCount(source, productValue, roleValue, mailmintValue, nonce);
-      if (isMounted) {
-        setCurrentCount(total);
-      }
+      setLabelsBySource((prev) => {
+        const next = { ...prev };
+        const mapped = { ...next[source] };
+        items.forEach((item) => {
+          mapped[item.value] = item.label;
+        });
+        next[source] = mapped;
+        return next;
+      });
     };
 
     run();
+  }, [source]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, [currentSelectorValue, mailmintValue, productValue, roleValue, source]);
-
-  const addToGlobalAudience = async () => {
-    if (!currentSelectorValue) {
-      setMessage({ type: 'warning', text: __('Debes seleccionar un elemento antes de añadir.', 'wc-pbm') });
+  useEffect(() => {
+    if (searchTerm.length < 3) {
+      setSearchResults([]);
       return;
     }
 
-    const key = `${source}:${currentSelectorValue}`;
-    const duplicate = globalAudience.some((item) => item.key === key);
-
-    if (duplicate) {
-      setMessage({ type: 'warning', text: __('Ese elemento ya está en la lista global.', 'wc-pbm') });
-      return;
-    }
-
-    const newItem = {
-      key,
-      source,
-      sourceLabel: getSourceLabel(source, sourceOptions),
-      selectorValue: currentSelectorValue,
-      selectorLabel: currentSelectorLabel,
-      count: currentCount,
-    };
-
-    setGlobalAudience((prev) => [...prev, newItem]);
-    setMessage({ type: 'success', text: __('Elemento añadido a la lista global.', 'wc-pbm') });
-
+    let alive = true;
     const nonceField = document.getElementById('pbm_nonce');
     const nonce = nonceField ? nonceField.value : '';
-    const emails = await fetchAudienceItemEmails(source, currentSelectorValue, nonce);
 
-    setItemDetails((prev) => ({
-      ...prev,
-      [key]: {
-        emails,
-        count: emails.length,
-      },
-    }));
+    const timer = setTimeout(async () => {
+      const items = await fetchSelectorItems(source, searchTerm, nonce);
+      if (!alive) {
+        return;
+      }
+
+      setSearchResults(items);
+      setLabelsBySource((prev) => {
+        const next = { ...prev };
+        const mapped = { ...next[source] };
+        items.forEach((item) => {
+          mapped[item.value] = item.label;
+        });
+        next[source] = mapped;
+        return next;
+      });
+    }, 250);
+
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+    };
+  }, [searchTerm, source]);
+
+  const toggleSelection = async (item) => {
+    setSelectedBySource((prev) => {
+      const selected = prev[source] || [];
+      const exists = selected.includes(item.value);
+      const nextSelected = exists ? selected.filter((value) => value !== item.value) : [...selected, item.value];
+
+      const next = { ...prev, [source]: nextSelected };
+      const primary = nextSelected[0] || '';
+      if (source === 'product') {
+        syncSelectValue('pbm_product_id', primary);
+      } else if (source === 'role') {
+        syncSelectValue('pbm_user_role', primary);
+      } else if (source === 'mailmint') {
+        syncSelectValue('pbm_mailmint_list', primary);
+      }
+
+      return next;
+    });
+
+    const key = `${source}:${item.value}`;
+    if (typeof countByKey[key] === 'undefined') {
+      const nonceField = document.getElementById('pbm_nonce');
+      const nonce = nonceField ? nonceField.value : '';
+      const count = await fetchRecipientCount(source, item.value, nonce);
+      setCountByKey((prev) => ({ ...prev, [key]: count }));
+    }
+  };
+
+  const selectedValues = selectedBySource[source] || [];
+  const selectedLabel = selectedValues.length
+    ? __('Seleccionados: ', 'wc-pbm') + selectedValues.length
+    : '';
+
+  const addToGlobalAudience = async () => {
+    if (selectedValues.length === 0) {
+      setMessage({ type: 'warning', text: __('Debes seleccionar al menos un elemento.', 'wc-pbm') });
+      return;
+    }
+
+    const sourceLabel = sourceOptions.find((option) => option.value === source)?.label || source;
+    const nonceField = document.getElementById('pbm_nonce');
+    const nonce = nonceField ? nonceField.value : '';
+
+    for (const selectorValue of selectedValues) {
+      const key = `${source}:${selectorValue}`;
+      const duplicate = globalAudience.some((item) => item.key === key);
+      if (duplicate) {
+        continue;
+      }
+
+      const label = labelsBySource[source]?.[selectorValue] || selectorValue;
+      const count = typeof countByKey[key] === 'number'
+        ? countByKey[key]
+        : await fetchRecipientCount(source, selectorValue, nonce);
+
+      const newItem = {
+        key,
+        source,
+        sourceLabel,
+        selectorValue,
+        selectorLabel: label,
+        count,
+      };
+
+      setGlobalAudience((prev) => [...prev, newItem]);
+
+      const emails = await fetchAudienceItemEmails(source, selectorValue, nonce);
+      setItemDetails((prev) => ({
+        ...prev,
+        [key]: {
+          emails,
+          count: emails.length,
+        },
+      }));
+      setCountByKey((prev) => ({ ...prev, [key]: emails.length }));
+    }
+
+    setMessage({ type: 'success', text: __('Elementos añadidos a la lista global.', 'wc-pbm') });
   };
 
   const addManualEmails = (rawInput) => {
@@ -363,20 +374,40 @@ export default function App() {
     return { gross, unique, duplicates };
   }, [listItems]);
 
+  useEffect(() => {
+    const audienceInput = document.getElementById('pbm_audience_items');
+    const manualInput = document.getElementById('pbm_manual_emails');
+
+    if (audienceInput) {
+      const payload = globalAudience.map((item) => ({
+        source: item.source,
+        selectorValue: item.selectorValue,
+      }));
+      audienceInput.value = JSON.stringify(payload);
+    }
+
+    if (manualInput) {
+      manualInput.value = JSON.stringify(manualEmails);
+    }
+  }, [globalAudience, manualEmails]);
+
   return (
     <Card className="pbm-react-shell">
       <CardBody>
         <SourceSelector sources={sourceOptions} source={source} onChange={setSource} />
         <DependentSelector
           source={source}
-          options={activeSelector.options}
-          value={activeSelector.value}
-          onChange={activeSelector.onChange}
-          currentCount={currentCount}
+          topItems={topItemsBySource[source] || []}
+          searchTerm={searchTerm}
+          onSearchTermChange={setSearchTerm}
+          searchResults={searchResults}
+          selectedValues={selectedValues}
+          onToggleSelection={toggleSelection}
+          countByKey={countByKey}
         />
         <AudienceBuilder
-          canAdd={Boolean(currentSelectorValue)}
-          selectedLabel={currentSelectorLabel}
+          canAdd={selectedValues.length > 0}
+          selectedLabel={selectedLabel}
           onAdd={addToGlobalAudience}
           message={message}
         />

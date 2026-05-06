@@ -156,6 +156,7 @@ function init()
     add_action('wp_ajax_pbm_preview_recipients', __NAMESPACE__ . '\\ajax_preview_recipients');
     add_action('wp_ajax_pbm_count_recipients', __NAMESPACE__ . '\\ajax_count_recipients');
     add_action('wp_ajax_pbm_resolve_audience_item', __NAMESPACE__ . '\\ajax_resolve_audience_item');
+    add_action('wp_ajax_pbm_search_selectors', __NAMESPACE__ . '\\ajax_search_selectors');
     add_action('wp_ajax_pbm_send_broadcast', __NAMESPACE__ . '\\ajax_send_broadcast');
     add_action('pbm_process_email_batch', __NAMESPACE__ . '\\process_email_batch', 10, 4);
 
@@ -280,13 +281,15 @@ function render_admin_page()
     <div class="wrap pbm-admin">
         <h1>
             <?php esc_html_e(' Broadcast Mailer', 'wc-pbm'); ?>
-            <small style="color:#666; font-weight: normal;">
+            <small class="pbm-version">
                 <?php echo esc_html(sprintf(__('(v%s)', 'wc-pbm'), get_plugin_version())); ?>
             </small>
         </h1>
         <div id="pbm-admin-app"></div>
-        <form id="pbm-broadcast-form" method="post" style="max-width: 800px;">
+        <form id="pbm-broadcast-form" method="post">
             <?php wp_nonce_field('pbm_broadcast_action', 'pbm_nonce'); ?>
+            <input type="hidden" id="pbm_audience_items" name="pbm_audience_items" value="">
+            <input type="hidden" id="pbm_manual_emails" name="pbm_manual_emails" value="">
 
             <table class="form-table">
                 <tr id="pbm-source-row-legacy">
@@ -302,7 +305,7 @@ function render_admin_page()
                             <?php endforeach; ?>
                         </select>
                         <?php if (isset($recipient_sources['mailmint']) && empty($recipient_sources['mailmint']['enabled'])) : ?>
-                            <p class="description" style="margin-top:8px;color:#b32d2e;">
+                            <p class="description pbm-warning-text">
                                 <?php esc_html_e('Mail Mint no está activo o no tiene tablas creadas. Esta fuente queda deshabilitada.', 'wc-pbm'); ?>
                             </p>
                         <?php endif; ?>
@@ -336,18 +339,18 @@ function render_admin_page()
                             </p>
                         </div>
 
-                        <p style="margin-top: 10px;">
+                        <p class="pbm-preview-button-wrap">
                             <button type="button" id="pbm-preview-btn" class="button">
                                 <?php esc_html_e('Vista Previa de Destinatarios', 'wc-pbm'); ?>
                             </button>
                         </p>
 
-                        <div id="pbm-preview-results" style="display:none; margin-top: 15px;padding: 15px;background: rgb(240 240 240);border-radius: 10px;">
-                            <h4 style="margin-top: 0; margin-bottom: 10px;"><?php esc_html_e('Resumen de Destinatarios', 'wc-pbm'); ?></h4>
+                        <div id="pbm-preview-results" class="pbm-preview-results" style="display:none;">
+                            <h4 class="pbm-preview-title"><?php esc_html_e('Resumen de Destinatarios', 'wc-pbm'); ?></h4>
                             <div id="pbm-preview-content"></div>
-                            <div id="pbm-emails-list" style="margin-top: 12px; padding: 10px; background: #fff; border: 1px solid #ddd; border-radius: 3px; max-height: 150px; overflow-y: auto; font-size: 12px; line-height: 1.6;">
+                            <div id="pbm-emails-list" class="pbm-emails-list">
                                 <strong><?php esc_html_e('Emails:', 'wc-pbm'); ?></strong><br>
-                                <span id="pbm-emails-content" style="color: #555;"></span>
+                                <span id="pbm-emails-content" class="pbm-emails-content"></span>
                             </div>
                         </div>
                     </td>
@@ -402,7 +405,7 @@ function render_admin_page()
                         <p class="description">
                             <?php esc_html_e('Límite de emails a enviar por hora (ej: 200). El sistema calculará automáticamente el intervalo entre lotes.', 'wc-pbm'); ?>
                         </p>
-                        <p id="pbm-interval-preview" style="margin-top: 8px; padding: 8px; background: #f0f0f0; border-radius: 5px; display: none;">
+                        <p id="pbm-interval-preview" class="pbm-interval-preview" style="display: none;">
                             <strong><?php esc_html_e('Intervalo calculado:', 'wc-pbm'); ?></strong> <span id="pbm-interval-value"></span>
                         </p>
                     </td>
@@ -433,8 +436,8 @@ function render_admin_page()
                 </tr>
             </table>
 
-            <p class="submit" style="text-align:right">
-                <button type="submit" id="pbm-send-btn" class="button" style="border: none;padding: 10px 30px; background: #1a1a1a;color: #ffffff;" disabled>
+            <p class="submit pbm-submit-wrap">
+                <button type="submit" id="pbm-send-btn" class="button" disabled>
                     <?php esc_html_e('Enviar Emails', 'wc-pbm'); ?>
                 </button>
             </p>
@@ -508,18 +511,21 @@ function render_admin_page()
                     const productId = $('#pbm_product_id').val();
                     const role = $('#pbm_user_role').val();
                     const mailmintList = $('#pbm_mailmint_list').val();
+                    const audienceItems = $('#pbm_audience_items').val();
+                    const manualEmails = $('#pbm_manual_emails').val();
+                    const hasGlobalAudience = (audienceItems && audienceItems !== '[]') || (manualEmails && manualEmails !== '[]');
 
-                    if (source === 'product' && !productId) {
+                    if (!hasGlobalAudience && source === 'product' && !productId) {
                         alert('<?php echo esc_js(__('Por favor selecciona un producto', 'wc-pbm')); ?>');
                         return;
                     }
 
-                    if (source === 'role' && !role) {
+                    if (!hasGlobalAudience && source === 'role' && !role) {
                         alert('<?php echo esc_js(__('Por favor selecciona un rol', 'wc-pbm')); ?>');
                         return;
                     }
 
-                    if (source === 'mailmint' && !mailmintList) {
+                    if (!hasGlobalAudience && source === 'mailmint' && !mailmintList) {
                         alert('<?php echo esc_js(__('Por favor selecciona una lista de Mail Mint', 'wc-pbm')); ?>');
                         return;
                     }
@@ -532,6 +538,8 @@ function render_admin_page()
                         product_id: productId,
                         role: role,
                         mailmint_list_id: mailmintList,
+                        audience_items: audienceItems,
+                        manual_emails: manualEmails,
                         nonce: $('#pbm_nonce').val()
                     }, function(response) {
                         if (response.success) {
@@ -539,7 +547,9 @@ function render_admin_page()
 
                             let previewHtml = '<p style="margin: 0 0 5px;"><strong><?php echo esc_js(__('Total de destinatarios únicos:', 'wc-pbm')); ?></strong> ' + response.data.total + '</p>';
 
-                            if (source === 'product') {
+                            if (response.data.is_global_audience) {
+                                previewHtml += '<p style="margin: 0;"><strong><?php echo esc_js(__('Fuente:', 'wc-pbm')); ?></strong> <?php echo esc_js(__('Lista global combinada', 'wc-pbm')); ?></p>';
+                            } else if (source === 'product') {
                                 previewHtml += '<p style="margin: 0 0 5px;"><strong><?php echo esc_js(__('Pedidos encontrados:', 'wc-pbm')); ?></strong> ' + response.data.orders_count + '</p>';
                                 previewHtml += '<p style="margin: 0;"><strong><?php echo esc_js(__('Suscripciones activas:', 'wc-pbm')); ?></strong> ' + response.data.subscriptions_count + '</p>';
                             } else if (source === 'role') {
@@ -606,6 +616,8 @@ function render_admin_page()
                         product_id: $('#pbm_product_id').val(),
                         role: $('#pbm_user_role').val(),
                         mailmint_list_id: $('#pbm_mailmint_list').val(),
+                        audience_items: $('#pbm_audience_items').val(),
+                        manual_emails: $('#pbm_manual_emails').val(),
                         subject: $('#pbm_subject').val(),
                         message: messageContent,
                         batch_size: $('#pbm_batch_size').val(),
@@ -629,19 +641,19 @@ function render_admin_page()
             });
         </script>
 
-        <div style="margin-top: 24px;">
+        <div class="pbm-manage-wrap">
             <details>
-                <summary style="cursor: pointer; font-size: 14px; font-weight: 600;">
+                <summary class="pbm-manage-summary">
                     <?php esc_html_e('Ver envíos programados y logs', 'wc-pbm'); ?>
                 </summary>
-                <div style="margin-top: 16px;">
+                <div class="pbm-manage-content">
                     <?php render_scheduled_emails_tab(); ?>
                 </div>
             </details>
         </div>
 
         <!-- Mensaje siempre visible -->
-        <div style="background: #f1f1f1; border-radius: 10px; padding: 10px 30px; margin-top: 20px;">
+        <div class="pbm-info-box pbm-info-box-compact">
             <p>
                 <strong><?php esc_html_e('Importante:', 'wc-pbm'); ?></strong>
                 <?php esc_html_e('Los correos se enviarán en segundo plano usando Action Scheduler.', 'wc-pbm'); ?>
@@ -651,7 +663,7 @@ function render_admin_page()
             </p>
         </div>
 
-        <div style="background: #f1f1f1; border-radius: 10px; padding: 20px 30px; margin-top: 20px;">
+        <div class="pbm-info-box">
             <h2><?php esc_html_e('Ajustes', 'wc-pbm'); ?></h2>
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <?php wp_nonce_field('pbm_save_settings', 'pbm_settings_nonce'); ?>

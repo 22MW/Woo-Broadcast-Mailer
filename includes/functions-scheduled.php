@@ -328,6 +328,27 @@ function get_delivery_type_label($delivery_meta)
  */
 function get_delivery_audience_label($email, $delivery_meta)
 {
+    if (! empty($delivery_meta['global']['is_global']) && ! empty($delivery_meta['global']['sources']) && is_array($delivery_meta['global']['sources'])) {
+        $sources = $delivery_meta['global']['sources'];
+        $parts = array();
+
+        if (! empty($sources['product'])) {
+            $parts[] = sprintf(__('Productos: %d', 'wc-pbm'), (int) $sources['product']);
+        }
+        if (! empty($sources['role'])) {
+            $parts[] = sprintf(__('Roles: %d', 'wc-pbm'), (int) $sources['role']);
+        }
+        if (! empty($sources['mailmint'])) {
+            $parts[] = sprintf(__('Listas: %d', 'wc-pbm'), (int) $sources['mailmint']);
+        }
+        if (! empty($sources['manual'])) {
+            $parts[] = sprintf(__('Manuales: %d', 'wc-pbm'), (int) $sources['manual']);
+        }
+
+        $summary = empty($parts) ? __('Global', 'wc-pbm') : implode(' | ', $parts);
+        return __('Global: ', 'wc-pbm') . $summary;
+    }
+
     if (! empty($delivery_meta['audience'])) {
         return (string) $delivery_meta['audience'];
     }
