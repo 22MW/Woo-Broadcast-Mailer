@@ -165,9 +165,11 @@ function init()
     add_action('wp_ajax_pbm_cancel_scheduled_email', __NAMESPACE__ . '\\ajax_cancel_scheduled_email');
     add_action('wp_ajax_pbm_run_scheduled_now', __NAMESPACE__ . '\\ajax_run_scheduled_now');
     add_action('wp_ajax_pbm_get_scheduled_logs', __NAMESPACE__ . '\\ajax_get_scheduled_logs');
+    add_action('wp_ajax_pbm_list_scheduled_emails', __NAMESPACE__ . '\\ajax_list_scheduled_emails');
     add_action('wp_ajax_pbm_preview_role_recipients', __NAMESPACE__ . '\\ajax_preview_role_recipients');
     add_action('wp_ajax_pbm_delete_scheduled_email', __NAMESPACE__ . '\\ajax_delete_scheduled_email');
     add_action('wp_ajax_pbm_bulk_delete_scheduled', __NAMESPACE__ . '\\ajax_bulk_delete_scheduled');
+    add_action('wp_ajax_pbm_bulk_delete_scheduled_ids', __NAMESPACE__ . '\\ajax_bulk_delete_scheduled_ids');
 
     // Registrar callbacks de Action Scheduler
     add_action('pbm_execute_scheduled_email', __NAMESPACE__ . '\\execute_scheduled_email', 10, 1);
@@ -247,6 +249,7 @@ function enqueue_admin_assets($hook)
             array(
                 'ajaxUrl' => admin_url('admin-ajax.php'),
                 'nonce'   => wp_create_nonce('pbm_broadcast_action'),
+                'scheduledNonce' => wp_create_nonce('pbm_scheduled_action'),
             )
         );
 
@@ -641,7 +644,7 @@ function render_admin_page()
             });
         </script>
 
-        <div class="pbm-manage-wrap">
+        <div class="pbm-manage-wrap pbm-legacy-scheduled">
             <details>
                 <summary class="pbm-manage-summary">
                     <?php esc_html_e('Ver envíos programados y logs', 'wc-pbm'); ?>

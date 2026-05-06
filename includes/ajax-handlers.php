@@ -945,3 +945,116 @@ function ajax_bulk_delete_scheduled()
         'deleted' => $deleted
     ));
 }
+
+/**
+ * AJAX: Listado paginado/ordenado de envíos para panel React.
+ *
+ * @return void
+ */
+function ajax_list_scheduled_emails()
+{
+    check_ajax_referer('pbm_scheduled_action', 'nonce');
+
+    if (! current_user_can('manage_woocommerce')) {
+        wp_send_json_error(array('message' => __('Permisos insuficientes', 'wc-pbm')));
+    }
+
+    global $wpdb;
+
+    $page = max(1, absint($_POST['page'] ?? 1));
+    $per_page = max(1, min(50, absint($_POST['per_page'] ?? 10)));
+    $offset = ($page - 1) * $per_page;
+
+    $allowed_sort = array('scheduled_at', 'status', 'subject');
+    $sort_by = sanitize_text_field($_POST['sort_by'] ?? 'scheduled_at');
+    if (! in_array($sort_by, $allowed_sort, true)) {
+        $sort_by = 'scheduled_at';
+    }
+
+    $sort_dir = strtoupper(sanitize_text_field($_POST['sort_dir'] ?? 'DESC'));
+    if (! in_array($sort_dir, array('ASC', 'DESC'), true)) {
+        $sort_dir = 'DESC';
+    }
+
+    $table = $wpdb->prefix . 'pbm_scheduled_emails';
+    $total = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$table}");
+
+    $rows = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT * FROM {$table} ORDER BY {$sort_by} {$sort_dir} LIMIT %d OFFSET %d",
+            $per_page,
+            $offset
+        )
+    );
+
+    $status_labels = array(
+        'pending'   => __('Pendiente', 'wc-pbm'),
+        'running'   => __('En ejecución', 'wc-pbm'),
+        'completed' => __('Completado', 'wc-pbm'),
+        'cancelled' => __('Cancelado', 'wc-pbm'),
+    );
+
+    $items = array();
+    foreach ((array) $rows as $row) {
+        $meta = get_delivery_meta($row->id);
+        $items[] = array(
+            'id'             => (int) $row->id,
+            'type'           => get_delivery_type_label($meta),
+            'date'           => get_date_from_gmt($row->scheduled_at, 'd/m/Y H:i'),
+            'audience'       => get_delivery_audience_label($row, $meta),
+            'subject'        => (string) $row->subject,
+            'status'         => (string) $row->status,
+            'status_label'   => (string) ($status_labels[$row->status] ?? $row->status),
+            'config'         => sprintf(
+                esc_html__('%d por lote / %d por hora', 'wc-pbm'),
+                (int) $row->batch_size,
+                (int) $row->emails_per_hour
+            ),
+            'can_delete'     => in_array($row->status, array('completed', 'cancelled'), true),
+        );
+    }
+
+    wp_send_json_success(array(
+        'items'      => $items,
+        'page'       => $page,
+        'per_page'   => $per_page,
+        'total'      => $total,
+        'total_pages' => (int) ceil($total / $per_page),
+    ));
+}
+
+/**
+ * AJAX: Borrado masivo por IDs seleccionados.
+ *
+ * @return void
+ */
+function ajax_bulk_delete_scheduled_ids()
+{
+    check_ajax_referer('pbm_scheduled_action', 'nonce');
+
+    if (! current_user_can('manage_woocommerce')) {
+        wp_send_json_error(array('message' => __('Permisos insuficientes', 'wc-pbm')));
+    }
+
+    $ids = $_POST['ids'] ?? array();
+    if (! is_array($ids)) {
+        wp_send_json_error(array('message' => __('IDs inválidos', 'wc-pbm')));
+    }
+
+    $ids = array_values(array_filter(array_map('absint', $ids)));
+    if (empty($ids)) {
+        wp_send_json_error(array('message' => __('No hay elementos seleccionados', 'wc-pbm')));
+    }
+
+    $deleted = 0;
+    foreach ($ids as $id) {
+        if (delete_scheduled_email_with_logs($id)) {
+            $deleted++;
+        }
+    }
+
+    wp_send_json_success(array(
+        'deleted' => $deleted,
+        'message' => sprintf(__('%d envíos eliminados', 'wc-pbm'), $deleted),
+    ));
+}

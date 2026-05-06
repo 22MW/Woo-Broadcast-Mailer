@@ -6,6 +6,7 @@ import DependentSelector from './components/DependentSelector';
 import AudienceBuilder from './components/AudienceBuilder';
 import GlobalAudienceList from './components/GlobalAudienceList';
 import ManualEmailsInput from './components/ManualEmailsInput';
+import ScheduledLogsPanel from './components/ScheduledLogsPanel';
 
 function mapOptionsFromSelect(selectId) {
   const element = document.getElementById(selectId);
@@ -418,6 +419,7 @@ export default function App() {
           onClear={clearGlobalAudience}
           summary={summary}
         />
+        <ScheduledLogsPanel />
       </CardBody>
     </Card>
   );
