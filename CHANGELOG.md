@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.0
+- Major admin migration to React for core broadcast workflow.
+- Removed legacy selector/preview/send admin block (legacy markup and inline JS cleanup).
+- Added global combined audience workflow across sources (product, role, Mail Mint, manual emails).
+- Added multi-select dependent selector with AJAX search (3+ chars) and global audience builder.
+- Added global audience summary with gross, unique, and duplicate counts.
+- React preview flow for unique recipients via unified AJAX endpoint.
+- React send flow for instant and scheduled deliveries with client-side validation.
+- Kept classic `wp_editor` integrated inside React panel for stable message editing.
+- Backend validation hardening for global audiences:
+- When `audience_items`/`manual_emails` exists, skip legacy required selector checks.
+- Keep legacy selector checks only for non-global audience requests.
+- Scheduled/logs management upgraded in React cards:
+- Sorting by date/status/subject.
+- Page selection + bulk delete by selected IDs.
+- Pagination set to 12 cards per page.
+- Colored status badges for `pending`, `running`, `completed`, `cancelled`.
+- Added total messages per card with historical fallback:
+- Prefer stored scheduled recipients.
+- Fallback to aggregated sent+failed logs for old records.
+- UI tokens and style alignment with 22MW visual system:
+- Unified button treatment (solid backgrounds, no borders, full radius).
+- Added 22MW brand logo in header linking to `https://22mw.online/`.
+
 ## 1.1.0
 - Unified broadcast flow for instant and scheduled deliveries in a single form.
 - Added recipient source selector architecture: Woo product, WordPress role, and Mail Mint list.

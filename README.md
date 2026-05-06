@@ -126,6 +126,32 @@ Proyecto personalizado. Para cambios o soporte, contacta al autor.
 
 ## Changelog
 
+### 2.0.0
+- Migración principal del panel admin a React para flujo operativo completo.
+- Limpieza del bloque legacy de selector/preview/envío en el admin (markup y JS inline removidos).
+- Flujo de audiencia global combinada (producto, rol, Mail Mint y emails manuales) con deduplicación previa al envío.
+- Selector por fuente con modo multi-selección y búsqueda AJAX (3+ caracteres).
+- Lista global de audiencias con añadir/quitar/limpiar y recuentos por origen.
+- Resumen dinámico de audiencia (bruto, únicos y duplicados).
+- Vista previa React de destinatarios únicos usando endpoint AJAX unificado.
+- Flujo de envío React (instantáneo y programado) con validaciones de asunto/mensaje/fecha.
+- Integración estable de `wp_editor` clásico para el campo mensaje dentro del panel React (híbrido controlado).
+- Refuerzo backend para audiencias globales:
+- Si hay `audience_items`/`manual_emails`, no exige selectores legacy (`product_id`, `role`, `mailmint_list_id`).
+- Mantiene validación legacy cuando no existe audiencia global.
+- Gestión de envíos y logs migrada a cards React:
+- Ordenación por fecha/estado/asunto.
+- Selección por página y borrado masivo por IDs.
+- Paginación a 12 elementos por página.
+- Badges de estado por color (`pending`, `running`, `completed`, `cancelled`).
+- Total de mensajes por card con fallback para históricos:
+- Primero desde destinatarios guardados.
+- Si no existen, suma de enviados+fallidos en logs.
+- Ajustes visuales unificados:
+- Tokens de color y tipografía alineados con estilo 22MW.
+- Botonera consistente, sin bordes, con fondo sólido y radio completo.
+- Header con logo enlazado a `https://22mw.online/`.
+
 ### 1.1.0
 - Flujo unificado de envío (instantáneo/programado) en una sola UI.
 - Capa extensible de fuentes de destinatarios.
