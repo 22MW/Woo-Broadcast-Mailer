@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.1.0
+- Unified broadcast flow for instant and scheduled deliveries in a single form.
+- Added recipient source selector architecture: Woo product, WordPress role, and Mail Mint list.
+- Added dependent selector behavior by source with recipient preview before send.
+- Refactored backend to a single send endpoint that:
+- If scheduling is disabled, queues immediate batches.
+- If scheduling is enabled, stores schedule metadata and queues execution for selected date/time.
+- Implemented extensible recipient source layer:
+- `get_recipients_from_product()`
+- `get_recipients_from_role()`
+- `get_recipients_from_mailmint_list()`
+- Integrated Mail Mint (phase 1):
+- List loading from `mint_contact_groups` (`type=lists`).
+- Subscribed contacts retrieval from relationship tables.
+- Preview support for Mail Mint audience.
+- Added role-based audience preview and normalized source-specific preview summaries.
+- Added compatibility checks for Mail Mint availability, with disabled source and admin warning when unavailable.
+- Preserved and reinforced nonce, capability, sanitization, and guarded execution flows.
+- Kept lower delivery-management block with scheduled records and logs:
+- Pending/completed/cancelled visibility.
+- Execute now, cancel, delete, and bulk delete actions.
+- Improved admin UI consistency and styling polish (without changing send logic):
+- Custom admin stylesheet enqueue for plugin screen.
+- Unified visual treatment for form blocks, preview panel, table, modal, and buttons.
+
 ## 1.0.9
 - Language filtering for recipients using WPML order language.
 

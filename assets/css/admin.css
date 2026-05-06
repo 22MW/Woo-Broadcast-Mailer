@@ -1,0 +1,165 @@
+.pbm-admin {
+    background: #e9e9ec;
+    border-radius: 20px;
+    margin-top: 18px;
+    padding: 16px 18px 22px;
+    color: #1f2540;
+}
+
+.pbm-admin h1,
+.pbm-admin h2,
+.pbm-admin h3,
+.pbm-admin h4,
+.pbm-admin th,
+.pbm-admin label,
+.pbm-admin summary {
+    color: #1f2540;
+    font-weight: 700;
+}
+
+.pbm-admin > h1 {
+    align-items: center;
+    background: #f8f8fb;
+    border-radius: 18px;
+    display: flex;
+    gap: 10px;
+    margin: 0 0 16px;
+    padding: 14px 20px;
+}
+
+.pbm-admin #pbm-broadcast-form {
+    background: #f8f8fb;
+    border-radius: 18px;
+    margin: 0;
+    max-width: 100%;
+    padding: 14px 16px 18px;
+}
+
+.pbm-admin .form-table th {
+    font-size: 16px;
+    padding-top: 18px;
+    vertical-align: top;
+    width: 190px;
+}
+
+.pbm-admin .form-table td {
+    padding-top: 16px;
+}
+
+.pbm-admin select,
+.pbm-admin input[type="text"],
+.pbm-admin input[type="number"],
+.pbm-admin input[type="datetime-local"] {
+    background: #fff;
+    border: 1px solid #c3c7d5;
+    border-radius: 12px;
+    box-shadow: none;
+    min-height: 40px;
+    padding: 8px 12px;
+}
+
+.pbm-admin #pbm_recipient_source,
+.pbm-admin #pbm_user_role,
+.pbm-admin #pbm_mailmint_list {
+    min-width: 250px;
+}
+
+.pbm-admin #pbm-preview-btn,
+.pbm-admin .pbm-bulk-delete,
+.pbm-admin .pbm-view-logs,
+.pbm-admin .pbm-run-now,
+.pbm-admin .pbm-cancel-scheduled,
+.pbm-admin .pbm-delete-scheduled,
+.pbm-admin #pbm-close-logs-modal,
+.pbm-admin .button.button-primary,
+.pbm-admin .button.button-secondary {
+    background: #f7f8ff;
+    border: 1px solid #2a6bc9;
+    border-radius: 999px;
+    color: #2a6bc9;
+    min-height: 36px;
+    padding: 0 18px;
+    text-decoration: none;
+}
+
+.pbm-admin #pbm-preview-btn:hover,
+.pbm-admin .pbm-bulk-delete:hover,
+.pbm-admin .pbm-view-logs:hover,
+.pbm-admin .pbm-run-now:hover,
+.pbm-admin .pbm-cancel-scheduled:hover,
+.pbm-admin .pbm-delete-scheduled:hover,
+.pbm-admin #pbm-close-logs-modal:hover,
+.pbm-admin .button.button-primary:hover,
+.pbm-admin .button.button-secondary:hover {
+    background: #eef3ff;
+    border-color: #1f5db5;
+    color: #1f5db5;
+}
+
+.pbm-admin #pbm-send-btn.button {
+    background: #17181c;
+    border-radius: 999px;
+    color: #fff;
+    min-height: 46px;
+    min-width: 140px;
+}
+
+.pbm-admin #pbm-preview-results,
+.pbm-admin #pbm-interval-preview,
+.pbm-admin > div[style*="background: #f1f1f1"] {
+    background: #ececf1 !important;
+    border: 1px solid #d8dbe5;
+    border-radius: 14px !important;
+}
+
+.pbm-admin #pbm-emails-list {
+    border: 1px solid #cfd4e2 !important;
+    border-radius: 10px !important;
+}
+
+.pbm-admin details {
+    background: #f8f8fb;
+    border-radius: 18px;
+    margin-top: 18px;
+    padding: 14px 16px;
+}
+
+.pbm-admin .wp-list-table {
+    border: 1px solid #cfd4e2;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.pbm-admin .wp-list-table th {
+    background: #eef1fb;
+    font-size: 13px;
+    padding: 10px;
+}
+
+.pbm-admin .wp-list-table td {
+    padding: 10px;
+    vertical-align: top;
+}
+
+.pbm-admin #pbm-logs-modal > div {
+    border-radius: 16px !important;
+}
+
+@media (max-width: 960px) {
+    .pbm-admin .form-table th {
+        font-size: 16px;
+        width: 100%;
+    }
+
+    .pbm-admin .form-table,
+    .pbm-admin .form-table tbody,
+    .pbm-admin .form-table tr,
+    .pbm-admin .form-table td,
+    .pbm-admin .form-table th {
+        display: block;
+    }
+
+    .pbm-admin .form-table td {
+        padding-top: 4px;
+    }
+}
