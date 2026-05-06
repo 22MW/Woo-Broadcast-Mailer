@@ -154,6 +154,8 @@ function init()
     add_action('admin_notices', __NAMESPACE__ . '\\maybe_show_settings_notice');
     add_action('admin_init', __NAMESPACE__ . '\\register_updater_hooks');
     add_action('wp_ajax_pbm_preview_recipients', __NAMESPACE__ . '\\ajax_preview_recipients');
+    add_action('wp_ajax_pbm_count_recipients', __NAMESPACE__ . '\\ajax_count_recipients');
+    add_action('wp_ajax_pbm_resolve_audience_item', __NAMESPACE__ . '\\ajax_resolve_audience_item');
     add_action('wp_ajax_pbm_send_broadcast', __NAMESPACE__ . '\\ajax_send_broadcast');
     add_action('pbm_process_email_batch', __NAMESPACE__ . '\\process_email_batch', 10, 4);
 
@@ -227,6 +229,36 @@ function enqueue_admin_assets($hook)
             });
         });
     ');
+
+    $asset_file = plugin_dir_path(__FILE__) . 'build/index.asset.php';
+    if (file_exists($asset_file)) {
+        $asset_data = require $asset_file;
+        wp_enqueue_script(
+            'pbm-admin-react',
+            plugin_dir_url(__FILE__) . 'build/index.js',
+            $asset_data['dependencies'] ?? array('wp-element', 'wp-components', 'wp-i18n'),
+            $asset_data['version'] ?? get_plugin_version(),
+            true
+        );
+        wp_localize_script(
+            'pbm-admin-react',
+            'pbmAdminApp',
+            array(
+                'ajaxUrl' => admin_url('admin-ajax.php'),
+                'nonce'   => wp_create_nonce('pbm_broadcast_action'),
+            )
+        );
+
+        $style_file = plugin_dir_path(__FILE__) . 'build/index.css';
+        if (file_exists($style_file)) {
+            wp_enqueue_style(
+                'pbm-admin-react',
+                plugin_dir_url(__FILE__) . 'build/index.css',
+                array(),
+                $asset_data['version'] ?? get_plugin_version()
+            );
+        }
+    }
 }
 
 /**
@@ -252,11 +284,12 @@ function render_admin_page()
                 <?php echo esc_html(sprintf(__('(v%s)', 'wc-pbm'), get_plugin_version())); ?>
             </small>
         </h1>
+        <div id="pbm-admin-app"></div>
         <form id="pbm-broadcast-form" method="post" style="max-width: 800px;">
             <?php wp_nonce_field('pbm_broadcast_action', 'pbm_nonce'); ?>
 
             <table class="form-table">
-                <tr>
+                <tr id="pbm-source-row-legacy">
                     <th scope="row">
                         <label for="pbm_recipient_source"><?php esc_html_e('Fuente', 'wc-pbm'); ?></label>
                     </th>
@@ -276,10 +309,10 @@ function render_admin_page()
                     </td>
                 </tr>
 
-                <tr>
+                <tr id="pbm-selector-row-legacy">
                     <th scope="row"><?php esc_html_e('Selector', 'wc-pbm'); ?></th>
                     <td>
-                        <div id="pbm-source-product">
+                        <div id="pbm-source-product" class="pbm-selector-legacy-block">
                             <label for="pbm_product_id"><?php esc_html_e('Producto', 'wc-pbm'); ?></label>
                             <?php render_product_selector(); ?>
                             <p class="description">
@@ -287,7 +320,7 @@ function render_admin_page()
                             </p>
                         </div>
 
-                        <div id="pbm-source-role" style="display:none;">
+                        <div id="pbm-source-role" class="pbm-selector-legacy-block" style="display:none;">
                             <label for="pbm_user_role"><?php esc_html_e('Rol de Usuario', 'wc-pbm'); ?></label>
                             <?php render_role_selector(); ?>
                             <p class="description">
@@ -295,7 +328,7 @@ function render_admin_page()
                             </p>
                         </div>
 
-                        <div id="pbm-source-mailmint" style="display:none;">
+                        <div id="pbm-source-mailmint" class="pbm-selector-legacy-block" style="display:none;">
                             <label for="pbm_mailmint_list"><?php esc_html_e('Lista Mail Mint', 'wc-pbm'); ?></label>
                             <?php render_mailmint_list_selector(); ?>
                             <p class="description">

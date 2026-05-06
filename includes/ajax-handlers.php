@@ -81,6 +81,114 @@ function ajax_preview_recipients()
 }
 
 /**
+ * AJAX: Conteo de destinatarios por fuente/selector (sin devolver emails)
+ *
+ * @return void
+ */
+function ajax_count_recipients()
+{
+    check_ajax_referer('pbm_broadcast_action', 'nonce');
+
+    if (! current_user_can('manage_woocommerce')) {
+        wp_send_json_error(array('message' => __('Permisos insuficientes', 'wc-pbm')));
+    }
+
+    $source = sanitize_text_field($_POST['source'] ?? 'product');
+    $available_sources = get_recipient_sources();
+    $product_id = absint($_POST['product_id'] ?? 0);
+    $role = sanitize_text_field($_POST['role'] ?? '');
+    $mailmint_list_id = absint($_POST['mailmint_list_id'] ?? 0);
+
+    if (! isset($available_sources[$source])) {
+        wp_send_json_error(array('message' => __('Fuente inválida', 'wc-pbm')));
+    }
+
+    if (isset($available_sources[$source]['enabled']) && ! $available_sources[$source]['enabled']) {
+        wp_send_json_error(array('message' => __('La fuente seleccionada no está disponible', 'wc-pbm')));
+    }
+
+    if ('product' === $source && ! $product_id) {
+        wp_send_json_success(array('total' => 0));
+    }
+
+    if ('role' === $source && ! $role) {
+        wp_send_json_success(array('total' => 0));
+    }
+
+    if ('mailmint' === $source && ! $mailmint_list_id) {
+        wp_send_json_success(array('total' => 0));
+    }
+
+    $recipients = get_recipients_by_source($source, array(
+        'product_id'       => $product_id,
+        'role'             => $role,
+        'mailmint_list_id' => $mailmint_list_id,
+    ));
+
+    wp_send_json_success(array(
+        'total' => count($recipients),
+    ));
+}
+
+/**
+ * AJAX: Resuelve emails reales de un item de audiencia.
+ *
+ * @return void
+ */
+function ajax_resolve_audience_item()
+{
+    check_ajax_referer('pbm_broadcast_action', 'nonce');
+
+    if (! current_user_can('manage_woocommerce')) {
+        wp_send_json_error(array('message' => __('Permisos insuficientes', 'wc-pbm')));
+    }
+
+    $source = sanitize_text_field($_POST['source'] ?? 'product');
+    $available_sources = get_recipient_sources();
+    $selector_value = sanitize_text_field($_POST['selector_value'] ?? '');
+
+    if (! isset($available_sources[$source])) {
+        wp_send_json_error(array('message' => __('Fuente inválida', 'wc-pbm')));
+    }
+
+    if (isset($available_sources[$source]['enabled']) && ! $available_sources[$source]['enabled']) {
+        wp_send_json_error(array('message' => __('La fuente seleccionada no está disponible', 'wc-pbm')));
+    }
+
+    $args = array(
+        'product_id'       => 0,
+        'role'             => '',
+        'mailmint_list_id' => 0,
+    );
+
+    if ('product' === $source) {
+        $args['product_id'] = absint($selector_value);
+        if (! $args['product_id']) {
+            wp_send_json_success(array('total' => 0, 'emails' => array()));
+        }
+    } elseif ('role' === $source) {
+        $args['role'] = $selector_value;
+        if (! $args['role']) {
+            wp_send_json_success(array('total' => 0, 'emails' => array()));
+        }
+    } elseif ('mailmint' === $source) {
+        $args['mailmint_list_id'] = absint($selector_value);
+        if (! $args['mailmint_list_id']) {
+            wp_send_json_success(array('total' => 0, 'emails' => array()));
+        }
+    }
+
+    $recipients = get_recipients_by_source($source, $args);
+    $emails = array_map('strtolower', array_keys($recipients));
+    $emails = array_values(array_unique(array_filter($emails, 'is_email')));
+
+    wp_send_json_success(array(
+        'total'  => count($emails),
+        'emails' => $emails,
+    ));
+}
+
+/**
  * AJAX: Enviar broadcast (programa las acciones)
  *
  * @return void
