@@ -1,18 +1,38 @@
-.pbm-admin {
-    --pbm-bg-page: #e9e9ec;
-    --pbm-bg-card: #f8f8fb;
-    --pbm-bg-soft: #ececf1;
-    --pbm-bg-pill: #f4f5fb;
-    --pbm-bg-pill-active: #c6cdf9;
-    --pbm-bg-accent-soft: #eaf0ff;
-    --pbm-text-main: #1f2540;
-    --pbm-text-muted: #555;
-    --pbm-text-accent: #123f63;
-    --pbm-border: #cfd4e2;
-    --pbm-border-soft: #d8dbe5;
-    --pbm-border-accent: #2a6bc9;
-    --pbm-btn-dark: #17181c;
+@import url('https://fonts.googleapis.com/css2?family=Afacad:ital,wght@0,400..700;1,400..700&display=swap');
 
+:root {
+    --vfwoo-bg: #f6f5f3;
+    --vfwoo-white: #ffffff;
+    --vfwoo-text: #1a1a1a;
+    --vfwoo-verde: #0e415d;
+    --vfwoo-azul: #7f8bec;
+    --vfwoo-azul-light: #d0d5fb;
+    --vfwoo-red: #b33654;
+    --vfwoo-orange: #f98c59;
+    --vfwoo-orange-light: #ffdccc;
+}
+
+.pbm-admin {
+    --pbm-bg-page: var(--vfwoo-bg);
+    --pbm-bg-card: var(--vfwoo-white);
+    --pbm-bg-soft: #eeedf4;
+    --pbm-bg-pill: #eceffc;
+    --pbm-bg-pill-active: var(--vfwoo-azul-light);
+    --pbm-bg-accent-soft: #eaf0ff;
+    --pbm-text-main: var(--vfwoo-text);
+    --pbm-text-muted: #555;
+    --pbm-text-accent: var(--vfwoo-verde);
+    --pbm-border: transparent;
+    --pbm-border-soft: transparent;
+    --pbm-border-accent: var(--vfwoo-azul);
+    --pbm-btn-dark: #17181c;
+    --pbm-btn-primary: var(--vfwoo-azul);
+    --pbm-btn-primary-hover: #6d7de8;
+    --pbm-btn-danger: var(--vfwoo-red);
+    --pbm-btn-danger-hover: #9f2f4b;
+
+    font-family: "Afacad", sans-serif;
+    font-size: 14px;
     background: var(--pbm-bg-page);
     border-radius: 20px;
     color: var(--pbm-text-main);
@@ -36,14 +56,41 @@
     background: var(--pbm-bg-card);
     border-radius: 18px;
     display: flex;
+    justify-content: space-between;
     gap: 10px;
     margin: 0 0 16px;
     padding: 14px 20px;
 }
 
+.pbm-admin .pbm-title-wrap {
+    align-items: center;
+    display: inline-flex;
+    gap: 10px;
+}
+
+.pbm-admin .pbm-brand-link {
+    align-items: center;
+    display: inline-flex;
+}
+
+.pbm-admin .pbm-brand-link img {
+    display: block;
+    height: 44px;
+    width: auto;
+}
+
 .pbm-admin .pbm-version {
     color: #666;
     font-weight: 400;
+}
+
+.pbm-admin p,
+.pbm-admin label,
+.pbm-admin input,
+.pbm-admin select,
+.pbm-admin textarea,
+.pbm-admin button {
+    font-family: inherit;
 }
 
 .pbm-admin #pbm-broadcast-form {
@@ -70,7 +117,7 @@
 .pbm-admin input[type="number"],
 .pbm-admin input[type="datetime-local"] {
     background: #fff;
-    border: 1px solid #c3c7d5;
+    border: none;
     border-radius: 12px;
     box-shadow: none;
     min-height: 40px;
@@ -91,11 +138,13 @@
 .pbm-admin .pbm-delete-scheduled,
 .pbm-admin #pbm-close-logs-modal,
 .pbm-admin .button.button-primary,
-.pbm-admin .button.button-secondary {
-    background: #f7f8ff;
-    border: 1px solid var(--pbm-border-accent);
+.pbm-admin .button.button-secondary,
+.pbm-admin .components-button:not(.is-link) {
+    background: var(--pbm-btn-primary);
+    border: none;
     border-radius: 999px;
-    color: var(--pbm-border-accent);
+    box-shadow: none;
+    color: #fff;
     min-height: 36px;
     padding: 0 18px;
     text-decoration: none;
@@ -109,10 +158,28 @@
 .pbm-admin .pbm-delete-scheduled:hover,
 .pbm-admin #pbm-close-logs-modal:hover,
 .pbm-admin .button.button-primary:hover,
-.pbm-admin .button.button-secondary:hover {
-    background: #eef3ff;
-    border-color: #1f5db5;
-    color: #1f5db5;
+.pbm-admin .button.button-secondary:hover,
+.pbm-admin .components-button:not(.is-link):hover {
+    background: var(--pbm-btn-primary-hover);
+    color: #fff;
+}
+
+.pbm-admin .components-button:not(.is-link)[disabled],
+.pbm-admin .button[disabled] {
+    background: #bfc5d7 !important;
+    color: #edf0f7 !important;
+    cursor: not-allowed;
+}
+
+.pbm-admin .components-button.is-destructive:not(.is-link),
+.pbm-admin .pbm-delete-scheduled {
+    background: var(--pbm-btn-danger) !important;
+    color: #fff !important;
+}
+
+.pbm-admin .components-button.is-destructive:not(.is-link):hover,
+.pbm-admin .pbm-delete-scheduled:hover {
+    background: var(--pbm-btn-danger-hover) !important;
 }
 
 .pbm-admin #pbm-send-btn.button {
@@ -129,7 +196,7 @@
 .pbm-admin #pbm-interval-preview,
 .pbm-admin .pbm-info-box {
     background: var(--pbm-bg-soft);
-    border: 1px solid var(--pbm-border-soft);
+    border: none;
     border-radius: 14px;
 }
 
@@ -153,9 +220,9 @@
 
 .pbm-admin .pbm-emails-list {
     background: #fff;
-    border: 1px solid var(--pbm-border);
+    border: none;
     border-radius: 10px;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.6;
     margin-top: 12px;
     max-height: 150px;
@@ -200,7 +267,7 @@
 }
 
 .pbm-admin #pbm-emails-list {
-    border: 1px solid var(--pbm-border);
+    border: none;
     border-radius: 10px;
 }
 
@@ -212,7 +279,7 @@
 }
 
 .pbm-admin .wp-list-table {
-    border: 1px solid var(--pbm-border);
+    border: none;
     border-radius: 12px;
     overflow: hidden;
 }
@@ -281,7 +348,7 @@
 .pbm-admin .pbm-react-preview-box,
 .pbm-admin .pbm-react-send-config {
     background: #f5f6fb;
-    border: 1px solid #d8def0;
+    border: none;
     border-radius: 12px;
     margin-top: 10px;
     padding: 12px;
@@ -294,13 +361,52 @@
 }
 
 .pbm-admin .pbm-react-send-grid {
+    align-items: end;
     display: grid;
     gap: 10px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 170px 170px 190px minmax(260px, 1fr);
+}
+
+.pbm-admin .pbm-react-send-grid .components-base-control {
+    margin-bottom: 0;
+}
+
+.pbm-admin .pbm-react-send-grid .components-datetime__date {
+    min-width: 220px;
+    width: 220px;
+}
+
+.pbm-admin .pbm-react-send-grid .components-checkbox-control {
+    align-self: end;
+    margin-bottom: 2px;
+}
+
+.pbm-admin .pbm-react-send-grid .components-text-control__input[type="number"] {
+    width: 100%;
+}
+
+.pbm-admin .pbm-react-estimate {
+    background: var(--pbm-bg-soft);
+    border-radius: 12px;
+    grid-column: 1 / -1;
+    margin-top: 10px;
+    padding: 10px 12px;
 }
 
 .pbm-admin .pbm-react-send-actions {
+    grid-column: 1 / -1;
     margin-top: 10px;
+}
+
+@media (max-width: 960px) {
+    .pbm-admin .pbm-react-send-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pbm-admin .pbm-react-send-grid .components-datetime__date {
+        min-width: 0;
+        width: 100%;
+    }
 }
 
 .pbm-admin .pbm-react-source h3,
@@ -322,24 +428,24 @@
 }
 
 .pbm-admin .pbm-react-source-btn {
-    border-radius: 12px !important;
+    border-radius: 999px !important;
     min-height: 36px !important;
     padding: 4px 14px !important;
 }
 
 .pbm-admin .pbm-react-source-btn.is-primary {
     background: var(--pbm-bg-pill-active) !important;
-    border-color: var(--pbm-bg-pill-active) !important;
+    border: none !important;
     color: var(--pbm-text-accent) !important;
 }
 
 .pbm-admin .pbm-pill {
     background: var(--pbm-bg-pill);
-    border: 1px solid #d3d8ea;
+    border: none;
     border-radius: 999px;
     color: #273856;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.2;
     padding: 6px 10px;
 }
@@ -354,7 +460,7 @@
     background: var(--pbm-bg-accent-soft);
     border-radius: 999px;
     color: #1e3f67;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .pbm-admin .pbm-selected-chip {
@@ -369,7 +475,7 @@
 }
 
 .pbm-admin .pbm-react-audience-builder .components-button {
-    border-radius: 10px;
+    border-radius: 999px;
 }
 
 .pbm-admin .pbm-react-manual-emails .components-base-control {
@@ -378,7 +484,7 @@
 
 .pbm-admin .pbm-react-global-list {
     background: #f5f6fb;
-    border: 1px solid #d8def0;
+    border: none;
     border-radius: 12px;
     padding: 12px;
 }
@@ -400,7 +506,7 @@
 
 .pbm-admin .pbm-react-global-list-items li {
     background: #fff;
-    border: 1px solid #e0e4f2;
+    border: none;
     border-radius: 10px;
     padding: 8px 10px;
 }
@@ -424,7 +530,7 @@
 
 .pbm-admin .pbm-list-detail {
     color: #4a4f61;
-    font-size: 12px;
+    font-size: 14px;
     margin-top: 6px;
     word-break: break-word;
 }
@@ -435,7 +541,7 @@
 
 .pbm-admin .pbm-react-scheduled {
     background: #f5f6fb;
-    border: 1px solid #d8def0;
+    border: none;
     border-radius: 12px;
     padding: 12px;
 }
@@ -460,11 +566,11 @@
 }
 
 .pbm-admin .pbm-sort-btn {
-    background: #f4f5fb;
-    border: 1px solid #d3d8ea;
+    background: var(--pbm-bg-pill);
+    border: none;
     border-radius: 999px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
     padding: 6px 10px;
 }
 
@@ -476,7 +582,7 @@
 
 .pbm-admin .pbm-scheduled-card {
     background: #fff;
-    border: 1px solid #e0e4f2;
+    border: none;
     border-radius: 10px;
     min-width: 0;
     padding: 10px;
@@ -489,6 +595,34 @@
     justify-content: space-between;
     line-height: 1.3;
     margin-bottom: 8px;
+}
+
+.pbm-admin .pbm-status-badge {
+    border-radius: 999px;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+}
+
+.pbm-admin .pbm-status-pending {
+    background: #ffdccc;
+    color: #8a3f1f;
+}
+
+.pbm-admin .pbm-status-running {
+    background: #d0d5fb;
+    color: #24306f;
+}
+
+.pbm-admin .pbm-status-completed {
+    background: #d9f2e3;
+    color: #1f5d3b;
+}
+
+.pbm-admin .pbm-status-cancelled {
+    background: #ffd9e2;
+    color: #8a2a44;
 }
 
 .pbm-admin .pbm-scheduled-card div {

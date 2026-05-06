@@ -4,7 +4,7 @@
  * Plugin Name: Woo Broadcast Mailer
  * Description: Sistema de envío masivo de emails: envía a compradores de productos específicos o programa envíos por rol de usuario. Compatible con HPOS y Action Scheduler.
  * Version: 1.1.0
- * Author: 22MW ( Veri*Fac*WOO TEAM )
+ * Author: 22MW · The Capricho Studio
  * Author URI: https://22mw.online
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -283,10 +283,15 @@ function render_admin_page()
 ?>
     <div class="wrap pbm-admin">
         <h1>
-            <?php esc_html_e(' Broadcast Mailer', 'wc-pbm'); ?>
-            <small class="pbm-version">
-                <?php echo esc_html(sprintf(__('(v%s)', 'wc-pbm'), get_plugin_version())); ?>
-            </small>
+            <span class="pbm-title-wrap">
+                <?php esc_html_e(' Broadcast Mailer', 'wc-pbm'); ?>
+                <small class="pbm-version">
+                    <?php echo esc_html(sprintf(__('(v%s)', 'wc-pbm'), get_plugin_version())); ?>
+                </small>
+            </span>
+            <a class="pbm-brand-link" href="https://22mw.online/" target="_blank" rel="noopener noreferrer">
+                <img src="<?php echo esc_url(plugin_dir_url(__FILE__) . 'assets/img/22mw.svg'); ?>" alt="22MW">
+            </a>
         </h1>
         <div id="pbm-admin-app"></div>
         <form id="pbm-broadcast-form" method="post">

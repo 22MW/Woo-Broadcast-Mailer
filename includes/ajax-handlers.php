@@ -1001,6 +1001,21 @@ function ajax_list_scheduled_emails()
     $items = array();
     foreach ((array) $rows as $row) {
         $meta = get_delivery_meta($row->id);
+        $recipients = get_option('pbm_scheduled_recipients_' . (int) $row->id, array());
+        $total_messages = is_array($recipients) ? count($recipients) : 0;
+
+        if ($total_messages < 1) {
+            $logs = get_scheduled_logs((int) $row->id);
+            if (! empty($logs)) {
+                $sum = 0;
+                foreach ((array) $logs as $log) {
+                    $sum += (int) ($log->total_sent ?? 0);
+                    $sum += (int) ($log->total_failed ?? 0);
+                }
+                $total_messages = max(0, (int) $sum);
+            }
+        }
+
         $items[] = array(
             'id'             => (int) $row->id,
             'type'           => get_delivery_type_label($meta),
@@ -1009,6 +1024,7 @@ function ajax_list_scheduled_emails()
             'subject'        => (string) $row->subject,
             'status'         => (string) $row->status,
             'status_label'   => (string) ($status_labels[$row->status] ?? $row->status),
+            'total_messages' => (int) $total_messages,
             'config'         => sprintf(
                 esc_html__('%d por lote / %d por hora', 'wc-pbm'),
                 (int) $row->batch_size,

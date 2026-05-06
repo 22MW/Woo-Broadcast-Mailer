@@ -56,6 +56,19 @@ function getClassicEditorMessage() {
   return textarea ? String(textarea.value || '') : '';
 }
 
+function formatEstimatedDuration(totalMinutes) {
+  const minutes = Math.max(0, Math.round(totalMinutes));
+  const hours = Math.floor(minutes / 60);
+  const remainder = minutes % 60;
+  if (hours < 1) {
+    return `${minutes} min`;
+  }
+  if (remainder === 0) {
+    return `${hours} h`;
+  }
+  return `${hours} h ${remainder} min`;
+}
+
 async function postAjax(params) {
   const response = await fetch(window.ajaxurl, {
     method: 'POST',
@@ -393,6 +406,24 @@ export default function App() {
     return { gross, unique, duplicates };
   }, [listItems]);
 
+  const deliveryEstimate = useMemo(() => {
+    const unique = Math.max(0, Number(summary.unique || 0));
+    const batch = Math.max(1, parseInt(batchSize || '0', 10) || 1);
+    const perHour = Math.max(1, parseInt(emailsPerHour || '0', 10) || 1);
+    const batches = unique > 0 ? Math.ceil(unique / batch) : 0;
+    const intervalMinutes = Math.ceil((batch / perHour) * 60);
+    const totalWindowMinutes = batches > 0 ? batches * intervalMinutes : 0;
+
+    return {
+      unique,
+      batch,
+      perHour,
+      batches,
+      intervalMinutes,
+      totalWindowMinutes,
+    };
+  }, [summary.unique, batchSize, emailsPerHour]);
+
   useEffect(() => {
     const audienceInput = document.getElementById('pbm_audience_items');
     const manualInput = document.getElementById('pbm_manual_emails');
@@ -563,16 +594,19 @@ export default function App() {
           <div className="pbm-react-send-grid">
             <TextControl label={__('Tamaño de lote', 'wc-pbm')} type="number" min={10} max={100} value={batchSize} onChange={setBatchSize} />
             <TextControl label={__('Emails por hora', 'wc-pbm')} type="number" min={10} max={1000} value={emailsPerHour} onChange={setEmailsPerHour} />
-          </div>
-          <CheckboxControl label={__('Programar envío', 'wc-pbm')} checked={scheduleEnabled} onChange={setScheduleEnabled} />
-          {scheduleEnabled && (
+            <CheckboxControl label={__('Programar envío', 'wc-pbm')} checked={scheduleEnabled} onChange={setScheduleEnabled} />
             <TextControl
               label={__('Fecha y hora de envío', 'wc-pbm')}
               type="datetime-local"
               value={scheduledDatetime}
               onChange={setScheduledDatetime}
+              style={{ visibility: scheduleEnabled ? 'visible' : 'hidden' }}
             />
-          )}
+          </div>
+          <div className="pbm-react-estimate">
+            <strong>{__('Resumen estimado:', 'wc-pbm')}</strong>{' '}
+            {`${deliveryEstimate.unique} ${__('únicos', 'wc-pbm')} · ${deliveryEstimate.batches} ${__('lotes', 'wc-pbm')} · ${deliveryEstimate.intervalMinutes} ${__('min entre lotes', 'wc-pbm')} · ${formatEstimatedDuration(deliveryEstimate.totalWindowMinutes)}`}
+          </div>
           <div className="pbm-react-send-actions">
             <Button variant="primary" onClick={sendBroadcast} disabled={sending || listItems.length === 0}>
               {sending ? __('Programando envíos...', 'wc-pbm') : __('Enviar Emails', 'wc-pbm')}

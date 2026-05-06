@@ -34,7 +34,7 @@ export default function ScheduledLogsPanel() {
     const params = new URLSearchParams();
     params.append('action', 'pbm_list_scheduled_emails');
     params.append('page', String(page));
-    params.append('per_page', '10');
+    params.append('per_page', '12');
     params.append('sort_by', sortBy);
     params.append('sort_dir', sortDir);
     params.append('nonce', scheduledNonce);
@@ -173,11 +173,12 @@ export default function ScheduledLogsPanel() {
                 />
                 <strong>#{item.id}</strong>
               </label>
-              <span>{item.status_label}</span>
+              <span className={`pbm-status-badge pbm-status-${item.status}`}>{item.status_label}</span>
             </div>
             <div><strong>{__('Tipo', 'wc-pbm')}:</strong> {item.type}</div>
             <div><strong>{__('Fecha', 'wc-pbm')}:</strong> {item.date}</div>
             <div><strong>{__('Audiencia', 'wc-pbm')}:</strong> {item.audience}</div>
+            <div><strong>{__('Total mensajes', 'wc-pbm')}:</strong> {item.total_messages ?? 0}</div>
             <div><strong>{__('Asunto', 'wc-pbm')}:</strong> {item.subject}</div>
             <div><strong>{__('Config. Envío', 'wc-pbm')}:</strong> {item.config}</div>
             <div className="pbm-scheduled-card-actions">
