@@ -19,117 +19,6 @@ function render_scheduled_emails_tab()
 {
 ?>
     <div class="pbm-scheduled-wrapper">
-        <!-- Formulario de creación -->
-        <div style="max-width: 800px; margin-bottom: 30px;">
-            <h2><?php esc_html_e('Programar Nuevo Envío', 'wc-pbm'); ?></h2>
-
-            <form id="pbm-scheduled-form" method="post">
-                <?php wp_nonce_field('pbm_scheduled_action', 'pbm_scheduled_nonce'); ?>
-
-                <table class="form-table">
-                    <tr>
-                        <th scope="row">
-                            <label for="pbm_user_role"><?php esc_html_e('Rol de Usuario', 'wc-pbm'); ?></label>
-                        </th>
-                        <td>
-                            <?php render_role_selector(); ?>
-                            <p class="description">
-                                <?php esc_html_e('Los usuarios se obtendrán en el momento del envío, no ahora.', 'wc-pbm'); ?>
-                            </p>
-                            <p style="margin-top: 10px;">
-                                <button type="button" id="pbm-preview-role-btn" class="button">
-                                    <?php esc_html_e('Vista Previa de Destinatarios', 'wc-pbm'); ?>
-                                </button>
-                            </p>
-
-                            <div id="pbm-role-preview-results" style="display:none; margin-top: 15px; padding: 15px; background: rgb(240 240 240); border-radius: 10px;">
-                                <h4 style="margin-top: 0; margin-bottom: 10px;"><?php esc_html_e('Resumen de Destinatarios', 'wc-pbm'); ?></h4>
-                                <div id="pbm-role-preview-content"></div>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th scope="row">
-                            <label for="pbm_scheduled_subject"><?php esc_html_e('Asunto', 'wc-pbm'); ?></label>
-                        </th>
-                        <td>
-                            <input type="text" id="pbm_scheduled_subject" name="pbm_scheduled_subject" class="regular-text" required>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th scope="row">
-                            <label for="pbm_scheduled_message"><?php esc_html_e('Mensaje', 'wc-pbm'); ?></label>
-                        </th>
-                        <td>
-                            <?php
-                            wp_editor('', 'pbm_scheduled_message', array(
-                                'textarea_rows' => 15,
-                                'media_buttons' => false,
-                                'teeny'         => false,
-                                'quicktags'     => true,
-                            ));
-                            ?>
-                            <p class="description">
-                                <?php esc_html_e('Usa {customer_name} para el nombre del usuario.', 'wc-pbm'); ?>
-                            </p>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th scope="row">
-                            <label for="pbm_scheduled_datetime"><?php esc_html_e('Fecha y Hora de Envío', 'wc-pbm'); ?></label>
-                        </th>
-                        <td>
-                            <input type="datetime-local" id="pbm_scheduled_datetime" name="pbm_scheduled_datetime" required>
-                            <p class="description">
-                                <?php esc_html_e('El envío se ejecutará exactamente a esta hora.', 'wc-pbm'); ?>
-                            </p>
-                            <p style="margin-top: 8px; padding: 8px; background: rgb(240, 240, 240); border-radius: 5px;">
-                                <strong><?php esc_html_e('Fecha y hora actual del servidor:', 'wc-pbm'); ?></strong>
-                                <?php echo esc_html(current_time('d/m/Y H:i:s')); ?>
-                            </p>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th scope="row">
-                            <label for="pbm_scheduled_batch_size"><?php esc_html_e('Tamaño de lote', 'wc-pbm'); ?></label>
-                        </th>
-                        <td>
-                            <input type="number" id="pbm_scheduled_batch_size" name="pbm_scheduled_batch_size" value="30" min="10" max="100" class="small-text">
-                            <p class="description">
-                                <?php esc_html_e('Correos por lote (recomendado: 20-50)', 'wc-pbm'); ?>
-                            </p>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th scope="row">
-                            <label for="pbm_scheduled_emails_per_hour"><?php esc_html_e('Emails por hora', 'wc-pbm'); ?></label>
-                        </th>
-                        <td>
-                            <input type="number" id="pbm_scheduled_emails_per_hour" name="pbm_scheduled_emails_per_hour" value="200" min="10" max="1000" class="small-text">
-                            <p class="description">
-                                <?php esc_html_e('Límite de emails a enviar por hora.', 'wc-pbm'); ?>
-                            </p>
-                            <p id="pbm-scheduled-interval-preview" style="margin-top: 8px; padding: 8px; background: #f0f0f0; border-radius: 5px; display: none;">
-                                <strong><?php esc_html_e('Intervalo calculado:', 'wc-pbm'); ?></strong> <span id="pbm-scheduled-interval-value"></span>
-                            </p>
-                        </td>
-                    </tr>
-                </table>
-
-                <p class="submit" style="text-align:right">
-                    <button type="submit" id="pbm-create-scheduled-btn" class="button" style="border: none; padding: 10px 30px; background: #1a1a1a; color: #ffffff;">
-                        <?php esc_html_e('Programar Envío', 'wc-pbm'); ?>
-                    </button>
-                </p>
-            </form>
-        </div>
-
-        <!-- Lista de envíos programados -->
         <div>
             <h2><?php esc_html_e('Envíos Programados', 'wc-pbm'); ?></h2>
             <div id="pbm-scheduled-list">
@@ -153,98 +42,6 @@ function render_scheduled_emails_tab()
 
     <script type="text/javascript">
         jQuery(document).ready(function($) {
-            // Calcular intervalo en tiempo real
-            function updateScheduledIntervalPreview() {
-                const batchSize = parseInt($('#pbm_scheduled_batch_size').val()) || 30;
-                const perHour = parseInt($('#pbm_scheduled_emails_per_hour').val()) || 200;
-                const intervalMinutes = Math.ceil((batchSize / perHour) * 60);
-
-                if (perHour > 0 && batchSize > 0) {
-                    $('#pbm-scheduled-interval-value').text(intervalMinutes + ' <?php echo esc_js(__('minutos entre lotes', 'wc-pbm')); ?>');
-                    $('#pbm-scheduled-interval-preview').slideDown();
-                }
-            }
-
-            $('#pbm_scheduled_batch_size, #pbm_scheduled_emails_per_hour').on('input', updateScheduledIntervalPreview);
-            updateScheduledIntervalPreview();
-
-            // Vista previa de destinatarios por rol
-            $('#pbm-preview-role-btn').on('click', function(e) {
-                e.preventDefault();
-
-                const role = $('#pbm_user_role').val();
-                if (!role) {
-                    alert('<?php echo esc_js(__('Por favor selecciona un rol', 'wc-pbm')); ?>');
-                    return;
-                }
-
-                $(this).prop('disabled', true).text('<?php echo esc_js(__('Cargando...', 'wc-pbm')); ?>');
-
-                $.post(ajaxurl, {
-                    action: 'pbm_preview_role_recipients',
-                    role: role,
-                    nonce: $('#pbm_scheduled_nonce').val()
-                }, function(response) {
-                    if (response.success) {
-                        let html = '<p style="margin: 0 0 10px;"><strong><?php echo esc_js(__('Total de usuarios activos:', 'wc-pbm')); ?></strong> ' + response.data.total + '</p>';
-
-                        if (response.data.emails && response.data.emails.length > 0) {
-                            html += '<div style="margin-top: 12px; padding: 10px; background: #fff; border: 1px solid #ddd; border-radius: 3px; max-height: 150px; overflow-y: auto; font-size: 12px; line-height: 1.6;">';
-                            html += '<strong><?php echo esc_js(__('Usuarios:', 'wc-pbm')); ?></strong><br>';
-                            html += '<span style="color: #555;">' + response.data.emails.join(', ') + '</span>';
-                            html += '</div>';
-                        }
-
-                        $('#pbm-role-preview-content').html(html);
-                        $('#pbm-role-preview-results').slideDown();
-                    } else {
-                        alert(response.data.message || '<?php echo esc_js(__('Error al obtener destinatarios', 'wc-pbm')); ?>');
-                    }
-                }).always(function() {
-                    $('#pbm-preview-role-btn').prop('disabled', false).text('<?php echo esc_js(__('Vista Previa de Destinatarios', 'wc-pbm')); ?>');
-                });
-            });
-
-            // Crear envío programado
-            $('#pbm-scheduled-form').on('submit', function(e) {
-                e.preventDefault();
-
-                const role = $('#pbm_user_role').val();
-                const subject = $('#pbm_scheduled_subject').val();
-                const message = $('#pbm_scheduled_message').val();
-                const datetime = $('#pbm_scheduled_datetime').val();
-
-                if (!role || !subject || !message || !datetime) {
-                    alert('<?php echo esc_js(__('Por favor completa todos los campos', 'wc-pbm')); ?>');
-                    return;
-                }
-
-                if (!confirm('<?php echo esc_js(__('¿Confirmas la programación de este envío?', 'wc-pbm')); ?>')) {
-                    return;
-                }
-
-                $('#pbm-create-scheduled-btn').prop('disabled', true).text('<?php echo esc_js(__('Programando...', 'wc-pbm')); ?>');
-
-                $.post(ajaxurl, {
-                    action: 'pbm_create_scheduled_email',
-                    role: role,
-                    subject: subject,
-                    message: message,
-                    scheduled_datetime: datetime,
-                    batch_size: $('#pbm_scheduled_batch_size').val(),
-                    emails_per_hour: $('#pbm_scheduled_emails_per_hour').val(),
-                    nonce: $('#pbm_scheduled_nonce').val()
-                }, function(response) {
-                    if (response.success) {
-                        alert(response.data.message);
-                        location.reload();
-                    } else {
-                        alert(response.data.message || '<?php echo esc_js(__('Error al programar el envío', 'wc-pbm')); ?>');
-                        $('#pbm-create-scheduled-btn').prop('disabled', false).text('<?php echo esc_js(__('Programar Envío', 'wc-pbm')); ?>');
-                    }
-                });
-            });
-
             // Cancelar envío programado
             $(document).on('click', '.pbm-cancel-scheduled', function(e) {
                 e.preventDefault();
@@ -383,7 +180,7 @@ function render_role_selector()
 {
     $roles = wp_roles()->get_names();
 
-    echo '<select id="pbm_user_role" name="pbm_user_role" required>';
+    echo '<select id="pbm_user_role" name="pbm_user_role">';
     echo '<option value="">' . esc_html__('Selecciona un rol...', 'wc-pbm') . '</option>';
 
     foreach ($roles as $role_slug => $role_name) {
@@ -407,7 +204,7 @@ function render_scheduled_emails_list()
     $scheduled_emails = get_all_scheduled_emails();
 
     if (empty($scheduled_emails)) {
-        echo '<p>' . esc_html__('No hay envíos programados.', 'wc-pbm') . '</p>';
+        echo '<p>' . esc_html__('No hay envíos registrados.', 'wc-pbm') . '</p>';
         return;
     }
 
@@ -424,19 +221,26 @@ function render_scheduled_emails_list()
     <table class="wp-list-table widefat fixed striped">
         <thead>
             <tr>
-                <th><?php esc_html_e('Fecha Programada', 'wc-pbm'); ?></th>
-                <th><?php esc_html_e('Rol', 'wc-pbm'); ?></th>
+                <th style="width: 150px;"><?php esc_html_e('Tipo', 'wc-pbm'); ?></th>
+                <th style="width: 170px;"><?php esc_html_e('Fecha', 'wc-pbm'); ?></th>
+                <th><?php esc_html_e('Audiencia', 'wc-pbm'); ?></th>
                 <th><?php esc_html_e('Asunto', 'wc-pbm'); ?></th>
-                <th><?php esc_html_e('Estado', 'wc-pbm'); ?></th>
-                <th><?php esc_html_e('Config. Envío', 'wc-pbm'); ?></th>
+                <th style="width: 120px;"><?php esc_html_e('Estado', 'wc-pbm'); ?></th>
+                <th style="width: 170px;"><?php esc_html_e('Config. Envío', 'wc-pbm'); ?></th>
                 <th><?php esc_html_e('Acciones', 'wc-pbm'); ?></th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($scheduled_emails as $email) : ?>
+                <?php
+                $delivery_meta = get_delivery_meta($email->id);
+                $type_label = get_delivery_type_label($delivery_meta);
+                $audience_label = get_delivery_audience_label($email, $delivery_meta);
+                ?>
                 <tr>
+                    <td><?php echo esc_html($type_label); ?></td>
                     <td><?php echo esc_html(get_date_from_gmt($email->scheduled_at, 'd/m/Y H:i')); ?></td>
-                    <td><?php echo esc_html($email->user_role); ?></td>
+                    <td><?php echo esc_html($audience_label); ?></td>
                     <td><?php echo esc_html($email->subject); ?></td>
                     <td>
                         <?php
@@ -446,7 +250,7 @@ function render_scheduled_emails_list()
                             'completed' => __('Completado', 'wc-pbm'),
                             'cancelled' => __('Cancelado', 'wc-pbm'),
                         );
-                        echo esc_html($status_labels[$email->status] ?? $email->status);
+                        echo '<strong>' . esc_html($status_labels[$email->status] ?? $email->status) . '</strong>';
                         ?>
                     </td>
                     <td>
@@ -481,6 +285,75 @@ function render_scheduled_emails_list()
         </tbody>
     </table>
 <?php
+}
+
+/**
+ * Obtiene metadatos de entrega guardados.
+ *
+ * @param int $delivery_id ID del envío.
+ * @return array
+ */
+function get_delivery_meta($delivery_id)
+{
+    $meta = get_option('pbm_delivery_meta_' . absint($delivery_id), array());
+    return is_array($meta) ? $meta : array();
+}
+
+/**
+ * Etiqueta tipo de envío.
+ *
+ * @param array $delivery_meta Metadatos.
+ * @return string
+ */
+function get_delivery_type_label($delivery_meta)
+{
+    $type = $delivery_meta['type'] ?? '';
+    if ('instant' === $type) {
+        return __('Instantáneo', 'wc-pbm');
+    }
+
+    if ('scheduled' === $type) {
+        return __('Programado', 'wc-pbm');
+    }
+
+    return __('Programado', 'wc-pbm');
+}
+
+/**
+ * Etiqueta audiencia.
+ *
+ * @param object $email Fila de envío.
+ * @param array  $delivery_meta Metadatos.
+ * @return string
+ */
+function get_delivery_audience_label($email, $delivery_meta)
+{
+    if (! empty($delivery_meta['global']['is_global']) && ! empty($delivery_meta['global']['sources']) && is_array($delivery_meta['global']['sources'])) {
+        $sources = $delivery_meta['global']['sources'];
+        $parts = array();
+
+        if (! empty($sources['product'])) {
+            $parts[] = sprintf(__('Productos: %d', 'wc-pbm'), (int) $sources['product']);
+        }
+        if (! empty($sources['role'])) {
+            $parts[] = sprintf(__('Roles: %d', 'wc-pbm'), (int) $sources['role']);
+        }
+        if (! empty($sources['mailmint'])) {
+            $parts[] = sprintf(__('Listas: %d', 'wc-pbm'), (int) $sources['mailmint']);
+        }
+        if (! empty($sources['manual'])) {
+            $parts[] = sprintf(__('Manuales: %d', 'wc-pbm'), (int) $sources['manual']);
+        }
+
+        $summary = empty($parts) ? __('Global', 'wc-pbm') : implode(' | ', $parts);
+        return __('Global: ', 'wc-pbm') . $summary;
+    }
+
+    if (! empty($delivery_meta['audience'])) {
+        return (string) $delivery_meta['audience'];
+    }
+
+    return (string) $email->user_role;
 }
 
 /**
@@ -523,8 +396,12 @@ function execute_scheduled_email($scheduled_id)
     update_scheduled_email_status($scheduled_id, 'running');
 
     try {
-        // Obtener usuarios activos del rol EN ESTE MOMENTO
-        $users = get_users_by_role($scheduled->user_role);
+        $users = get_scheduled_recipients_snapshot($scheduled_id);
+
+        if (empty($users)) {
+            // Compatibilidad: envíos antiguos por rol.
+            $users = get_users_by_role($scheduled->user_role);
+        }
 
         if (empty($users)) {
             throw new \Exception(__('No se encontraron usuarios con ese rol', 'wc-pbm'));
@@ -561,6 +438,25 @@ function execute_scheduled_email($scheduled_id)
 
         update_scheduled_email_status($scheduled_id, 'completed');
     }
+}
+
+/**
+ * Obtiene destinatarios snapshot para un envío programado.
+ *
+ * @param int $scheduled_id ID del envío programado.
+ * @return array
+ */
+function get_scheduled_recipients_snapshot($scheduled_id)
+{
+    $option_key = 'pbm_scheduled_recipients_' . absint($scheduled_id);
+    $recipients = get_option($option_key, array());
+
+    if (is_array($recipients) && ! empty($recipients)) {
+        delete_option($option_key);
+        return $recipients;
+    }
+
+    return array();
 }
 
 /**
@@ -647,7 +543,14 @@ function delete_scheduled_email_with_logs($scheduled_id)
     $wpdb->delete($table_logs, array('scheduled_id' => $scheduled_id), array('%d'));
 
     // Borrar email programado
-    return (bool) $wpdb->delete($table_emails, array('id' => $scheduled_id), array('%d'));
+    $deleted = (bool) $wpdb->delete($table_emails, array('id' => $scheduled_id), array('%d'));
+
+    if ($deleted) {
+        delete_option('pbm_delivery_meta_' . absint($scheduled_id));
+        delete_option('pbm_scheduled_recipients_' . absint($scheduled_id));
+    }
+
+    return $deleted;
 }
 
 /**
@@ -682,8 +585,15 @@ function bulk_delete_scheduled_by_status($status)
     ));
 
     // Borrar emails
-    return $wpdb->query($wpdb->prepare(
+    $deleted = $wpdb->query($wpdb->prepare(
         "DELETE FROM {$table_emails} WHERE status = %s",
         $status
     ));
+
+    foreach ($ids as $id) {
+        delete_option('pbm_delivery_meta_' . absint($id));
+        delete_option('pbm_scheduled_recipients_' . absint($id));
+    }
+
+    return $deleted;
 }
