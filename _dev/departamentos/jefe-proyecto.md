@@ -2,11 +2,11 @@
 
 ## Última actualización
 
-2026-06-18
+2026-06-19
 
 ## Resumen humano
 
-Plan A completo aplicado y consolidado. Email String Editor E1-E3 implementado como MVP admin seguro. Queda QA funcional/admin, E4 pendiente y validación real de ZIP/release antes de publicar.
+Plan A completo aplicado y consolidado. Email String Editor E1-E5 y R1 React están implementados. A4 post-fix tiene QA OK del usuario. 22MW-BACK se evaluó como posible, pero debe entrar por piloto, no como rediseño entero de golpe.
 
 ## Descubierto
 
@@ -17,6 +17,7 @@ Plan A completo aplicado y consolidado. Email String Editor E1-E3 implementado c
 - A4 requería build para que el cambio React se viera en admin.
 - A7 requería excluir `_dev/` del ZIP/release.
 - Email String Editor debía entrar por fases: módulo propio, admin MVP y guardado/borrado antes de activar `gettext`.
+- 22MW-BACK puede aportar identidad visual al admin, pero el alcance debe separarse en inventario, piloto y extensión.
 
 ## Hecho
 
@@ -34,10 +35,14 @@ Plan A completo aplicado y consolidado. Email String Editor E1-E3 implementado c
 - `node_modules/` copiado desde el plugin anterior.
 - `npm run build` ejecutado con éxito.
 - Email String Editor E1-E3 implementado.
-- E4 queda pendiente porque requiere confirmar hook seguro para limitar `gettext` a emails WooCommerce.
+- E4 implementado y QA reportado OK.
+- R1 implementado y pusheado en `2.0.1.6`.
+- A4 post-fix aplicado y QA reportado OK por usuario.
+- Plan B 22MW-BACK añadido al roadmap como propuesta por fases.
 
 ## Pendiente
 
+- Decidir alcance del piloto 22MW-BACK.
 - QA funcional del Plan A completo.
 - QA admin de Email String Editor E1-E3.
 - E4 Email String Editor.
@@ -61,8 +66,8 @@ Plan A completo aplicado y consolidado. Email String Editor E1-E3 implementado c
 
 - No ejecutar QA funcional sin permiso porque puede crear envíos, logs o acciones programadas.
 - No preparar release sin validación de ZIP y checklist.
-- No activar aplicación real de overrides Email String Editor sin confirmar contexto email seguro.
+- No activar cambios 22MW-BACK sin arquitectura previa y piloto aprobado.
 
 ## Próximo paso recomendado
 
-- Ejecutar QA funcional controlado del Plan A completo.
+- Decidir B0/B1: inventario admin 22MW-BACK y piloto en Broadcast principal.

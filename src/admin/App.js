@@ -68,7 +68,7 @@ function formatEstimatedDuration(totalMinutes) {
   return `${hours} h ${remainder} min`;
 }
 
-function buildPreviewSignature({ globalAudience, manualEmails, batchSize, emailsPerHour, scheduleEnabled, scheduledDatetime }) {
+function buildPreviewSignature({ globalAudience, manualEmails, batchSize, emailsPerHour }) {
   const audience = globalAudience.map((item) => ({
     source: item.source,
     selectorValue: item.selectorValue,
@@ -79,8 +79,6 @@ function buildPreviewSignature({ globalAudience, manualEmails, batchSize, emails
     manualEmails,
     batchSize: String(parseInt(batchSize || '30', 10) || 30),
     emailsPerHour: String(parseInt(emailsPerHour || '200', 10) || 200),
-    scheduleEnabled: Boolean(scheduleEnabled),
-    scheduledDatetime: scheduleEnabled ? scheduledDatetime || '' : '',
   });
 }
 
@@ -445,9 +443,7 @@ export default function App() {
     manualEmails,
     batchSize,
     emailsPerHour,
-    scheduleEnabled,
-    scheduledDatetime,
-  }), [globalAudience, manualEmails, batchSize, emailsPerHour, scheduleEnabled, scheduledDatetime]);
+  }), [globalAudience, manualEmails, batchSize, emailsPerHour]);
 
   const isPreviewStale = Boolean(previewData && previewSignature !== currentPreviewSignature);
 

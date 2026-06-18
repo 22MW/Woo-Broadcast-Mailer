@@ -2,11 +2,11 @@
 
 ## Última actualización
 
-2026-06-18
+2026-06-19
 
 ## Resumen humano
 
-QA funcional reportó que con 3 pedidos de prueba con varios productos, el plugin muestra `0 emails`.
+QA funcional reportó inicialmente que con 3 pedidos de prueba con varios productos, el plugin mostraba `0 emails`. Nuevo bug A4: al tocar “Programar envío”, la preview se marcaba obsoleta sin cambiar destinatarios.
 
 ## Descubierto
 
@@ -45,8 +45,8 @@ QA funcional reportó que con 3 pedidos de prueba con varios productos, el plugi
 
 ## Próximo paso recomendado
 
-- Validar con los pedidos `655`, `656`, `711` y producto `380`.
-- Si ahora devuelve emails, preparar commit/push separado para este fix de destinatarios.
+- Validar manualmente A4: previsualizar, activar/desactivar programación y cambiar fecha/hora sin que aparezca aviso de preview obsoleta.
+- Validar que cambiar audiencia, manuales, lote o emails por hora sí invalida preview.
 
 ## No volver a investigar
 
@@ -54,6 +54,7 @@ QA funcional reportó que con 3 pedidos de prueba con varios productos, el plugi
 - El producto `380` existe y aparece en el pedido `655`.
 - El punto sensible estaba en el flujo HPOS/lookup, no en la ausencia visible de emails de pedido.
 - Fix aplicado en `includes/functions-products.php`.
+- A4: la causa confirmada estaba en `src/admin/App.js`; `buildPreviewSignature()` incluía `scheduleEnabled` y `scheduledDatetime`.
 
 ## Evidencia revisada
 

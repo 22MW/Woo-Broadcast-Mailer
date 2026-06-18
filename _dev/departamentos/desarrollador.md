@@ -17,6 +17,7 @@ Plan A completo aplicado: A1-A7. Email String Editor E1-E4 implementado y R1 apl
 - El estado `completed` se marcaba justo después de programar lotes, no al finalizar ejecución real.
 - El snapshot `pbm_scheduled_recipients_{id}` se borraba al leerlo, antes de confirmar que los lotes se programaron/ejecutaron.
 - La preview podía quedar obsoleta si cambiaba audiencia/configuración antes de enviar.
+- Bug A4 detectado: activar/desactivar programación o cambiar fecha/hora marcaba preview como obsoleta aunque no cambiaba destinatarios.
 - El workflow release no excluía `_dev/`.
 - Email String Editor debía integrarse como módulo propio, no copiando el plugin heredado tal cual.
 
@@ -55,7 +56,8 @@ Plan A completo aplicado: A1-A7. Email String Editor E1-E4 implementado y R1 apl
 ### A4
 
 - Añadida firma de preview en `src/admin/App.js`.
-- La firma cubre audiencia global, emails manuales, lote, emails por hora, programación y fecha.
+- La firma cubre audiencia global, emails manuales, lote y emails por hora.
+- La programación y fecha/hora ya no forman parte de la firma porque no cambian destinatarios.
 - Si cambia la audiencia/configuración tras previsualizar, se muestra aviso.
 - El botón de envío queda bloqueado si la preview está obsoleta.
 - Se compiló `build/` con Node local.
@@ -114,6 +116,7 @@ Plan A completo aplicado: A1-A7. Email String Editor E1-E4 implementado y R1 apl
 - QA funcional real del aviso admin y rutas AJAX.
 - QA de A2 con envío instantáneo, envío programado, ejecución de lotes y logs acumulados.
 - QA de A4: preview, cambio de audiencia/configuración y bloqueo de envío.
+- QA específico A4: confirmar que activar/desactivar programación y cambiar fecha/hora no invalidan preview.
 - Prueba específica con caracteres HTML en nombre de destinatario.
 - QA de borrado con registros `completed`, `cancelled`, `pending` y `running`.
 - Validar ZIP/release real antes de publicar.
@@ -126,7 +129,7 @@ Plan A completo aplicado: A1-A7. Email String Editor E1-E4 implementado y R1 apl
 - A1 implementado: Action Scheduler obligatorio y aviso admin.
 - A2 implementado: `completed` queda ligado a logs acumulados.
 - A3 implementado: snapshot se conserva hasta completar/eliminar.
-- A4 implementado y compilado: preview obsoleta bloquea envío.
+- A4 implementado y compilado: preview obsoleta bloquea envío; programación y fecha/hora no invalidan preview.
 - A5 implementado: escape de `{customer_name}` y validación de email destino.
 - A6 implementado: borrado por ID limitado a `completed` y `cancelled`.
 - A7 implementado: workflow release excluye `_dev/`.

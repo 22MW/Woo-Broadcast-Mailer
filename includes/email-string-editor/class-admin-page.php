@@ -88,7 +88,7 @@ class Admin_Page
         $asset_file = dirname(__DIR__, 2) . '/build/index.asset.php';
         $asset_data = file_exists($asset_file) ? require $asset_file : array();
         $dependencies = $asset_data['dependencies'] ?? array('wp-element', 'wp-components', 'wp-i18n');
-        $version = $asset_data['version'] ?? '2.0.1.6';
+        $version = $asset_data['version'] ?? '2.0.1.7';
 
         wp_enqueue_script(
             'pbm-admin-react',

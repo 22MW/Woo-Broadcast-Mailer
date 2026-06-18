@@ -2,11 +2,11 @@
 
 ## Última actualización
 
-2026-06-18
+2026-06-19
 
 ## Resumen humano
 
-Análisis funcional realizado sobre `_dev/_md/WooEmailStringEditor.php` para posible incorporación en Woo Broadcast Mailer. La funcionalidad es útil, pero debe entrar como módulo planificado, no copiando el plugin tal cual.
+Análisis funcional realizado sobre Email String Editor y sobre posible aplicación de 22MW-BACK al admin completo. 22MW-BACK es posible, pero recomendado por piloto controlado, no como rediseño entero de golpe.
 
 ## Descubierto
 
@@ -23,9 +23,15 @@ Análisis funcional realizado sobre `_dev/_md/WooEmailStringEditor.php` para pos
 - Documento resumen creado: `_dev/incorporacion-email-string-editor.md`.
 - Propuesta funcional definida en fases.
 - MVP recomendado: submenú separado, idioma activo, selector por categoría/origen/plantilla y compatibilidad con datos existentes.
+- Evaluado 22MW-BACK para Woo Broadcast Mailer: posible, tamaño medio-alto, recomendado por fases.
+- Recomendación 22MW-BACK: empezar por piloto en Broadcast React principal y extender después al Editor de emails React si valida bien.
 
 ## Pendiente
 
+- Decidir si el piloto 22MW-BACK empieza por Broadcast principal o por Editor de emails React.
+- Decidir si dark/light entra en el piloto.
+- Decidir si el rediseño será solo visual o también reorganización funcional de menús.
+- Decidir si Woo Broadcast Mailer será referencia reusable 22MW-BACK para otros plugins.
 - Decidir si se integra como submenú o pestaña React.
 - Decidir si debe afectar solo emails WooCommerce o todo dominio `woocommerce`.
 - Decidir idioma dominante en emails multiidioma.
@@ -48,3 +54,4 @@ Análisis funcional realizado sobre `_dev/_md/WooEmailStringEditor.php` para pos
 ## Próximo paso recomendado
 
 - Cerrar decisiones pendientes antes de arquitectura definitiva e implementación.
+- Si se aprueba 22MW-BACK, hacer Fase 0 de inventario de pantallas y luego piloto visual en Broadcast React principal.

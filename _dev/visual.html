@@ -48,10 +48,12 @@
   <main>
     <header>
       <h1>Woo Broadcast Mailer — Plan A + Email String Editor + R1</h1>
-      <p class="muted">Vista interna — bloque técnico mínimo antes de QA/release — 2026-06-18</p>
+      <p class="muted">Vista interna — bloque técnico mínimo antes de QA/release — 2026-06-19</p>
       <span class="badge"><span class="dot green"></span> A1-A7 hechos</span>
       <span class="badge"><span class="dot green"></span> E1-E5 QA OK</span>
-      <span class="badge"><span class="dot yellow"></span> QA pendiente</span>
+      <span class="badge"><span class="dot green"></span> A4 QA OK</span>
+      <span class="badge"><span class="dot yellow"></span> QA general pendiente</span>
+      <span class="badge"><span class="dot blue"></span> 22MW-BACK en plan</span>
       <span class="badge"><span class="dot blue"></span> Rama: devWooBM</span>
     </header>
 
@@ -60,11 +62,11 @@
         <h2>Resumen humano</h2>
         <p>El Plan A completo está aplicado: Action Scheduler, estados/logs, snapshot, preview obsoleta, escape de nombre, borrado seguro y exclusión de <code>_dev/</code> en release.</p>
         <p>Email String Editor E1-E4 está aplicado: admin seguro, búsqueda global multiidioma, edición multiidioma, overrides reales limitados a emails WooCommerce y R1 React implementado.</p>
-        <p>Ahora toca QA funcional/admin controlado y, si pasa, checklist de ZIP/release.</p>
+        <p>Ahora toca decidir el piloto 22MW-BACK o seguir con QA funcional/admin controlado antes de ZIP/release.</p>
       </div>
       <div class="card ok">
         <h2>Estado actual</h2>
-        <p>A4 compilado con Node local. <code>build/</code> quedó sincronizado con <code>src/admin/App.js</code>.</p>
+        <p>A4 compilado con Node local. <code>build/</code> quedó sincronizado con <code>src/admin/App.js</code>. Programar envío ya no invalida preview.</p>
         <p>Node local: <code>/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin</code>.</p>
       </div>
     </section>
@@ -76,7 +78,7 @@
           <div class="plan-item ok"><div class="plan-head"><div><span class="code">A1</span> — Action Scheduler obligatorio + aviso admin</div><span class="state done">Hecho</span></div><p>Comprueba disponibilidad de Action Scheduler, muestra estado en admin y bloquea envío/programación si falta.</p><p class="small">Validado: <code>php -l</code>, <code>git diff --check</code>, aviso visual.</p></div>
           <div class="plan-item ok"><div class="plan-head"><div><span class="code">A2</span> — Estados/logs reales</div><span class="state done">Hecho</span></div><p>Evita que <code>completed</code> signifique solo lotes programados; se completa al cubrir logs acumulados.</p><p class="small">QA funcional pendiente.</p></div>
           <div class="plan-item ok"><div class="plan-head"><div><span class="code">A3</span> — Snapshot seguro de destinatarios</div><span class="state done">Hecho</span></div><p>Conserva snapshot hasta completar o eliminar el envío.</p><p class="small">QA programación pendiente.</p></div>
-          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A4</span> — Preview no obsoleto</div><span class="state done">Hecho</span></div><p>Invalida preview y bloquea envío si cambia audiencia/configuración.</p><p class="small">Compilado con <code>npm run build</code>.</p></div>
+          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A4</span> — Preview no obsoleto</div><span class="state done">Hecho</span></div><p>Invalida preview y bloquea envío si cambia audiencia/configuración. Programación y fecha/hora no invalidan preview.</p><p class="small">Compilado con <code>npm run build</code>.</p></div>
           <div class="plan-item ok"><div class="plan-head"><div><span class="code">A5</span> — Escape de <code>{customer_name}</code></div><span class="state done">Hecho</span></div><p>Escapa el nombre del destinatario antes de insertarlo en email HTML y valida email destino.</p><p class="small">Validación técnica: <code>php -l</code> y <code>git diff --check</code>.</p></div>
           <div class="plan-item ok"><div class="plan-head"><div><span class="code">A6</span> — Borrado por IDs seguro</div><span class="state done">Hecho</span></div><p>Impide que el borrado individual y por IDs elimine envíos <code>pending</code>, <code>running</code> o inexistentes.</p><p class="small">Validación técnica: <code>php -l</code> y <code>git diff --check</code>.</p></div>
           <div class="plan-item ok"><div class="plan-head"><div><span class="code">A7</span> — ZIP/release sin <code>_dev/</code></div><span class="state done">Hecho</span></div><p>Workflow release excluye <code>_dev/</code>.</p><p class="small">ZIP real pendiente de release.</p></div>
@@ -88,7 +90,7 @@
         <ul class="checklist">
           <li><span class="box pending"></span><span>Panel carga sin errores JS.</span></li>
           <li><span class="box pending"></span><span>Preview audiencia global con deduplicación.</span></li>
-          <li><span class="box pending"></span><span>A4: cambiar audiencia/configuración y confirmar bloqueo.</span></li>
+          <li><span class="box pending"></span><span>A4: cambiar audiencia/configuración y confirmar bloqueo; activar programación y cambiar fecha/hora sin invalidar preview.</span></li>
           <li><span class="box pending"></span><span>A5: email con nombre HTML escapado.</span></li>
           <li><span class="box pending"></span><span>A2: envío instantáneo y programado con logs reales.</span></li>
           <li><span class="box pending"></span><span>A6: borrado solo en completed/cancelled.</span></li>
@@ -114,7 +116,7 @@
         </ul>
       </div>
       <div class="card warn"><h2>Bloqueos</h2><ul><li>QA funcional general requiere permiso porque crea envíos/logs/acciones.</li><li>Release, ZIP, tag, push y deploy requieren permiso explícito.</li><li>No publicar sin ZIP de prueba y checklist release.</li></ul></div>
-      <div class="card"><h2>Próximo paso recomendado</h2><p>Checkpoint dev 2.0.1.6 con R1. Después, revisar A4: programar envío no debe invalidar preview si no cambia audiencia/configuración real.</p></div>
+      <div class="card"><h2>Próximo paso recomendado</h2><p>Decidir B0/B1: inventario admin 22MW-BACK y piloto visual en Broadcast principal, sin tocar lógica funcional.</p></div>
     </section>
 
     <footer>Vista local estática. No incluir en ZIP, release ni deploy público.</footer>

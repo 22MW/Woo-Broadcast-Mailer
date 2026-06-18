@@ -6,11 +6,11 @@
 
 ## Resumen humano
 
-Plugin funcional en v2.0.1.6 dev. Migración a React completada. Flujo multi-fuente con audiencia global implementado. Action Scheduler integrado. Updater activo vía GitHub Releases. El Plan A completo está aplicado. Email String Editor E1-E4 está implementado: admin seguro y aplicación `gettext` limitada al contexto de emails WooCommerce.
+Plugin funcional en v2.0.1.7 dev. Migración a React completada. Flujo multi-fuente con audiencia global implementado. Action Scheduler integrado. Updater activo vía GitHub Releases. El Plan A completo está aplicado. Email String Editor E1-E4 está implementado: admin seguro y aplicación `gettext` limitada al contexto de emails WooCommerce.
 
 ## Estado general
 
-Funcional con Plan A aplicado y Email String Editor E1-E4 añadido. Pendiente QA funcional/admin, documentación de release y validación ZIP antes de publicar.
+Funcional con Plan A aplicado, Email String Editor E1-E5 añadido y R1 React implementado. A4 post-fix validado por usuario. Pendiente decidir alcance 22MW-BACK, QA funcional general, documentación de release y validación ZIP antes de publicar.
 
 ## Hecho
 
@@ -35,7 +35,7 @@ Funcional con Plan A aplicado y Email String Editor E1-E4 añadido. Pendiente QA
 - A1 implementado: Action Scheduler obligatorio + aviso admin.
 - A2 implementado: `completed` ya no se marca al programar lotes, sino al cubrir logs acumulados.
 - A3 implementado: snapshot de destinatarios no se borra al leerlo; se limpia al completar o eliminar.
-- A4 implementado y compilado: preview obsoleta bloquea envío.
+- A4 implementado y compilado: preview obsoleta bloquea envío; programación y fecha/hora no invalidan preview.
 - A5 implementado: escape de `{customer_name}` y validación de email destino.
 - A6 implementado: borrado individual y por IDs limitado a envíos completados o cancelados.
 - A7 implementado: workflow release excluye `_dev/`.
@@ -51,6 +51,8 @@ Funcional con Plan A aplicado y Email String Editor E1-E4 añadido. Pendiente QA
 - Email String Editor E3.2 implementado: edición directa desde la pestaña Cambios guardados.
 - Email String Editor E4 implementado: aplicación real de overrides con `gettext` solo mientras WooCommerce renderiza emails.
 - R1 implementado: interfaz admin del Editor de emails migrada a React con AJAX seguro.
+- QA A4 post-fix reportado OK por usuario.
+- Plan B 22MW-BACK creado como propuesta por fases; pendiente decisión de piloto.
 - Bugfix HPOS destinatarios por producto implementado: fallback a escaneo por `line_items` cuando la tabla lookup no devuelve destinatarios.
 
 ## En curso
@@ -104,7 +106,8 @@ Funcional con Plan A aplicado y Email String Editor E1-E4 añadido. Pendiente QA
 ## Pendiente de validar
 
 - QA de A2 con envío instantáneo, envío programado, ejecución de lotes y logs acumulados.
-- QA de A4: preview, cambio de audiencia/configuración y bloqueo de envío.
+- QA de A4: programación/fecha OK reportado por usuario; queda QA general de preview si se hace bloque funcional completo.
+- Decidir alcance del piloto 22MW-BACK.
 - QA de A6 con registros completados, cancelados, pendientes y en ejecución.
 - Prueba de A5 con nombre que contenga caracteres HTML.
 - Que las rutas AJAX devuelven error si Action Scheduler no está disponible.
@@ -122,7 +125,7 @@ Funcional con Plan A aplicado y Email String Editor E1-E4 añadido. Pendiente QA
 
 - Ruta real del plugin: `app/public/wp-content/plugins/Woo-Broadcast-Mailer/`.
 - Rama de trabajo del plugin: `devWooBM`.
-- Versión dev actual del plugin: `2.0.1.6`.
+- Versión dev actual del plugin: `2.0.1.7`.
 - Versión pública base: `2.0.1`.
 - Text domain correcto del plugin: `wc-pbm`.
 - Los planes de `_dev/_md/` (`PLAN_MULTI_FUENTE` y `PLAN_MIGRACION`) están implementados en v2.0.0. No re-investigar como pendientes.

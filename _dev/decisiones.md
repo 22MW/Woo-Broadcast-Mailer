@@ -2,7 +2,7 @@
 
 ## Última actualización
 
-2026-06-18
+2026-06-19
 
 ## Decisiones confirmadas
 
@@ -22,6 +22,8 @@
 - **Plan A cerrado**: A1-A7 aplicados a nivel de código, React build y workflow release.
 - **Node local para build**: Node/npm se instalaron en `/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin` porque el sistema no encontraba `node`/`npm`.
 - **node_modules local**: se copió `node_modules/` desde el plugin anterior `/Users/22mw/Local Sites/test/app/public/wp-content/plugins/woo-broadcast-mailer/node_modules/`.
+- **QA A4 post-fix**: usuario reportó QA OK para el ajuste que evita invalidar preview al activar programación o cambiar fecha/hora.
+- **22MW-BACK**: posible en Woo Broadcast Mailer, pero se decide tratarlo como mejora admin por fases; no aplicar al plugin entero de golpe sin piloto.
 
 ## Decisiones operativas derivadas de la auditoría
 
@@ -40,6 +42,10 @@
 
 ## Pendientes de decisión
 
+- 22MW-BACK: ¿el piloto empieza por Broadcast principal o por Editor de emails React?
+- 22MW-BACK: ¿dark/light entra en el piloto o queda para fase posterior?
+- 22MW-BACK: ¿será solo visual o también reorganización funcional de menús?
+- 22MW-BACK: ¿Woo Broadcast Mailer será referencia reusable para otros plugins?
 - ¿Borrar `_dev/_md/` del repo ahora que existe `_dev/` consolidado?
 - ¿Sincronizar versión de `package.json`/`package-lock.json` con la versión del plugin o mantenerla como versión interna del paquete JS?
 - ¿Actualizar `CHANGELOG.md` y `README.md` con entrada `2.0.1` antes del próximo push/release?

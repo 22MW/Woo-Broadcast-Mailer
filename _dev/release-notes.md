@@ -1,5 +1,12 @@
 # Release notes internas
 
+## 2.0.1.7 — Dev checkpoint — 2026-06-19
+
+- A4 ajustado: activar programación o cambiar fecha/hora ya no invalida la preview porque no cambia destinatarios.
+- Build React actualizado tras el ajuste.
+- QA A4 post-fix reportado OK por usuario.
+- Plan B 22MW-BACK añadido como propuesta por fases.
+
 ## 2.0.1.6 — Dev checkpoint — 2026-06-19
 
 - R1 aplicado: Editor de emails migrado a React.

@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.1.7
+- Fixed stale preview detection so scheduling and scheduled datetime changes do not invalidate recipient preview.
+- Kept stale preview protection for audience, manual emails, batch size, and emails per hour.
+- Added internal 22MW-BACK admin visual plan.
+
 ## 2.0.1.6
 - Migrated Email String Editor admin UI to React.
 - Added AJAX controller for templates, search, save, update, delete, and saved changes.
