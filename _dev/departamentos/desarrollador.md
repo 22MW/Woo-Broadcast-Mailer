@@ -90,7 +90,9 @@ Plan A completo aplicado: A1-A7. Email String Editor E1-E3 implementado como MVP
 - Añadido guardado multiidioma desde la misma pantalla.
 - Añadida edición directa desde la pestaña Cambios guardados.
 - Añadida lectura compatible de `wc_custom_email_strings`.
-- No se activó aplicación `gettext` real en emails; queda para E4.
+- E4 activado con filtro `gettext`/`gettext_with_context` limitado al contexto de emails WooCommerce.
+- La aplicación real usa `woocommerce_email_header` para activar contexto y `woocommerce_email_footer` para desactivarlo.
+- El idioma se resuelve desde `wpml_language` del pedido si existe, con fallback a locale actual.
 
 ### Bugfix destinatarios producto HPOS
 
@@ -108,7 +110,7 @@ Plan A completo aplicado: A1-A7. Email String Editor E1-E3 implementado como MVP
 - Validar ZIP/release real antes de publicar.
 - QA admin de Email String Editor E1-E3.1.
 - Validar QA funcional del bugfix HPOS con producto `380` y pedidos `655`, `656`, `711`.
-- E4: aplicar overrides solo en emails WooCommerce cuando se confirme hook seguro.
+- QA de E4 en email WooCommerce controlado: confirmar que aplica override y no afecta admin/frontend.
 
 ## No volver a investigar
 
@@ -119,7 +121,7 @@ Plan A completo aplicado: A1-A7. Email String Editor E1-E3 implementado como MVP
 - A5 implementado: escape de `{customer_name}` y validación de email destino.
 - A6 implementado: borrado por ID limitado a `completed` y `cancelled`.
 - A7 implementado: workflow release excluye `_dev/`.
-- Email String Editor E1-E3.2 y E2.3 implementados sin activar `gettext` real.
+- Email String Editor E1-E4 implementado; `gettext` queda limitado por contexto de email WooCommerce.
 - No se ejecutaron envíos ni acciones programadas durante estas implementaciones.
 - Node local disponible en `/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin`.
 - `node_modules/` se copió desde el plugin anterior.

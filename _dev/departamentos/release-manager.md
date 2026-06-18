@@ -35,6 +35,7 @@ Revisión release/versionado realizada en modo completo y solo lectura. El plugi
 - `CHANGELOG.md` actualizado con entrada `2.0.1.3`.
 - `_dev/release-notes.md` actualizado.
 - Commit `1ec86c4` pusheado en `devWooBM`.
+- Preparado checkpoint dev `2.0.1.5` para E4 Email String Editor con QA OK reportado por usuario.
 
 ## Pendiente
 

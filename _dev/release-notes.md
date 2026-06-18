@@ -1,5 +1,12 @@
 # Release notes internas
 
+## 2.0.1.5 — Dev checkpoint — 2026-06-18
+
+- E4 aplicado: overrides reales del Email String Editor limitados a emails WooCommerce.
+- `gettext`/`gettext_with_context` solo actúan entre `woocommerce_email_header` y `woocommerce_email_footer` y solo para dominio `woocommerce`.
+- Idioma resuelto desde `wpml_language` del pedido con fallback a locale.
+- QA reportado por usuario como OK.
+
 ## 2.0.1.4 — Dev checkpoint — 2026-06-18
 
 - Bugfix HPOS destinatarios por producto: fallback a escaneo por `line_items` cuando `wp_wc_order_product_lookup` no devuelve resultados.

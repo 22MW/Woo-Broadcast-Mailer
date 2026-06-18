@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.1.5
+- Added safe Email String Editor override application for WooCommerce emails.
+- Limited gettext overrides to WooCommerce email rendering context and `woocommerce` text domain.
+- Resolved email language from order `wpml_language` with locale fallback.
+- Confirmed E4 QA as OK.
+
 ## 2.0.1.4
 - Added HPOS fallback for product recipients when WooCommerce order lookup returns no results.
 - Product recipient counts now scan order line items if the HPOS lookup path is empty.

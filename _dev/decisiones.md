@@ -17,8 +17,8 @@
 - **Revisión global inicial 2026-06-18**: se realizó en solo lectura. No se tocó código, base de datos, settings, build ni release.
 - **Revisión completa por especialistas 2026-06-18**: arquitectura, seguridad, QA y release revisados en solo lectura.
 - **Documento Email String Editor 2026-06-18**: se creó `_dev/incorporacion-email-string-editor.md` como base de planificación.
-- **Email String Editor E1-E3.2 + E2.3**: implementado como MVP admin seguro bajo WooCommerce, con búsqueda global multiidioma, edición multiidioma en pantalla única, edición directa de cambios guardados, datos en `pbm_email_string_overrides` y compatibilidad de lectura con `wc_custom_email_strings`.
-- **Email String Editor E4 pendiente**: no se activó aplicación real con `gettext` hasta confirmar hook seguro de contexto email.
+- **Email String Editor E1-E4**: implementado como MVP admin seguro bajo WooCommerce, con búsqueda global multiidioma, edición multiidioma en pantalla única, edición directa de cambios guardados, datos en `pbm_email_string_overrides`, compatibilidad de lectura con `wc_custom_email_strings` y aplicación real limitada a emails WooCommerce.
+- **Email String Editor E4**: aplicación real con `gettext` limitada por `woocommerce_email_header`/`woocommerce_email_footer` y dominio `woocommerce`.
 - **Plan A cerrado**: A1-A7 aplicados a nivel de código, React build y workflow release.
 - **Node local para build**: Node/npm se instalaron en `/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin` porque el sistema no encontraba `node`/`npm`.
 - **node_modules local**: se copió `node_modules/` desde el plugin anterior `/Users/22mw/Local Sites/test/app/public/wp-content/plugins/woo-broadcast-mailer/node_modules/`.
@@ -44,17 +44,17 @@
 - ¿Sincronizar versión de `package.json`/`package-lock.json` con la versión del plugin o mantenerla como versión interna del paquete JS?
 - ¿Actualizar `CHANGELOG.md` y `README.md` con entrada `2.0.1` antes del próximo push/release?
 - ¿Excluir `src/`, `package.json` y `package-lock.json` del ZIP distribuible o mantenerlos?
-- Email String Editor E4: confirmar hook seguro para aplicar overrides solo en emails WooCommerce.
-- Email String Editor: ¿qué idioma manda en emails multiidioma: pedido, usuario, WPML/Polylang o locale del sitio?
+- Email String Editor E5: validar en email WooCommerce real que los overrides aplican solo dentro del email.
+- Email String Editor: ¿qué idioma manda en emails multiidioma cuando no existe meta `wpml_language`: usuario, WPML/Polylang o locale del sitio?
 - Email String Editor: ¿MVP solo WooCommerce core o también plugins detectados?
 
 ## Recomendaciones acordadas como siguiente paso
 
 - Ejecutar QA funcional controlado del Plan A completo.
-- Ejecutar QA admin de Email String Editor E1-E3.1.
+- Ejecutar QA de Email String Editor E4 en email WooCommerce controlado.
 - Si QA pasa, preparar checklist release: changelog, build, ZIP de prueba y exclusiones.
 - Preparar release solo al final: exclusiones, documentación, build, updater y staging.
-- Tratar Email String Editor E4 como fase futura bloqueada por hook seguro de contexto email.
+- Tratar Email String Editor E5 como fase de QA/no regresión antes de release.
 
 ## No reabrir sin motivo
 

@@ -21,6 +21,7 @@ Revisión de seguridad realizada en modo completo y solo lectura. La base de seg
 - Revisión de nonces, capabilities, sanitización, escaping, SQL, AJAX, updater, uninstall y React completada en solo lectura.
 - A5 aplicado: `send_single_email()` valida email destino y escapa `{customer_name}` con `esc_html()` antes de insertarlo en HTML.
 - A6 aplicado: borrado individual y por IDs bloqueado para estados distintos de `completed` o `cancelled`.
+- E4 aplicado con filtro `gettext` limitado por contexto WooCommerce email y dominio `woocommerce`.
 
 ## Pendiente
 
@@ -28,6 +29,7 @@ Revisión de seguridad realizada en modo completo y solo lectura. La base de seg
 - Validar host/HTTPS del paquete descargado por updater.
 - Añadir límites server-side máximos a `batch_size` y `emails_per_hour`.
 - QA de A6 con registros completados, cancelados, pendientes y en ejecución.
+- QA de E4: confirmar que no altera admin, checkout ni frontend fuera de emails WooCommerce.
 
 ## No volver a investigar
 
@@ -36,6 +38,7 @@ Revisión de seguridad realizada en modo completo y solo lectura. La base de seg
 - No se detectaron rutas REST.
 - A5 ya está aplicado.
 - A6 ya está aplicado.
+- E4 usa `woocommerce_email_header`/`woocommerce_email_footer` para acotar el contexto de `gettext`.
 
 ## Riesgos o bloqueos
 

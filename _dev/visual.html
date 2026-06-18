@@ -50,7 +50,7 @@
       <h1>Woo Broadcast Mailer — Plan A + Email String Editor</h1>
       <p class="muted">Vista interna — bloque técnico mínimo antes de QA/release — 2026-06-18</p>
       <span class="badge"><span class="dot green"></span> A1-A7 hechos</span>
-      <span class="badge"><span class="dot green"></span> E1-E3.1 hechos</span>
+      <span class="badge"><span class="dot green"></span> E1-E5 QA OK</span>
       <span class="badge"><span class="dot yellow"></span> QA pendiente</span>
       <span class="badge"><span class="dot blue"></span> Rama: devWooBM</span>
     </header>
@@ -59,7 +59,7 @@
       <div class="card risk">
         <h2>Resumen humano</h2>
         <p>El Plan A completo está aplicado: Action Scheduler, estados/logs, snapshot, preview obsoleta, escape de nombre, borrado seguro y exclusión de <code>_dev/</code> en release.</p>
-        <p>Email String Editor E1-E3.2 y E2.3 también están aplicados como MVP admin seguro, con búsqueda global multiidioma, edición multiidioma en pantalla única y edición directa desde Cambios guardados. E4 queda pendiente para aplicar overrides reales solo en emails.</p>
+        <p>Email String Editor E1-E4 está aplicado: admin seguro, búsqueda global multiidioma, edición multiidioma y overrides reales limitados a emails WooCommerce.</p>
         <p>Ahora toca QA funcional/admin controlado y, si pasa, checklist de ZIP/release.</p>
       </div>
       <div class="card ok">
@@ -109,12 +109,12 @@
           <li><span class="box done"></span><span>E3: guardado/borrado en <code>pbm_email_string_overrides</code>.</span></li>
           <li><span class="box done"></span><span>E3.1: guardado multiidioma desde una pantalla única.</span></li>
           <li><span class="box done"></span><span>E3.2: edición directa desde Cambios guardados.</span></li>
-          <li><span class="box pending"></span><span>E4: aplicar overrides reales solo en emails WooCommerce.</span></li>
-          <li><span class="box pending"></span><span>E5: QA admin, permisos, nonces y no regresión.</span></li>
+          <li><span class="box done"></span><span>E4: aplicar overrides reales solo en emails WooCommerce.</span></li>
+          <li><span class="box done"></span><span>E5: QA email real reportado OK.</span></li>
         </ul>
       </div>
-      <div class="card warn"><h2>Bloqueos</h2><ul><li>QA funcional requiere permiso porque crea envíos/logs/acciones.</li><li>E4 requiere confirmar hook seguro de contexto email.</li><li>Release, ZIP, tag, push y deploy requieren permiso explícito.</li><li>No publicar sin ZIP de prueba y checklist release.</li></ul></div>
-      <div class="card"><h2>Próximo paso recomendado</h2><p>Ejecutar QA funcional del Plan A, QA admin de Email String Editor E1-E3.1 y validación del bugfix HPOS con producto <code>380</code>.</p></div>
+      <div class="card warn"><h2>Bloqueos</h2><ul><li>QA funcional general requiere permiso porque crea envíos/logs/acciones.</li><li>Release, ZIP, tag, push y deploy requieren permiso explícito.</li><li>No publicar sin ZIP de prueba y checklist release.</li></ul></div>
+      <div class="card"><h2>Próximo paso recomendado</h2><p>Preparar checkpoint dev 2.0.1.5 con E4/E5 y, después, checklist release si se aprueba.</p></div>
     </section>
 
     <footer>Vista local estática. No incluir en ZIP, release ni deploy público.</footer>

@@ -6,7 +6,7 @@
 
 ## Resumen humano
 
-Revisión QA realizada en modo completo y solo lectura. No se ejecutaron pruebas con efecto. El flujo principal necesita QA funcional controlado antes de release o producción, especialmente Action Scheduler, preview, envíos, logs y borrado.
+Revisión QA inicial realizada en modo completo y solo lectura. Posteriormente, el usuario reportó QA OK para el bugfix HPOS y para E4 del Email String Editor.
 
 ## Descubierto
 
@@ -17,11 +17,13 @@ Revisión QA realizada en modo completo y solo lectura. No se ejecutaron pruebas
 ## Hecho
 
 - Checklist QA priorizado definido sin ejecutar acciones.
-- No se crearon pedidos, envíos, logs, usuarios ni acciones programadas.
+- No se crearon pedidos, envíos, logs, usuarios ni acciones programadas desde esta sesión.
+- Usuario reportó QA OK del bugfix HPOS con producto/pedidos de prueba.
+- Usuario reportó QA OK de E4: aplicación de overrides en emails WooCommerce.
 
 ## Pendiente
 
-- Ejecutar QA funcional con permiso explícito en entorno controlado.
+- Ejecutar QA funcional completo con permiso explícito en entorno controlado antes de release estable.
 - Confirmar build React contra `src/`.
 - Validar Mail Mint disponible/no disponible.
 - Validar WPML activo/inactivo y pedidos con/sin idioma.
@@ -29,7 +31,7 @@ Revisión QA realizada en modo completo y solo lectura. No se ejecutaron pruebas
 
 ## No volver a investigar
 
-- QA funcional no ha sido ejecutado todavía.
+- QA de bugfix HPOS y E4 fue reportado como OK por el usuario.
 - Action Scheduler, preview, envío instantáneo, envío programado, logs y borrado son el núcleo de QA.
 - Email catcher recomendado para pruebas de envío: MailHog, Mailpit o similar.
 

@@ -26,13 +26,13 @@ Este bloque agrupa los fixes detectados en auditoría. Cada código A debe mante
 | E3 | Guardado/borrado | Hecho | Alta | Guardar en `pbm_email_string_overrides`, leer compatibilidad `wc_custom_email_strings` y borrar personalizaciones. | `includes/email-string-editor/class-string-repository.php`, `class-admin-page.php` | `php -l`, QA admin pendiente |
 | E3.1 | Guardado multiidioma | Hecho | Alta | Procesar y guardar personalizaciones por idioma desde la misma pantalla del editor. | `includes/email-string-editor/class-admin-page.php`, `class-string-repository.php` | `php -l`, QA admin pendiente |
 | E3.2 | Edición desde cambios guardados | Hecho | Alta | Editar y guardar personalizaciones directamente desde la pestaña Cambios guardados. | `includes/email-string-editor/class-admin-page.php`, `class-email-string-editor.php` | `php -l`, QA admin pendiente |
-| E4 | Aplicación en emails | Pendiente | Alta | Aplicar overrides con `gettext` solo en emails WooCommerce y resolver idioma real. | `class-gettext-filter.php` futuro | Pendiente confirmar hook seguro |
-| E5 | QA Email String Editor | Pendiente | Alta | Probar pantalla, guardado, borrado, permisos, nonces y no regresión WooCommerce. | Admin WordPress | QA manual pendiente |
+| E4 | Aplicación en emails | Hecho | Alta | Aplicar overrides con `gettext` solo mientras WooCommerce renderiza emails y resolver idioma real. | `class-gettext-filter.php`, `class-email-string-editor.php`, `email-string-editor.php` | `php -l`, `git diff --check`; QA email real pendiente |
+| E5 | QA Email String Editor | Hecho | Alta | Probar pantalla, guardado, borrado, permisos, nonces, aplicación E4 y no regresión WooCommerce. | Admin WordPress / email WooCommerce | QA OK reportado por usuario |
 
 ## Urgente
 
 - QA funcional controlado del Plan A completo.
-- QA admin de Email String Editor E1-E3.1.
+- QA Email String Editor E1-E5 reportado como OK por el usuario.
 - Validar bugfix HPOS con producto `380` y pedidos `655`, `656`, `711`.
 - A7 requiere validación real de ZIP antes de cualquier release.
 
@@ -52,8 +52,7 @@ Este bloque agrupa los fixes detectados en auditoría. Cada código A debe mante
 
 ## Futuro
 
-- Email String Editor E4: aplicar overrides solo en emails WooCommerce con hook seguro.
-- Email String Editor E5: QA admin, seguridad y no regresión.
+- React para Editor de emails si se decide mejorar UX/galería visual.
 - Fase 2 Mail Mint: ampliar integración más allá de listas básicas si se requiere.
 - Mejora de logs: mostrar desglose de audiencia compuesta por fuente en historial.
 - Separar responsabilidades de archivos grandes si se aborda una mejora mediana o grande.
@@ -66,7 +65,7 @@ Este bloque agrupa los fixes detectados en auditoría. Cada código A debe mante
 - Limpieza de legacy bloqueada hasta confirmar si esas funciones siguen llamadas.
 - Eliminación de `_dev/_md/` bloqueada hasta decisión explícita del usuario.
 - Release, ZIP, tag, push o deploy bloqueados hasta permiso explícito y checklist release.
-- Aplicación real de overrides Email String Editor bloqueada hasta confirmar hook seguro de contexto email.
+- QA de aplicación real de overrides Email String Editor reportada como OK.
 
 ## Descartado
 
@@ -93,3 +92,5 @@ Este bloque agrupa los fixes detectados en auditoría. Cada código A debe mante
 - E3 aplicado: guardado/borrado en `pbm_email_string_overrides` con lectura compatible de `wc_custom_email_strings`.
 - E3.1 aplicado: guardado multiidioma desde una única pantalla.
 - E3.2 aplicado: edición directa desde Cambios guardados.
+- E4 aplicado: overrides reales limitados al contexto de emails WooCommerce.
+- E5 aplicado: QA Email String Editor OK reportado por usuario.
