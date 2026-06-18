@@ -48,8 +48,12 @@ function process_email_batch($batch, $subject, $message, $scheduled_id = 0)
  */
 function send_single_email($recipient, $subject, $message)
 {
-    $to      = $recipient['email'];
-    $name    = trim($recipient['name']);
+    $to = sanitize_email($recipient['email'] ?? '');
+    if (! is_email($to)) {
+        return false;
+    }
+
+    $name    = esc_html(trim((string) ($recipient['name'] ?? '')));
     $body    = str_replace('{customer_name}', $name, $message);
     $body    = nl2br($body);
     $headers = array('Content-Type: text/html; charset=UTF-8');
@@ -69,23 +73,25 @@ function send_single_email($recipient, $subject, $message)
  */
 function schedule_email_batches($recipients, $subject, $message, $batch_size, $emails_per_hour, $scheduled_id)
 {
+    if (! is_action_scheduler_available()) {
+        return 0;
+    }
+
     $batches = array_chunk($recipients, $batch_size);
     $scheduled_count = 0;
     $interval_seconds = ceil(($batch_size / $emails_per_hour) * 3600);
 
     foreach ($batches as $batch) {
-        if (function_exists('as_schedule_single_action')) {
-            $run_at = time() + ($scheduled_count * $interval_seconds);
+        $run_at = time() + ($scheduled_count * $interval_seconds);
 
-            // Reutilizar el hook existente pbm_process_email_batch
-            as_schedule_single_action(
-                $run_at,
-                'pbm_process_email_batch',
-                array($batch, $subject, $message, $scheduled_id),
-                'product-broadcast-mailer'
-            );
-            $scheduled_count++;
-        }
+        // Reutilizar el hook existente pbm_process_email_batch
+        as_schedule_single_action(
+            $run_at,
+            'pbm_process_email_batch',
+            array($batch, $subject, $message, $scheduled_id),
+            'product-broadcast-mailer'
+        );
+        $scheduled_count++;
     }
 
     return $scheduled_count;

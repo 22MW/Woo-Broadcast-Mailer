@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Woo Broadcast Mailer — Plan A</title>
+  <style>
+    :root { --bg:#0f1117; --card:#171b24; --card-soft:#1f2530; --text:#f4f6fb; --muted:#aab3c5; --green:#38d996; --yellow:#ffd166; --red:#ff6b6b; --blue:#7aa2ff; --border:rgba(255,255,255,.1); }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:radial-gradient(circle at top left,#20283a,var(--bg) 45%); color:var(--text); line-height:1.5; }
+    main { max-width:1240px; margin:0 auto; padding:32px 20px 48px; }
+    header { margin-bottom:24px; }
+    h1 { margin:0 0 8px; font-size:34px; letter-spacing:-.04em; }
+    h2 { margin:0 0 14px; font-size:20px; }
+    p { margin:0 0 10px; }
+    ul { margin:0; padding-left:20px; }
+    li { margin:5px 0; }
+    code { color:#dbe6ff; }
+    .muted { color:var(--muted); }
+    .grid { display:grid; gap:16px; margin-top:16px; }
+    .cols-2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .card { background:linear-gradient(180deg,var(--card),var(--card-soft)); border:1px solid var(--border); border-radius:20px; padding:18px; box-shadow:0 18px 60px rgba(0,0,0,.25); }
+    .hero { display:grid; grid-template-columns:1.2fr .8fr; gap:16px; }
+    .badge { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,.08); color:var(--text); font-size:13px; margin:4px 6px 4px 0; }
+    .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+    .green { background:var(--green); } .yellow { background:var(--yellow); } .red { background:var(--red); } .blue { background:var(--blue); }
+    .ok { border-left:4px solid var(--green); } .risk { border-left:4px solid var(--yellow); } .warn { border-left:4px solid var(--red); }
+    .plan { display:grid; gap:12px; }
+    .plan-item { border:1px solid var(--border); background:rgba(255,255,255,.055); border-radius:16px; padding:14px; }
+    .plan-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; margin-bottom:8px; }
+    .code { font-weight:800; font-size:18px; color:#fff; }
+    .state { padding:4px 8px; border-radius:999px; font-size:12px; background:rgba(255,255,255,.09); white-space:nowrap; }
+    .state.done { color:var(--green); }
+    .state.pending { color:var(--yellow); }
+    .state.blocked { color:var(--red); }
+    .small { font-size:13px; color:var(--muted); }
+    .checklist { list-style:none; padding:0; }
+    .checklist li { display:flex; gap:10px; align-items:flex-start; padding:9px 0; border-bottom:1px solid var(--border); }
+    .checklist li:last-child { border-bottom:0; }
+    .box { width:18px; height:18px; border-radius:5px; border:1px solid var(--muted); flex:0 0 18px; margin-top:2px; }
+    .box.pending { background:transparent; }
+    .box.done { background:var(--green); border-color:var(--green); }
+    footer { margin-top:24px; color:var(--muted); font-size:13px; }
+    @media (max-width:900px) { .hero,.cols-2 { grid-template-columns:1fr; } h1 { font-size:28px; } .plan-head { flex-direction:column; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Woo Broadcast Mailer — Plan A</h1>
+      <p class="muted">Vista interna — bloque técnico mínimo antes de QA/release — 2026-06-18</p>
+      <span class="badge"><span class="dot green"></span> A1 hecho</span>
+      <span class="badge"><span class="dot green"></span> A5 hecho</span>
+      <span class="badge"><span class="dot green"></span> A6 hecho</span>
+      <span class="badge"><span class="dot yellow"></span> A2-A4 pendientes</span>
+      <span class="badge"><span class="dot red"></span> A7 pendiente antes de release</span>
+    </header>
+
+    <section class="hero">
+      <div class="card risk">
+        <h2>Resumen humano</h2>
+        <p>El Plan A agrupa los fixes mínimos detectados por la auditoría para poder hacer QA y preparar release con menos riesgo.</p>
+        <p>A1, A5 y A6 ya están aplicados. Quedan pendientes estados/logs, snapshot, preview y exclusión de <code>_dev/</code> en release.</p>
+      </div>
+      <div class="card ok">
+        <h2>Estado actual</h2>
+        <p>A6 aplicado: el borrado individual y por IDs queda limitado a envíos <code>completed</code> o <code>cancelled</code>.</p>
+        <p>Siguiente recomendado por riesgo: A2 o A3.</p>
+      </div>
+    </section>
+
+    <section class="grid cols-2">
+      <div class="card">
+        <h2>Plan A detallado</h2>
+        <div class="plan">
+          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A1</span> — Action Scheduler obligatorio + aviso admin</div><span class="state done">Hecho</span></div><p>Comprueba disponibilidad de Action Scheduler, muestra estado en admin y bloquea envío/programación si falta.</p><p class="small">Validado: <code>php -l</code>, <code>git diff --check</code>, aviso visual.</p></div>
+          <div class="plan-item risk"><div class="plan-head"><div><span class="code">A2</span> — Estados/logs reales</div><span class="state pending">Pendiente</span></div><p>Evitar que <code>completed</code> signifique solo lotes programados. Separar cola, ejecución y finalización real.</p><p class="small">Archivos probables: <code>includes/ajax-handlers.php</code>, <code>includes/functions-scheduled.php</code>, posible React logs.</p></div>
+          <div class="plan-item risk"><div class="plan-head"><div><span class="code">A3</span> — Snapshot seguro de destinatarios</div><span class="state pending">Pendiente</span></div><p>No borrar <code>pbm_scheduled_recipients_{id}</code> hasta confirmar programación correcta de lotes.</p><p class="small">Archivos probables: <code>includes/functions-scheduled.php</code>, <code>includes/functions-email.php</code>.</p></div>
+          <div class="plan-item risk"><div class="plan-head"><div><span class="code">A4</span> — Preview no obsoleto</div><span class="state pending">Pendiente</span></div><p>Invalidar preview cuando cambia audiencia, manuales, fuente, selector, lote o fecha antes de enviar.</p><p class="small">Archivos probables: <code>src/admin/App.js</code> y build posterior.</p></div>
+          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A5</span> — Escape de <code>{customer_name}</code></div><span class="state done">Hecho</span></div><p>Escapa el nombre del destinatario antes de insertarlo en email HTML y valida email destino.</p><p class="small">Archivo: <code>includes/functions-email.php</code>. Validación técnica: <code>php -l</code> y <code>git diff --check</code>.</p></div>
+          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A6</span> — Borrado por IDs seguro</div><span class="state done">Hecho</span></div><p>Impide que el borrado individual y por IDs elimine envíos <code>pending</code>, <code>running</code> o inexistentes.</p><p class="small">Archivos: <code>includes/ajax-handlers.php</code>, <code>includes/functions-scheduled.php</code>. Validación técnica: <code>php -l</code> y <code>git diff --check</code>.</p></div>
+          <div class="plan-item warn"><div class="plan-head"><div><span class="code">A7</span> — ZIP/release sin <code>_dev/</code></div><span class="state blocked">Pendiente release</span></div><p>Ajustar workflow/exclusiones para que <code>_dev/</code> no entre en ZIP/release.</p><p class="small">Archivo probable: <code>.github/workflows/release.yml</code>. Validación: revisar ZIP generado.</p></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Planes separados</h2>
+        <ul>
+          <li><strong>Plan A:</strong> fixes mínimos del plugin principal antes de QA/release.</li>
+          <li><strong>QA:</strong> pruebas funcionales con posibles envíos/logs/acciones; requiere permiso aparte.</li>
+          <li><strong>Email String Editor:</strong> funcionalidad futura documentada en <code>incorporacion-email-string-editor.md</code> y <code>arquitectura-email-string-editor.md</code>.</li>
+          <li><strong>Release:</strong> no preparar ZIP/tag/push hasta cerrar A7 y checklist release.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="grid cols-2">
+      <div class="card">
+        <h2>Checklist QA pendiente</h2>
+        <ul class="checklist">
+          <li><span class="box done"></span><span>Confirmar Action Scheduler presente por MCP WooCommerce.</span></li>
+          <li><span class="box done"></span><span>Confirmar aviso Action Scheduler en admin.</span></li>
+          <li><span class="box pending"></span><span>Probar A5 con nombre que contenga caracteres HTML.</span></li>
+          <li><span class="box pending"></span><span>Probar A6 con registros completados, cancelados, pendientes y en ejecución.</span></li>
+          <li><span class="box pending"></span><span>Previsualizar audiencia global con deduplicación.</span></li>
+          <li><span class="box pending"></span><span>Enviar campaña instantánea con email catcher.</span></li>
+          <li><span class="box pending"></span><span>Programar campaña futura.</span></li>
+          <li><span class="box pending"></span><span>Comprobar logs reales tras ejecución de lotes.</span></li>
+        </ul>
+      </div>
+      <div class="card warn"><h2>Bloqueos</h2><ul><li>QA funcional requiere permiso porque crea envíos/logs/acciones.</li><li>Release, ZIP, tag, push y deploy requieren permiso explícito.</li><li>No usar workflow actual para release sin excluir <code>_dev/</code>.</li></ul></div>
+    </section>
+
+    <footer>Vista local estática. No incluir en ZIP, release ni deploy público.</footer>
+  </main>
+</body>
+</html>

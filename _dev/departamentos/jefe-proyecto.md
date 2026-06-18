@@ -2,38 +2,49 @@
 
 ## Última actualización
 
-2026-06-11
+2026-06-18
 
 ## Resumen humano
 
-Primera sesión de trabajo. Plugin clonado desde GitHub, rama devWooBM creada, análisis inicial completado, `_dev/` inicializada desde `_md/`.
+Plan A ordenado y consolidado. Los códigos A1-A7 quedan documentados en `roadmap.md` y `visual.html` para consulta y ejecución por partes. A1 está hecho; A2-A7 siguen pendientes según prioridad.
 
 ## Descubierto
 
-- Plugin en v2.0.1, estable, con React migrado y flujo multi-fuente implementado.
-- `_md/` contenía 3 archivos: dos planes ya implementados en v2.0.0 y reglas de desarrollo previas al sistema `.kilo/`.
-- Text domain incorrecto en `_md/REGLAS_DESARROLLO.md` (`vfwoo` en lugar de `wc-pbm`). Registrado en `decisiones.md`.
+- El usuario necesitaba que los códigos A1-A7 fueran consultables y no solo menciones sueltas.
+- `roadmap.md` y `visual.html` no estaban suficientemente claros para consultar qué contenía A5/A6.
 
 ## Hecho
 
-- Clon en `/app/public/wp-content/plugins/Woo-Broadcast-Mailer/`
-- Rama `devWooBM` creada desde `main`
-- `_dev/` creada con: `estado.md`, `roadmap.md`, `decisiones.md`, `departamentos/jefe-proyecto.md`
-- Contenido de `_md/` migrado y consolidado en `_dev/`
+- `roadmap.md` reorganizado con tabla Plan A: código, nombre, estado, prioridad, contenido, archivos probables y validación.
+- `visual.html` reorganizado con tarjetas A1-A7.
+- `estado.md` actualizado con resumen Plan A.
+- A1 queda marcado como hecho.
+- A2-A7 quedan marcados como pendientes.
 
 ## Pendiente
 
-- Decisión sobre borrar `_md/` (pendiente confirmación del usuario)
-- Definir qué trabajo se quiere hacer sobre el plugin
+- Elegir siguiente punto del Plan A.
+- Recomendado por bajo riesgo: A5 o A6.
+- QA funcional sigue pendiente y bloqueado hasta permiso.
+- Release sigue bloqueada hasta A7 y checklist release.
 
 ## No volver a investigar
 
-- Los planes de `_md/` están implementados. No tratar como trabajo pendiente.
+- Plan A significa bloque técnico mínimo antes de QA/release.
+- A1: Action Scheduler obligatorio + aviso admin.
+- A2: Estados/logs reales.
+- A3: Snapshot seguro de destinatarios.
+- A4: Preview no obsoleto.
+- A5: Escape de `{customer_name}`.
+- A6: Borrado por IDs seguro.
+- A7: ZIP/release sin `_dev/`.
 
 ## Riesgos o bloqueos
 
-- Ningún riesgo confirmado.
+- No ejecutar QA funcional sin permiso porque puede crear envíos, logs o acciones programadas.
+- No preparar release sin A7.
+- No mezclar Plan A con Email String Editor.
 
 ## Próximo paso recomendado
 
-- El usuario decide qué rol activar y qué tarea iniciar.
+- Ejecutar A5 o A6 como fix pequeño y validable.

@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Woo Broadcast Mailer
  * Description: Sistema de envío masivo de emails: envía a compradores de productos específicos o programa envíos por rol de usuario. Compatible con HPOS y Action Scheduler.
- * Version: 2.0.1
+ * Version: 2.0.1.1
  * Author: 22MW · The Capricho Studio
  * Author URI: https://22mw.online
  * License: GPLv2 or later
@@ -112,6 +112,40 @@ function check_plugin_dependencies()
     }
 
     return true;
+}
+
+/**
+ * Comprueba si Action Scheduler está disponible.
+ *
+ * @return bool
+ */
+function is_action_scheduler_available()
+{
+    return function_exists('as_schedule_single_action') && function_exists('as_unschedule_action');
+}
+
+/**
+ * Devuelve el mensaje de estado de Action Scheduler.
+ *
+ * @return string
+ */
+function get_action_scheduler_status_message()
+{
+    if (is_action_scheduler_available()) {
+        return __('Action Scheduler está disponible. Los envíos en segundo plano pueden programarse.', 'wc-pbm');
+    }
+
+    return __('Action Scheduler no está disponible. No se pueden programar envíos hasta revisar WooCommerce.', 'wc-pbm');
+}
+
+/**
+ * Devuelve el mensaje de error para bloqueos por Action Scheduler.
+ *
+ * @return string
+ */
+function get_action_scheduler_unavailable_message()
+{
+    return __('Action Scheduler no está disponible. No se pudo programar el envío.', 'wc-pbm');
 }
 
 /**
@@ -334,6 +368,10 @@ function render_admin_page()
                 <a target="_blank" href="<?php echo esc_url($scheduled_actions_url); ?>">
                     <?php esc_html_e('Monitoriza el progreso aquí', 'wc-pbm'); ?>
                 </a>.
+            </p>
+            <p>
+                <strong><?php esc_html_e('Estado Action Scheduler:', 'wc-pbm'); ?></strong>
+                <?php echo esc_html(get_action_scheduler_status_message()); ?>
             </p>
         </div>
 

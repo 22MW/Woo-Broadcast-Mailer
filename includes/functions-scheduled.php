@@ -527,6 +527,25 @@ function get_scheduled_logs($scheduled_id)
 }
 
 /**
+ * Comprueba si un envío puede borrarse sin afectar colas activas.
+ *
+ * @param int $scheduled_id ID del envío.
+ * @return bool True si el envío existe y está en estado borrable.
+ */
+function can_delete_scheduled_email($scheduled_id)
+{
+    global $wpdb;
+
+    $table_emails = $wpdb->prefix . 'pbm_scheduled_emails';
+    $status = $wpdb->get_var($wpdb->prepare(
+        "SELECT status FROM {$table_emails} WHERE id = %d",
+        absint($scheduled_id)
+    ));
+
+    return in_array($status, array('completed', 'cancelled'), true);
+}
+
+/**
  * Elimina un envío programado y todos sus logs
  *
  * @param int $scheduled_id ID del envío.
@@ -535,6 +554,11 @@ function get_scheduled_logs($scheduled_id)
 function delete_scheduled_email_with_logs($scheduled_id)
 {
     global $wpdb;
+
+    $scheduled_id = absint($scheduled_id);
+    if (! can_delete_scheduled_email($scheduled_id)) {
+        return false;
+    }
 
     $table_logs = $wpdb->prefix . 'pbm_scheduled_logs';
     $table_emails = $wpdb->prefix . 'pbm_scheduled_emails';
@@ -546,8 +570,8 @@ function delete_scheduled_email_with_logs($scheduled_id)
     $deleted = (bool) $wpdb->delete($table_emails, array('id' => $scheduled_id), array('%d'));
 
     if ($deleted) {
-        delete_option('pbm_delivery_meta_' . absint($scheduled_id));
-        delete_option('pbm_scheduled_recipients_' . absint($scheduled_id));
+        delete_option('pbm_delivery_meta_' . $scheduled_id);
+        delete_option('pbm_scheduled_recipients_' . $scheduled_id);
     }
 
     return $deleted;

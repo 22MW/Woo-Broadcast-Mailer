@@ -498,6 +498,10 @@ function ajax_send_broadcast()
         wp_send_json_error(array('message' => __('Parámetros de envío inválidos', 'wc-pbm')));
     }
 
+    if (! is_action_scheduler_available()) {
+        wp_send_json_error(array('message' => get_action_scheduler_unavailable_message()));
+    }
+
     $audience_items = get_json_array_from_post('audience_items');
     $manual_emails = get_json_array_from_post('manual_emails');
     $is_global_audience = ! empty($audience_items) || ! empty($manual_emails);
@@ -578,14 +582,12 @@ function ajax_send_broadcast()
             'global'   => $global_meta,
         ), '', false);
 
-        if (function_exists('as_schedule_single_action')) {
-            as_schedule_single_action(
-                $scheduled_timestamp,
-                'pbm_execute_scheduled_email',
-                array($scheduled_id),
-                'product-broadcast-mailer'
-            );
-        }
+        as_schedule_single_action(
+            $scheduled_timestamp,
+            'pbm_execute_scheduled_email',
+            array($scheduled_id),
+            'product-broadcast-mailer'
+        );
 
         wp_send_json_success(array(
             'message' => __('Envío programado correctamente', 'wc-pbm'),
@@ -622,6 +624,11 @@ function ajax_send_broadcast()
     ), '', false);
 
     $scheduled_count = schedule_email_batches($recipients, $subject, $message, $batch_size, $emails_per_hour, $delivery_id);
+    if ($scheduled_count < 1) {
+        update_scheduled_email_status($delivery_id, 'cancelled');
+        wp_send_json_error(array('message' => get_action_scheduler_unavailable_message()));
+    }
+
     update_scheduled_email_status($delivery_id, 'completed');
 
     wp_send_json_success(array(
@@ -716,6 +723,10 @@ function ajax_create_scheduled_email()
         wp_send_json_error(array('message' => __('Faltan datos requeridos', 'wc-pbm')));
     }
 
+    if (! is_action_scheduler_available()) {
+        wp_send_json_error(array('message' => get_action_scheduler_unavailable_message()));
+    }
+
     // Convertir datetime-local a timestamp considerando zona horaria de WordPress
     $local_datetime = str_replace('T', ' ', $scheduled_datetime) . ':00';
     $gmt_datetime = get_gmt_from_date($local_datetime);
@@ -750,14 +761,12 @@ function ajax_create_scheduled_email()
     $scheduled_id = $wpdb->insert_id;
 
     // Programar acción en Action Scheduler
-    if (function_exists('as_schedule_single_action')) {
-        as_schedule_single_action(
-            $scheduled_timestamp,
-            'pbm_execute_scheduled_email',
-            array($scheduled_id),
-            'product-broadcast-mailer'
-        );
-    }
+    as_schedule_single_action(
+        $scheduled_timestamp,
+        'pbm_execute_scheduled_email',
+        array($scheduled_id),
+        'product-broadcast-mailer'
+    );
 
     wp_send_json_success(array(
         'message' => __('Envío programado correctamente', 'wc-pbm'),
@@ -783,12 +792,14 @@ function ajax_cancel_scheduled_email()
         wp_send_json_error(array('message' => __('ID inválido', 'wc-pbm')));
     }
 
+    if (! is_action_scheduler_available()) {
+        wp_send_json_error(array('message' => get_action_scheduler_unavailable_message()));
+    }
+
     update_scheduled_email_status($scheduled_id, 'cancelled');
 
     // Cancelar acción en Action Scheduler
-    if (function_exists('as_unschedule_action')) {
-        as_unschedule_action('pbm_execute_scheduled_email', array($scheduled_id), 'product-broadcast-mailer');
-    }
+    as_unschedule_action('pbm_execute_scheduled_email', array($scheduled_id), 'product-broadcast-mailer');
 
     wp_send_json_success(array(
         'message' => __('Envío cancelado', 'wc-pbm'),
@@ -814,20 +825,20 @@ function ajax_run_scheduled_now()
         wp_send_json_error(array('message' => __('ID inválido', 'wc-pbm')));
     }
 
-    // Cancelar la acción programada original
-    if (function_exists('as_unschedule_action')) {
-        as_unschedule_action('pbm_execute_scheduled_email', array($scheduled_id), 'product-broadcast-mailer');
+    if (! is_action_scheduler_available()) {
+        wp_send_json_error(array('message' => get_action_scheduler_unavailable_message()));
     }
 
+    // Cancelar la acción programada original
+    as_unschedule_action('pbm_execute_scheduled_email', array($scheduled_id), 'product-broadcast-mailer');
+
     // Programar para ejecución inmediata
-    if (function_exists('as_schedule_single_action')) {
-        as_schedule_single_action(
-            time(),
-            'pbm_execute_scheduled_email',
-            array($scheduled_id),
-            'product-broadcast-mailer'
-        );
-    }
+    as_schedule_single_action(
+        time(),
+        'pbm_execute_scheduled_email',
+        array($scheduled_id),
+        'product-broadcast-mailer'
+    );
 
     wp_send_json_success(array(
         'message' => __('Envío programado para ejecución inmediata', 'wc-pbm'),
@@ -914,6 +925,10 @@ function ajax_delete_scheduled_email()
 
     if (!$scheduled_id) {
         wp_send_json_error(array('message' => __('ID inválido', 'wc-pbm')));
+    }
+
+    if (! can_delete_scheduled_email($scheduled_id)) {
+        wp_send_json_error(array('message' => __('Solo se pueden eliminar envíos completados o cancelados', 'wc-pbm')));
     }
 
     if (delete_scheduled_email_with_logs($scheduled_id)) {
@@ -1066,8 +1081,19 @@ function ajax_bulk_delete_scheduled_ids()
         wp_send_json_error(array('message' => __('No hay elementos seleccionados', 'wc-pbm')));
     }
 
-    $deleted = 0;
+    $deletable_ids = array();
     foreach ($ids as $id) {
+        if (can_delete_scheduled_email($id)) {
+            $deletable_ids[] = $id;
+        }
+    }
+
+    if (count($deletable_ids) !== count($ids)) {
+        wp_send_json_error(array('message' => __('Solo se pueden eliminar envíos completados o cancelados', 'wc-pbm')));
+    }
+
+    $deleted = 0;
+    foreach ($deletable_ids as $id) {
         if (delete_scheduled_email_with_logs($id)) {
             $deleted++;
         }
