@@ -29,10 +29,17 @@ Este bloque agrupa los fixes detectados en auditoría. Cada código A debe mante
 | E4 | Aplicación en emails | Hecho | Alta | Aplicar overrides con `gettext` solo mientras WooCommerce renderiza emails y resolver idioma real. | `class-gettext-filter.php`, `class-email-string-editor.php`, `email-string-editor.php` | `php -l`, `git diff --check`; QA email real pendiente |
 | E5 | QA Email String Editor | Hecho | Alta | Probar pantalla, guardado, borrado, permisos, nonces, aplicación E4 y no regresión WooCommerce. | Admin WordPress / email WooCommerce | QA OK reportado por usuario |
 
+## Plan R — React Editor de emails
+
+| Código | Nombre | Estado | Prioridad | Qué contiene | Archivos probables | Validación |
+|---|---|---|---|---|---|---|
+| R1 | React Editor de emails | Hecho | Alta | Migrar la pantalla del Editor de emails a React, con AJAX seguro para búsqueda, guardado, edición, borrado y cambios guardados. | `includes/email-string-editor/*`, `src/admin/email-editor/*`, `src/admin/index.js`, `build/index.js` | `php -l`, `npm run build`, `git diff --check`; QA funcional reportado por usuario |
+
 ## Urgente
 
 - QA funcional controlado del Plan A completo.
 - QA Email String Editor E1-E5 reportado como OK por el usuario.
+- Revisar A4: la programación de envío no debe invalidar preview si no cambia audiencia/configuración real.
 - Validar bugfix HPOS con producto `380` y pedidos `655`, `656`, `711`.
 - A7 requiere validación real de ZIP antes de cualquier release.
 
@@ -52,7 +59,6 @@ Este bloque agrupa los fixes detectados en auditoría. Cada código A debe mante
 
 ## Futuro
 
-- React para Editor de emails si se decide mejorar UX/galería visual.
 - Fase 2 Mail Mint: ampliar integración más allá de listas básicas si se requiere.
 - Mejora de logs: mostrar desglose de audiencia compuesta por fuente en historial.
 - Separar responsabilidades de archivos grandes si se aborda una mejora mediana o grande.
@@ -64,7 +70,7 @@ Este bloque agrupa los fixes detectados en auditoría. Cada código A debe mante
 - QA funcional bloqueado hasta permiso explícito para pruebas que puedan crear envíos, logs o acciones programadas.
 - Limpieza de legacy bloqueada hasta confirmar si esas funciones siguen llamadas.
 - Eliminación de `_dev/_md/` bloqueada hasta decisión explícita del usuario.
-- Release, ZIP, tag, push o deploy bloqueados hasta permiso explícito y checklist release.
+- Release, ZIP, tag y deploy bloqueados hasta permiso explícito y checklist release.
 - QA de aplicación real de overrides Email String Editor reportada como OK.
 
 ## Descartado
@@ -94,3 +100,4 @@ Este bloque agrupa los fixes detectados en auditoría. Cada código A debe mante
 - E3.2 aplicado: edición directa desde Cambios guardados.
 - E4 aplicado: overrides reales limitados al contexto de emails WooCommerce.
 - E5 aplicado: QA Email String Editor OK reportado por usuario.
+- R1 aplicado: Editor de emails migrado a React con AJAX seguro.

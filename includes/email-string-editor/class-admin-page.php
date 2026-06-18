@@ -67,33 +67,55 @@ class Admin_Page
             wp_die(esc_html__('Permisos insuficientes.', 'wc-pbm'));
         }
 
-        $tab = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'editor';
-        $template_id = isset($_GET['template']) ? sanitize_text_field(wp_unslash($_GET['template'])) : '';
-        $search = isset($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : '';
-        $templates = $this->scanner->get_templates();
-        $languages = $this->language_resolver->get_available_languages();
-        $results = $this->get_editor_results($template_id, $search, $templates);
+        $this->enqueue_assets();
         ?>
         <div class="wrap pbm-email-string-editor">
             <h1><?php esc_html_e('Editor de emails WooCommerce', 'wc-pbm'); ?></h1>
-            <p><?php esc_html_e('Busca strings en todas las plantillas y ajusta todos los idiomas desde una misma pantalla.', 'wc-pbm'); ?></p>
-            <?php $this->render_notices(); ?>
-            <?php if ($this->repository->has_legacy_data()) : ?>
-                <div class="notice notice-info"><p><?php esc_html_e('Se han detectado datos antiguos en wc_custom_email_strings. Se muestran como compatibilidad, sin migración automática.', 'wc-pbm'); ?></p></div>
-            <?php endif; ?>
-            <h2 class="nav-tab-wrapper">
-                <a class="nav-tab <?php echo 'editor' === $tab ? 'nav-tab-active' : ''; ?>" href="<?php echo esc_url($this->get_page_url(array('tab' => 'editor'))); ?>"><?php esc_html_e('Editor', 'wc-pbm'); ?></a>
-                <a class="nav-tab <?php echo 'changes' === $tab ? 'nav-tab-active' : ''; ?>" href="<?php echo esc_url($this->get_page_url(array('tab' => 'changes'))); ?>"><?php esc_html_e('Cambios guardados', 'wc-pbm'); ?></a>
-            </h2>
-
-            <?php if ('changes' === $tab) : ?>
-                <?php $this->render_changes($languages); ?>
-            <?php else : ?>
-                <?php $this->render_editor_filters($templates, $template_id, $search); ?>
-                <?php $this->render_editor($results, $languages, $search); ?>
-            <?php endif; ?>
+            <p><?php esc_html_e('Busca strings en plantillas de emails WooCommerce y ajusta sus textos por idioma.', 'wc-pbm'); ?></p>
+            <div id="pbm-email-string-editor-app"></div>
         </div>
         <?php
+    }
+
+    /**
+     * Enqueue React assets for the Email String Editor page.
+     *
+     * @return void
+     */
+    private function enqueue_assets()
+    {
+        $plugin_file = dirname(__DIR__, 2) . '/woo-broadcast-mailer.php';
+        $asset_file = dirname(__DIR__, 2) . '/build/index.asset.php';
+        $asset_data = file_exists($asset_file) ? require $asset_file : array();
+        $dependencies = $asset_data['dependencies'] ?? array('wp-element', 'wp-components', 'wp-i18n');
+        $version = $asset_data['version'] ?? '2.0.1.6';
+
+        wp_enqueue_script(
+            'pbm-admin-react',
+            plugin_dir_url($plugin_file) . 'build/index.js',
+            $dependencies,
+            $version,
+            true
+        );
+
+        wp_localize_script(
+            'pbm-admin-react',
+            'pbmEmailEditor',
+            array(
+                'ajaxUrl' => admin_url('admin-ajax.php'),
+                'nonce'   => wp_create_nonce('pbm_email_editor_action'),
+            )
+        );
+
+        $style_file = dirname(__DIR__, 2) . '/build/index.css';
+        if (file_exists($style_file)) {
+            wp_enqueue_style(
+                'pbm-admin-react',
+                plugin_dir_url($plugin_file) . 'build/index.css',
+                array(),
+                $version
+            );
+        }
     }
 
     /**

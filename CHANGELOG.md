@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.1.6
+- Migrated Email String Editor admin UI to React.
+- Added AJAX controller for templates, search, save, update, delete, and saved changes.
+- Kept existing storage and E4 email override behavior unchanged.
+- Updated admin build assets.
+
 ## 2.0.1.5
 - Added safe Email String Editor override application for WooCommerce emails.
 - Limited gettext overrides to WooCommerce email rendering context and `woocommerce` text domain.

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Woo Broadcast Mailer — Plan A + Email String Editor</title>
+  <title>Woo Broadcast Mailer — Plan A + Email String Editor + R1</title>
   <style>
     :root { --bg:#0f1117; --card:#171b24; --card-soft:#1f2530; --text:#f4f6fb; --muted:#aab3c5; --green:#38d996; --yellow:#ffd166; --red:#ff6b6b; --blue:#7aa2ff; --border:rgba(255,255,255,.1); }
     * { box-sizing:border-box; }
@@ -47,7 +47,7 @@
 <body>
   <main>
     <header>
-      <h1>Woo Broadcast Mailer — Plan A + Email String Editor</h1>
+      <h1>Woo Broadcast Mailer — Plan A + Email String Editor + R1</h1>
       <p class="muted">Vista interna — bloque técnico mínimo antes de QA/release — 2026-06-18</p>
       <span class="badge"><span class="dot green"></span> A1-A7 hechos</span>
       <span class="badge"><span class="dot green"></span> E1-E5 QA OK</span>
@@ -59,7 +59,7 @@
       <div class="card risk">
         <h2>Resumen humano</h2>
         <p>El Plan A completo está aplicado: Action Scheduler, estados/logs, snapshot, preview obsoleta, escape de nombre, borrado seguro y exclusión de <code>_dev/</code> en release.</p>
-        <p>Email String Editor E1-E4 está aplicado: admin seguro, búsqueda global multiidioma, edición multiidioma y overrides reales limitados a emails WooCommerce.</p>
+        <p>Email String Editor E1-E4 está aplicado: admin seguro, búsqueda global multiidioma, edición multiidioma, overrides reales limitados a emails WooCommerce y R1 React implementado.</p>
         <p>Ahora toca QA funcional/admin controlado y, si pasa, checklist de ZIP/release.</p>
       </div>
       <div class="card ok">
@@ -114,7 +114,7 @@
         </ul>
       </div>
       <div class="card warn"><h2>Bloqueos</h2><ul><li>QA funcional general requiere permiso porque crea envíos/logs/acciones.</li><li>Release, ZIP, tag, push y deploy requieren permiso explícito.</li><li>No publicar sin ZIP de prueba y checklist release.</li></ul></div>
-      <div class="card"><h2>Próximo paso recomendado</h2><p>Preparar checkpoint dev 2.0.1.5 con E4/E5 y, después, checklist release si se aprueba.</p></div>
+      <div class="card"><h2>Próximo paso recomendado</h2><p>Checkpoint dev 2.0.1.6 con R1. Después, revisar A4: programar envío no debe invalidar preview si no cambia audiencia/configuración real.</p></div>
     </section>
 
     <footer>Vista local estática. No incluir en ZIP, release ni deploy público.</footer>

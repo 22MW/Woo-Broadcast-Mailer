@@ -2,11 +2,11 @@
 
 ## Última actualización
 
-2026-06-18
+2026-06-19
 
 ## Resumen humano
 
-Plan A completo aplicado: A1-A7. Email String Editor E1-E3 implementado como MVP admin seguro. A4 fue compilado con Node local y `build/` quedó sincronizado con `src/admin/App.js`.
+Plan A completo aplicado: A1-A7. Email String Editor E1-E4 implementado y R1 aplicado: la interfaz admin del editor de emails migró a React, manteniendo E4, el submenú WooCommerce, la capability `manage_woocommerce`, la opción `pbm_email_string_overrides` y compatibilidad legacy de lectura.
 
 ## Descubierto
 
@@ -100,6 +100,15 @@ Plan A completo aplicado: A1-A7. Email String Editor E1-E3 implementado como MVP
 - Si HPOS está activo pero `get_recipients_from_order_lookup()` no devuelve destinatarios, ahora se escanean pedidos por `line_items`.
 - Mantiene la deduplicación por email y el filtro de idioma existente.
 
+### R1 React Email String Editor
+
+- Creado controlador AJAX `Ajax_Controller` para bootstrap, búsqueda, guardado por lote, listado, edición y borrado de overrides.
+- `Email_String_Editor` registra los nuevos hooks `wp_ajax_pbm_email_editor_*`.
+- `Admin_Page` renderiza el contenedor React `#pbm-email-string-editor-app` y localiza `pbmEmailEditor` con nonce `pbm_email_editor_action`.
+- `src/admin/index.js` monta tanto el admin principal como el editor React si existe su contenedor.
+- Añadida UI React mínima con tabs Editor / Cambios guardados, filtros, tabla editable por idioma, guardado por lote, edición inline y borrado.
+- Build React actualizado en `build/` con Node local.
+
 ## Pendiente
 
 - QA funcional real del aviso admin y rutas AJAX.
@@ -108,7 +117,7 @@ Plan A completo aplicado: A1-A7. Email String Editor E1-E3 implementado como MVP
 - Prueba específica con caracteres HTML en nombre de destinatario.
 - QA de borrado con registros `completed`, `cancelled`, `pending` y `running`.
 - Validar ZIP/release real antes de publicar.
-- QA admin de Email String Editor E1-E3.1.
+- QA admin de Email String Editor React R1: bootstrap, búsqueda, guardado por lote, edición inline y borrado.
 - Validar QA funcional del bugfix HPOS con producto `380` y pedidos `655`, `656`, `711`.
 - QA de E4 en email WooCommerce controlado: confirmar que aplica override y no afecta admin/frontend.
 
@@ -122,6 +131,7 @@ Plan A completo aplicado: A1-A7. Email String Editor E1-E3 implementado como MVP
 - A6 implementado: borrado por ID limitado a `completed` y `cancelled`.
 - A7 implementado: workflow release excluye `_dev/`.
 - Email String Editor E1-E4 implementado; `gettext` queda limitado por contexto de email WooCommerce.
+- R1 implementado sin tocar funcionalmente E4 ni cambiar el modelo de datos.
 - No se ejecutaron envíos ni acciones programadas durante estas implementaciones.
 - Node local disponible en `/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin`.
 - `node_modules/` se copió desde el plugin anterior.

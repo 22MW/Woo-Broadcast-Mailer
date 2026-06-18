@@ -1,5 +1,12 @@
 # Release notes internas
 
+## 2.0.1.6 — Dev checkpoint — 2026-06-19
+
+- R1 aplicado: Editor de emails migrado a React.
+- Añadido controlador AJAX para bootstrap, búsqueda, guardado, edición, borrado y cambios guardados.
+- Build React actualizado.
+- E4 se mantiene sin cambios funcionales.
+
 ## 2.0.1.5 — Dev checkpoint — 2026-06-18
 
 - E4 aplicado: overrides reales del Email String Editor limitados a emails WooCommerce.
