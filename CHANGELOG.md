@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.1.3
+- Added Email String Editor admin module under WooCommerce.
+- Added global template string search across allowed WooCommerce email templates.
+- Added multi-language editing from the same screen.
+- Added multi-language search across original strings, WooCommerce translations, and saved customizations.
+- Added direct editing from the saved changes screen.
+- Stored overrides in `pbm_email_string_overrides` with read compatibility for `wc_custom_email_strings`.
+- Kept real email override application disabled pending safe WooCommerce email context hook.
+
 ## 2.0.1.2
 - Completed Plan A hardening before QA/release.
 - Kept scheduled deliveries in `running` until batch logs cover expected recipients.

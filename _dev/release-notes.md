@@ -1,5 +1,13 @@
 # Release notes internas
 
+## 2.0.1.3 — Dev checkpoint — 2026-06-18
+
+- Email String Editor E1-E3.2 + E2.3 añadido como módulo admin bajo WooCommerce.
+- Búsqueda global en plantillas permitidas y búsqueda multiidioma por original, traducciones y personalizaciones.
+- Edición multiidioma desde una misma pantalla y edición directa desde Cambios guardados.
+- Guardado en `pbm_email_string_overrides` con lectura compatible de `wc_custom_email_strings`.
+- E4 sigue pendiente: no se aplican overrides reales en emails hasta confirmar hook seguro.
+
 ## 2.0.1.2 — Dev checkpoint — 2026-06-18
 
 - A2: estados/logs reales. `completed` queda ligado a logs acumulados y no solo a lotes programados.

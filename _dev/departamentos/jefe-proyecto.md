@@ -6,7 +6,7 @@
 
 ## Resumen humano
 
-Plan A completo aplicado y consolidado. A1-A7 están cerrados a nivel de código/workflow/build. Queda QA funcional y validación real de ZIP/release antes de publicar.
+Plan A completo aplicado y consolidado. Email String Editor E1-E3 implementado como MVP admin seguro. Queda QA funcional/admin, E4 pendiente y validación real de ZIP/release antes de publicar.
 
 ## Descubierto
 
@@ -16,6 +16,7 @@ Plan A completo aplicado y consolidado. A1-A7 están cerrados a nivel de código
 - A3 requería conservar snapshot hasta completar/eliminar.
 - A4 requería build para que el cambio React se viera en admin.
 - A7 requería excluir `_dev/` del ZIP/release.
+- Email String Editor debía entrar por fases: módulo propio, admin MVP y guardado/borrado antes de activar `gettext`.
 
 ## Hecho
 
@@ -32,10 +33,14 @@ Plan A completo aplicado y consolidado. A1-A7 están cerrados a nivel de código
 - Entorno Node local preparado para build.
 - `node_modules/` copiado desde el plugin anterior.
 - `npm run build` ejecutado con éxito.
+- Email String Editor E1-E3 implementado.
+- E4 queda pendiente porque requiere confirmar hook seguro para limitar `gettext` a emails WooCommerce.
 
 ## Pendiente
 
 - QA funcional del Plan A completo.
+- QA admin de Email String Editor E1-E3.
+- E4 Email String Editor.
 - Validación real de ZIP/release.
 - Checklist release antes de publicar.
 - Release, tag, push o deploy siguen bloqueados hasta permiso explícito.
@@ -56,7 +61,7 @@ Plan A completo aplicado y consolidado. A1-A7 están cerrados a nivel de código
 
 - No ejecutar QA funcional sin permiso porque puede crear envíos, logs o acciones programadas.
 - No preparar release sin validación de ZIP y checklist.
-- No mezclar Plan A con Email String Editor.
+- No activar aplicación real de overrides Email String Editor sin confirmar contexto email seguro.
 
 ## Próximo paso recomendado
 

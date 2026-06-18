@@ -6,7 +6,7 @@
 
 ## Resumen humano
 
-Plan A completo aplicado: A1-A7. A4 fue compilado con Node local y `build/` quedó sincronizado con `src/admin/App.js`.
+Plan A completo aplicado: A1-A7. Email String Editor E1-E3 implementado como MVP admin seguro. A4 fue compilado con Node local y `build/` quedó sincronizado con `src/admin/App.js`.
 
 ## Descubierto
 
@@ -18,6 +18,7 @@ Plan A completo aplicado: A1-A7. A4 fue compilado con Node local y `build/` qued
 - El snapshot `pbm_scheduled_recipients_{id}` se borraba al leerlo, antes de confirmar que los lotes se programaron/ejecutaron.
 - La preview podía quedar obsoleta si cambiaba audiencia/configuración antes de enviar.
 - El workflow release no excluía `_dev/`.
+- Email String Editor debía integrarse como módulo propio, no copiando el plugin heredado tal cual.
 
 ## Hecho
 
@@ -75,6 +76,22 @@ Plan A completo aplicado: A1-A7. A4 fue compilado con Node local y `build/` qued
 
 - `.github/workflows/release.yml` excluye `_dev/` del ZIP/release.
 
+### Email String Editor E1-E3
+
+- Añadido cargador `includes/email-string-editor.php`.
+- Añadidas clases base bajo `includes/email-string-editor/`.
+- Módulo inicializado desde `woo-broadcast-mailer.php`.
+- Añadido submenú `WooCommerce > Editor de emails`.
+- Añadido selector de idioma, selector de plantilla, buscador y listado de strings.
+- Añadida búsqueda global en todas las plantillas permitidas cuando no se elige plantilla.
+- Añadida búsqueda multiidioma comparando original, traducciones WooCommerce y personalizaciones guardadas.
+- Añadida edición de todos los idiomas disponibles dentro de cada string/email.
+- Añadido guardado/borrado en `pbm_email_string_overrides`.
+- Añadido guardado multiidioma desde la misma pantalla.
+- Añadida edición directa desde la pestaña Cambios guardados.
+- Añadida lectura compatible de `wc_custom_email_strings`.
+- No se activó aplicación `gettext` real en emails; queda para E4.
+
 ## Pendiente
 
 - QA funcional real del aviso admin y rutas AJAX.
@@ -83,6 +100,8 @@ Plan A completo aplicado: A1-A7. A4 fue compilado con Node local y `build/` qued
 - Prueba específica con caracteres HTML en nombre de destinatario.
 - QA de borrado con registros `completed`, `cancelled`, `pending` y `running`.
 - Validar ZIP/release real antes de publicar.
+- QA admin de Email String Editor E1-E3.1.
+- E4: aplicar overrides solo en emails WooCommerce cuando se confirme hook seguro.
 
 ## No volver a investigar
 
@@ -93,6 +112,7 @@ Plan A completo aplicado: A1-A7. A4 fue compilado con Node local y `build/` qued
 - A5 implementado: escape de `{customer_name}` y validación de email destino.
 - A6 implementado: borrado por ID limitado a `completed` y `cancelled`.
 - A7 implementado: workflow release excluye `_dev/`.
+- Email String Editor E1-E3.2 y E2.3 implementados sin activar `gettext` real.
 - No se ejecutaron envíos ni acciones programadas durante estas implementaciones.
 - Node local disponible en `/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin`.
 - `node_modules/` se copió desde el plugin anterior.

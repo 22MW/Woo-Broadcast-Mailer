@@ -6,7 +6,7 @@
 
 ## Resumen humano
 
-Revisión técnica de arquitectura realizada en modo completo y solo lectura. El plugin tiene una arquitectura funcional basada en React admin, AJAX server-side, Action Scheduler y tablas propias. Los riesgos principales están en la semántica de estados, dependencia no bloqueante de Action Scheduler y convivencia de flujo legacy con React.
+Arquitectura principal confirmada: React admin + AJAX + Action Scheduler + tablas propias. Plan A ya está aplicado. Email String Editor E1-E3 queda implementado como módulo propio, admin clásico y submenú WooCommerce, sin activar todavía aplicación `gettext` real en emails.
 
 ## Descubierto
 
@@ -17,17 +17,28 @@ Revisión técnica de arquitectura realizada en modo completo y solo lectura. El
 - Datos propios: tablas `pbm_scheduled_emails` y `pbm_scheduled_logs`; options `pbm_delivery_meta_{id}` y `pbm_scheduled_recipients_{id}`.
 - Integraciones opcionales: WooCommerce Subscriptions, WPML y Mail Mint.
 - Mail Mint se integra por tablas internas, no por API pública confirmada.
+- Email String Editor se incorporó en `includes/email-string-editor/` con clases separadas.
 
 ## Hecho
 
-- Revisión de arquitectura completada sin escribir archivos ni tocar WordPress/BD.
-- Se identificaron riesgos priorizados para roadmap técnico.
+- Revisión de arquitectura completada.
+- Plan A aplicado y consolidado.
+- Email String Editor E1-E3 implementado:
+  - cargador `includes/email-string-editor.php`;
+  - coordinador `Email_String_Editor`;
+  - scanner de plantillas permitidas;
+  - repositorio `pbm_email_string_overrides`;
+  - compatibilidad de lectura con `wc_custom_email_strings`;
+  - resolver de idiomas;
+  - pantalla admin MVP;
+  - guardado y borrado con `admin-post` prefijado.
 
 ## Pendiente
 
-- Validar en entorno real que Action Scheduler esté siempre disponible al ejecutar AJAX.
+- QA admin de Email String Editor E1-E3.
+- Confirmar hooks WooCommerce seguros para activar contexto email antes de E4.
+- Implementar E4 solo cuando esté claro cómo limitar `gettext` a emails WooCommerce.
 - Confirmar si `render_scheduled_emails_tab()` y `ajax_create_scheduled_email()` siguen en uso.
-- Confirmar que `build/` está sincronizado con `src/`.
 - Revisar integración Mail Mint contra documentación/API real si se amplía.
 
 ## No volver a investigar
@@ -36,17 +47,15 @@ Revisión técnica de arquitectura realizada en modo completo y solo lectura. El
 - Tablas propias confirmadas: `pbm_scheduled_emails` y `pbm_scheduled_logs`.
 - Hooks Action Scheduler confirmados: `pbm_execute_scheduled_email` y `pbm_process_email_batch`.
 - Updater GitHub Releases confirmado en `includes/updater.php`.
+- Email String Editor E1-E3 está integrado como módulo propio; no se copió el plugin heredado tal cual.
 
 ## Riesgos o bloqueos
 
-- Action Scheduler no se valida como dependencia dura antes de confirmar éxito.
-- `completed` puede significar lotes programados, no entrega final.
-- El snapshot `pbm_scheduled_recipients_{id}` se borra al iniciar ejecución; si falla la programación posterior, se pierde.
-- Código legacy visual convive con React y puede confundir mantenimiento.
-- Archivos grandes aumentan riesgo de regresión en futuras mejoras.
+- E4 es el riesgo principal: `gettext` global puede afectar checkout/admin si no se limita al contexto email.
+- Resolver idioma real del email sigue pendiente para sitios WPML/Polylang.
+- QA funcional puede crear envíos/logs/acciones; requiere permiso separado.
 
 ## Próximo paso recomendado
 
-- Primero corregir dependencia explícita de Action Scheduler y modelo de estados.
-- Después QA funcional controlado.
-- No refactorizar archivos grandes sin tarea específica aprobada.
+- QA admin de E1-E3.
+- Después decidir E4 con hook seguro de contexto email.

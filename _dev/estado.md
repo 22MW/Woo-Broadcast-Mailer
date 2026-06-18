@@ -6,11 +6,11 @@
 
 ## Resumen humano
 
-Plugin funcional en v2.0.1.2 dev. Migración a React completada. Flujo multi-fuente con audiencia global implementado. Action Scheduler integrado. Updater activo vía GitHub Releases. El Plan A completo está aplicado: A1-A7 cerrados a nivel de código/workflow/build. Queda QA funcional y validación real de ZIP/release.
+Plugin funcional en v2.0.1.3 dev. Migración a React completada. Flujo multi-fuente con audiencia global implementado. Action Scheduler integrado. Updater activo vía GitHub Releases. El Plan A completo está aplicado. Email String Editor E1-E3.2 + E2.3 está implementado como MVP admin seguro, sin aplicación `gettext` todavía.
 
 ## Estado general
 
-Funcional con Plan A aplicado. Pendiente QA funcional, documentación de release y validación ZIP antes de publicar.
+Funcional con Plan A aplicado y Email String Editor E1-E3.2 + E2.3 añadido. Pendiente QA funcional/admin, documentación de release y validación ZIP antes de publicar.
 
 ## Hecho
 
@@ -41,17 +41,26 @@ Funcional con Plan A aplicado. Pendiente QA funcional, documentación de release
 - A7 implementado: workflow release excluye `_dev/`.
 - Entorno Node local preparado con `node v22.11.0` y `npm v10.9.0`.
 - `node_modules/` copiado desde el plugin anterior.
+- Email String Editor E1 implementado: cargador, clases base, bootstrap y submenú WooCommerce.
+- Email String Editor E2 implementado: admin MVP con idioma, plantilla, buscador, listado de strings y cambios guardados.
+- Email String Editor E2.1 implementado: búsqueda global en todas las plantillas permitidas si no se elige plantilla.
+- Email String Editor E2.2 implementado: edición de todos los idiomas disponibles desde la misma pantalla de cada string/email.
+- Email String Editor E2.3 implementado: búsqueda multiidioma sobre original, traducciones WooCommerce y personalizaciones guardadas.
+- Email String Editor E3 implementado: guardado/borrado en `pbm_email_string_overrides` con lectura compatible de `wc_custom_email_strings`.
+- Email String Editor E3.1 implementado: guardado multiidioma por string/email desde una única pantalla.
+- Email String Editor E3.2 implementado: edición directa desde la pestaña Cambios guardados.
 
 ## En curso
 
 - QA funcional del Plan A completo.
+- QA admin de Email String Editor E1-E3.
 - Validación real de ZIP/release antes de publicar.
 
 ## Bloqueado
 
 - QA funcional bloqueado hasta permiso explícito porque puede crear envíos, logs o acciones programadas.
 - Release, ZIP, tag, push o deploy bloqueados hasta checklist release.
-- Incorporación Email String Editor bloqueada hasta decisiones funcionales.
+- Aplicación real de overrides Email String Editor bloqueada hasta confirmar hook seguro de contexto email.
 
 ## Plan A — Estado resumido
 
@@ -68,6 +77,7 @@ Funcional con Plan A aplicado. Pendiente QA funcional, documentación de release
 ### Alta prioridad
 
 - QA funcional pendiente del Plan A completo.
+- QA admin pendiente de Email String Editor E1-E3.
 - Validación real de ZIP/release pendiente antes de publicar.
 
 ### Media prioridad
@@ -102,12 +112,13 @@ Funcional con Plan A aplicado. Pendiente QA funcional, documentación de release
 - Que los logs representen estado final real de entrega.
 - Que el updater descargue correctamente la release actual.
 - Que el ZIP final excluya `_dev/` y archivos internos.
+- Que Email String Editor carga el submenú, busca en todas las plantillas y todos los idiomas, edita varios idiomas, edita cambios guardados, guarda y borra sin afectar emails aún.
 
 ## No volver a investigar
 
 - Ruta real del plugin: `app/public/wp-content/plugins/Woo-Broadcast-Mailer/`.
 - Rama de trabajo del plugin: `devWooBM`.
-- Versión dev actual del plugin: `2.0.1.2`.
+- Versión dev actual del plugin: `2.0.1.3`.
 - Versión pública base: `2.0.1`.
 - Text domain correcto del plugin: `wc-pbm`.
 - Los planes de `_dev/_md/` (`PLAN_MULTI_FUENTE` y `PLAN_MIGRACION`) están implementados en v2.0.0. No re-investigar como pendientes.
@@ -117,3 +128,4 @@ Funcional con Plan A aplicado. Pendiente QA funcional, documentación de release
 - Updater GitHub Releases existe en `includes/updater.php`.
 - Node local disponible en `/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin`.
 - `node_modules/` se copió desde `/Users/22mw/Local Sites/test/app/public/wp-content/plugins/woo-broadcast-mailer/node_modules/`.
+- Email String Editor E1-E3.2 y E2.3 están implementados, pero E4 (`gettext` real en emails) sigue pendiente.

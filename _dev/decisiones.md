@@ -16,7 +16,9 @@
 - **`_dev/` como memoria operativa**: se migra desde `_md/` (2026-06-11). `_md/` queda movido dentro de `_dev/_md/` y pendiente de decisión de borrado.
 - **Revisión global inicial 2026-06-18**: se realizó en solo lectura. No se tocó código, base de datos, settings, build ni release.
 - **Revisión completa por especialistas 2026-06-18**: arquitectura, seguridad, QA y release revisados en solo lectura.
-- **Documento Email String Editor 2026-06-18**: se creó `_dev/incorporacion-email-string-editor.md` como documento de planificación. No autoriza implementación.
+- **Documento Email String Editor 2026-06-18**: se creó `_dev/incorporacion-email-string-editor.md` como base de planificación.
+- **Email String Editor E1-E3.2 + E2.3**: implementado como MVP admin seguro bajo WooCommerce, con búsqueda global multiidioma, edición multiidioma en pantalla única, edición directa de cambios guardados, datos en `pbm_email_string_overrides` y compatibilidad de lectura con `wc_custom_email_strings`.
+- **Email String Editor E4 pendiente**: no se activó aplicación real con `gettext` hasta confirmar hook seguro de contexto email.
 - **Plan A cerrado**: A1-A7 aplicados a nivel de código, React build y workflow release.
 - **Node local para build**: Node/npm se instalaron en `/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin` porque el sistema no encontraba `node`/`npm`.
 - **node_modules local**: se copió `node_modules/` desde el plugin anterior `/Users/22mw/Local Sites/test/app/public/wp-content/plugins/woo-broadcast-mailer/node_modules/`.
@@ -34,7 +36,7 @@
 - `PLAN_MULTI_FUENTE.md`: plan del flujo de audiencia global. **Implementado en v2.0.0.**
 - `PLAN_MIGRACION_WORDPRESS_COMPONENTS.md`: plan de migración a React. **Implementado en v2.0.0.**
 - `REGLAS_DESARROLLO.md`: reglas de desarrollo previas al sistema `.kilo/`. Supersedidas por `.kilo/rules/globales.md` del workspace.
-- `WooEmailStringEditor.php`: plugin independiente evaluado para posible incorporación. Debe adaptarse como módulo planificado si se aprueba.
+- `WooEmailStringEditor.php`: plugin independiente evaluado para posible incorporación. Ya se adaptó parcialmente como módulo propio E1-E3; no se copió tal cual.
 
 ## Pendientes de decisión
 
@@ -42,18 +44,17 @@
 - ¿Sincronizar versión de `package.json`/`package-lock.json` con la versión del plugin o mantenerla como versión interna del paquete JS?
 - ¿Actualizar `CHANGELOG.md` y `README.md` con entrada `2.0.1` antes del próximo push/release?
 - ¿Excluir `src/`, `package.json` y `package-lock.json` del ZIP distribuible o mantenerlos?
-- Email String Editor: ¿submenú separado o pestaña React?
-- Email String Editor: ¿afectar solo emails WooCommerce o todo dominio `woocommerce`?
+- Email String Editor E4: confirmar hook seguro para aplicar overrides solo en emails WooCommerce.
 - Email String Editor: ¿qué idioma manda en emails multiidioma: pedido, usuario, WPML/Polylang o locale del sitio?
-- Email String Editor: ¿mantener `wc_custom_email_strings` o migrar a `pbm_email_string_overrides`?
 - Email String Editor: ¿MVP solo WooCommerce core o también plugins detectados?
 
 ## Recomendaciones acordadas como siguiente paso
 
 - Ejecutar QA funcional controlado del Plan A completo.
+- Ejecutar QA admin de Email String Editor E1-E3.1.
 - Si QA pasa, preparar checklist release: changelog, build, ZIP de prueba y exclusiones.
 - Preparar release solo al final: exclusiones, documentación, build, updater y staging.
-- Tratar Email String Editor como funcionalidad futura bloqueada por decisiones, no como implementación inmediata.
+- Tratar Email String Editor E4 como fase futura bloqueada por hook seguro de contexto email.
 
 ## No reabrir sin motivo
 

@@ -14,9 +14,25 @@ Este bloque agrupa los fixes detectados en auditoría. Cada código A debe mante
 | A6 | Borrado por IDs seguro | Hecho | Media/Alta | Impedir que el borrado individual y por IDs elimine envíos `pending`, `running` o inexistentes. | `includes/ajax-handlers.php`, `includes/functions-scheduled.php` | `php -l`, `git diff --check`; QA endpoint/listado pendiente |
 | A7 | ZIP/release sin `_dev/` | Hecho | Alta release | Excluir `_dev/` del ZIP/release en workflow. | `.github/workflows/release.yml` | revisión workflow; ZIP real pendiente de release |
 
+## Plan E — Email String Editor
+
+| Código | Nombre | Estado | Prioridad | Qué contiene | Archivos probables | Validación |
+|---|---|---|---|---|---|---|
+| E1 | Módulo base | Hecho | Alta | Cargador, clases base, bootstrap desde plugin principal y submenú WooCommerce. | `woo-broadcast-mailer.php`, `includes/email-string-editor.php`, `includes/email-string-editor/*` | `php -l`, `git diff --check` |
+| E2 | Admin MVP | Hecho | Alta | Selector de plantilla, buscador, listado de strings y pantalla de cambios guardados. | `includes/email-string-editor/class-admin-page.php`, `class-template-scanner.php` | `php -l`, QA admin pendiente |
+| E2.1 | Búsqueda global | Hecho | Alta | Buscar strings en todas las plantillas permitidas cuando no se selecciona una plantilla concreta. | `includes/email-string-editor/class-admin-page.php` | `php -l`, QA admin pendiente |
+| E2.2 | Edición multiidioma en pantalla única | Hecho | Alta | Mostrar todos los idiomas disponibles dentro de cada string/email y permitir editar cada idioma sin cambiar de pantalla. | `includes/email-string-editor/class-admin-page.php` | `php -l`, QA admin pendiente |
+| E2.3 | Búsqueda multiidioma | Hecho | Alta | Buscar por original, traducciones WooCommerce por idioma y personalizaciones guardadas. | `includes/email-string-editor/class-admin-page.php` | `php -l`, QA admin pendiente |
+| E3 | Guardado/borrado | Hecho | Alta | Guardar en `pbm_email_string_overrides`, leer compatibilidad `wc_custom_email_strings` y borrar personalizaciones. | `includes/email-string-editor/class-string-repository.php`, `class-admin-page.php` | `php -l`, QA admin pendiente |
+| E3.1 | Guardado multiidioma | Hecho | Alta | Procesar y guardar personalizaciones por idioma desde la misma pantalla del editor. | `includes/email-string-editor/class-admin-page.php`, `class-string-repository.php` | `php -l`, QA admin pendiente |
+| E3.2 | Edición desde cambios guardados | Hecho | Alta | Editar y guardar personalizaciones directamente desde la pestaña Cambios guardados. | `includes/email-string-editor/class-admin-page.php`, `class-email-string-editor.php` | `php -l`, QA admin pendiente |
+| E4 | Aplicación en emails | Pendiente | Alta | Aplicar overrides con `gettext` solo en emails WooCommerce y resolver idioma real. | `class-gettext-filter.php` futuro | Pendiente confirmar hook seguro |
+| E5 | QA Email String Editor | Pendiente | Alta | Probar pantalla, guardado, borrado, permisos, nonces y no regresión WooCommerce. | Admin WordPress | QA manual pendiente |
+
 ## Urgente
 
 - QA funcional controlado del Plan A completo.
+- QA admin de Email String Editor E1-E3.1.
 - A7 requiere validación real de ZIP antes de cualquier release.
 
 ## Recomendado
@@ -35,8 +51,8 @@ Este bloque agrupa los fixes detectados en auditoría. Cada código A debe mante
 
 ## Futuro
 
-- Incorporar Email String Editor como módulo planificado, no copiando `_dev/_md/WooEmailStringEditor.php` tal cual.
-- Fase recomendada Email String Editor: submenú separado, selección por categoría/origen/plantilla/idioma y compatibilidad con `wc_custom_email_strings`.
+- Email String Editor E4: aplicar overrides solo en emails WooCommerce con hook seguro.
+- Email String Editor E5: QA admin, seguridad y no regresión.
 - Fase 2 Mail Mint: ampliar integración más allá de listas básicas si se requiere.
 - Mejora de logs: mostrar desglose de audiencia compuesta por fuente en historial.
 - Separar responsabilidades de archivos grandes si se aborda una mejora mediana o grande.
@@ -49,7 +65,7 @@ Este bloque agrupa los fixes detectados en auditoría. Cada código A debe mante
 - Limpieza de legacy bloqueada hasta confirmar si esas funciones siguen llamadas.
 - Eliminación de `_dev/_md/` bloqueada hasta decisión explícita del usuario.
 - Release, ZIP, tag, push o deploy bloqueados hasta permiso explícito y checklist release.
-- Incorporación Email String Editor bloqueada hasta decidir submenú/pestaña, alcance de `gettext`, idioma multiidioma y estrategia de datos.
+- Aplicación real de overrides Email String Editor bloqueada hasta confirmar hook seguro de contexto email.
 
 ## Descartado
 
@@ -68,3 +84,11 @@ Este bloque agrupa los fixes detectados en auditoría. Cada código A debe mante
 - A5 aplicado: escape de `{customer_name}` y validación de email destino.
 - A6 aplicado: borrado individual y por IDs limitado a envíos completados o cancelados.
 - A7 aplicado: workflow release excluye `_dev/`.
+- E1 aplicado: módulo base Email String Editor cargado desde el plugin.
+- E2 aplicado: admin MVP con selector de plantilla, buscador y listado de strings.
+- E2.1 aplicado: búsqueda global en todas las plantillas permitidas.
+- E2.2 aplicado: edición de todos los idiomas disponibles desde la misma pantalla.
+- E2.3 aplicado: búsqueda multiidioma por original, traducciones WooCommerce y personalizaciones guardadas.
+- E3 aplicado: guardado/borrado en `pbm_email_string_overrides` con lectura compatible de `wc_custom_email_strings`.
+- E3.1 aplicado: guardado multiidioma desde una única pantalla.
+- E3.2 aplicado: edición directa desde Cambios guardados.

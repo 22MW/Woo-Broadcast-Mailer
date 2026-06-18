@@ -29,6 +29,12 @@ Revisión release/versionado realizada en modo completo y solo lectura. El plugi
   - `npm run build`
 - `build/index.js` y `build/index.asset.php` quedan sincronizados con `src/admin/App.js`.
 
+## Hecho
+
+- Preparado checkpoint dev `2.0.1.3` para Email String Editor E1-E3.2 + E2.3.
+- `CHANGELOG.md` actualizado con entrada `2.0.1.3`.
+- `_dev/release-notes.md` actualizado.
+
 ## Pendiente
 
 - Generar ZIP de prueba sin publicar.
