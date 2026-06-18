@@ -629,8 +629,6 @@ function ajax_send_broadcast()
         wp_send_json_error(array('message' => get_action_scheduler_unavailable_message()));
     }
 
-    update_scheduled_email_status($delivery_id, 'completed');
-
     wp_send_json_success(array(
         'message' => sprintf(
             /* translators: %1$d: número de lotes, %2$d: número total de destinatarios */

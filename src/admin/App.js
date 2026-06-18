@@ -68,6 +68,22 @@ function formatEstimatedDuration(totalMinutes) {
   return `${hours} h ${remainder} min`;
 }
 
+function buildPreviewSignature({ globalAudience, manualEmails, batchSize, emailsPerHour, scheduleEnabled, scheduledDatetime }) {
+  const audience = globalAudience.map((item) => ({
+    source: item.source,
+    selectorValue: item.selectorValue,
+  }));
+
+  return JSON.stringify({
+    audience,
+    manualEmails,
+    batchSize: String(parseInt(batchSize || '30', 10) || 30),
+    emailsPerHour: String(parseInt(emailsPerHour || '200', 10) || 200),
+    scheduleEnabled: Boolean(scheduleEnabled),
+    scheduledDatetime: scheduleEnabled ? scheduledDatetime || '' : '',
+  });
+}
+
 async function postAjax(params) {
   const response = await fetch(window.ajaxurl, {
     method: 'POST',
@@ -150,6 +166,7 @@ export default function App() {
   const [scheduledDatetime, setScheduledDatetime] = useState('');
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewData, setPreviewData] = useState(null);
+  const [previewSignature, setPreviewSignature] = useState('');
   const [sending, setSending] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -423,6 +440,17 @@ export default function App() {
     };
   }, [summary.unique, batchSize, emailsPerHour]);
 
+  const currentPreviewSignature = useMemo(() => buildPreviewSignature({
+    globalAudience,
+    manualEmails,
+    batchSize,
+    emailsPerHour,
+    scheduleEnabled,
+    scheduledDatetime,
+  }), [globalAudience, manualEmails, batchSize, emailsPerHour, scheduleEnabled, scheduledDatetime]);
+
+  const isPreviewStale = Boolean(previewData && previewSignature !== currentPreviewSignature);
+
   useEffect(() => {
     const audienceInput = document.getElementById('pbm_audience_items');
     const manualInput = document.getElementById('pbm_manual_emails');
@@ -465,6 +493,7 @@ export default function App() {
       return;
     }
 
+    const signature = currentPreviewSignature;
     setPreviewLoading(true);
     const nonceField = document.getElementById('pbm_nonce');
     const nonce = nonceField ? nonceField.value : '';
@@ -487,6 +516,7 @@ export default function App() {
     }
 
     setPreviewData(data.data);
+    setPreviewSignature(signature);
   };
 
   const sendBroadcast = async () => {
@@ -496,6 +526,10 @@ export default function App() {
     }
     if (!previewData || Number(previewData.total || 0) < 1) {
       window.alert(__('Primero debes hacer una vista previa.', 'wc-pbm'));
+      return;
+    }
+    if (isPreviewStale) {
+      window.alert(__('La audiencia o configuración cambió. Actualiza la vista previa antes de enviar.', 'wc-pbm'));
       return;
     }
 
@@ -576,6 +610,11 @@ export default function App() {
           <Button variant="secondary" onClick={previewAudience} disabled={previewLoading || listItems.length === 0}>
             {previewLoading ? __('Cargando…', 'wc-pbm') : __('Vista Previa de Destinatarios', 'wc-pbm')}
           </Button>
+          {isPreviewStale && (
+            <div className="pbm-react-notice pbm-react-notice-warning">
+              {__('La audiencia o configuración cambió. Actualiza la vista previa antes de enviar.', 'wc-pbm')}
+            </div>
+          )}
           {previewData && (
             <div className="pbm-react-preview-box">
               <p><strong>{__('Total de destinatarios únicos:', 'wc-pbm')}</strong> {previewData.total || 0}</p>
@@ -607,7 +646,7 @@ export default function App() {
             {`${deliveryEstimate.unique} ${__('únicos', 'wc-pbm')} · ${deliveryEstimate.batches} ${__('lotes', 'wc-pbm')} · ${deliveryEstimate.intervalMinutes} ${__('min entre lotes', 'wc-pbm')} · ${formatEstimatedDuration(deliveryEstimate.totalWindowMinutes)}`}
           </div>
           <div className="pbm-react-send-actions">
-            <Button variant="primary" onClick={sendBroadcast} disabled={sending || listItems.length === 0}>
+            <Button variant="primary" onClick={sendBroadcast} disabled={sending || listItems.length === 0 || isPreviewStale}>
               {sending ? __('Programando envíos...', 'wc-pbm') : __('Enviar Emails', 'wc-pbm')}
             </Button>
           </div>

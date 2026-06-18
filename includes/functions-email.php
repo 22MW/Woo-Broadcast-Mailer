@@ -35,6 +35,7 @@ function process_email_batch($batch, $subject, $message, $scheduled_id = 0)
     // Crear log solo si es envío programado
     if ($scheduled_id > 0) {
         create_batch_log($scheduled_id, $sent, $failed);
+        maybe_complete_scheduled_email($scheduled_id);
     }
 }
 

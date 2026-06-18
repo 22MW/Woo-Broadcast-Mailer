@@ -49,23 +49,21 @@
     <header>
       <h1>Woo Broadcast Mailer — Plan A</h1>
       <p class="muted">Vista interna — bloque técnico mínimo antes de QA/release — 2026-06-18</p>
-      <span class="badge"><span class="dot green"></span> A1 hecho</span>
-      <span class="badge"><span class="dot green"></span> A5 hecho</span>
-      <span class="badge"><span class="dot green"></span> A6 hecho</span>
-      <span class="badge"><span class="dot yellow"></span> A2-A4 pendientes</span>
-      <span class="badge"><span class="dot red"></span> A7 pendiente antes de release</span>
+      <span class="badge"><span class="dot green"></span> A1-A7 hechos</span>
+      <span class="badge"><span class="dot yellow"></span> QA pendiente</span>
+      <span class="badge"><span class="dot blue"></span> Rama: devWooBM</span>
     </header>
 
     <section class="hero">
       <div class="card risk">
         <h2>Resumen humano</h2>
-        <p>El Plan A agrupa los fixes mínimos detectados por la auditoría para poder hacer QA y preparar release con menos riesgo.</p>
-        <p>A1, A5 y A6 ya están aplicados. Quedan pendientes estados/logs, snapshot, preview y exclusión de <code>_dev/</code> en release.</p>
+        <p>El Plan A completo está aplicado: Action Scheduler, estados/logs, snapshot, preview obsoleta, escape de nombre, borrado seguro y exclusión de <code>_dev/</code> en release.</p>
+        <p>Ahora toca QA funcional controlado y, si pasa, checklist de ZIP/release.</p>
       </div>
       <div class="card ok">
         <h2>Estado actual</h2>
-        <p>A6 aplicado: el borrado individual y por IDs queda limitado a envíos <code>completed</code> o <code>cancelled</code>.</p>
-        <p>Siguiente recomendado por riesgo: A2 o A3.</p>
+        <p>A4 compilado con Node local. <code>build/</code> quedó sincronizado con <code>src/admin/App.js</code>.</p>
+        <p>Node local: <code>/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin</code>.</p>
       </div>
     </section>
 
@@ -74,41 +72,32 @@
         <h2>Plan A detallado</h2>
         <div class="plan">
           <div class="plan-item ok"><div class="plan-head"><div><span class="code">A1</span> — Action Scheduler obligatorio + aviso admin</div><span class="state done">Hecho</span></div><p>Comprueba disponibilidad de Action Scheduler, muestra estado en admin y bloquea envío/programación si falta.</p><p class="small">Validado: <code>php -l</code>, <code>git diff --check</code>, aviso visual.</p></div>
-          <div class="plan-item risk"><div class="plan-head"><div><span class="code">A2</span> — Estados/logs reales</div><span class="state pending">Pendiente</span></div><p>Evitar que <code>completed</code> signifique solo lotes programados. Separar cola, ejecución y finalización real.</p><p class="small">Archivos probables: <code>includes/ajax-handlers.php</code>, <code>includes/functions-scheduled.php</code>, posible React logs.</p></div>
-          <div class="plan-item risk"><div class="plan-head"><div><span class="code">A3</span> — Snapshot seguro de destinatarios</div><span class="state pending">Pendiente</span></div><p>No borrar <code>pbm_scheduled_recipients_{id}</code> hasta confirmar programación correcta de lotes.</p><p class="small">Archivos probables: <code>includes/functions-scheduled.php</code>, <code>includes/functions-email.php</code>.</p></div>
-          <div class="plan-item risk"><div class="plan-head"><div><span class="code">A4</span> — Preview no obsoleto</div><span class="state pending">Pendiente</span></div><p>Invalidar preview cuando cambia audiencia, manuales, fuente, selector, lote o fecha antes de enviar.</p><p class="small">Archivos probables: <code>src/admin/App.js</code> y build posterior.</p></div>
-          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A5</span> — Escape de <code>{customer_name}</code></div><span class="state done">Hecho</span></div><p>Escapa el nombre del destinatario antes de insertarlo en email HTML y valida email destino.</p><p class="small">Archivo: <code>includes/functions-email.php</code>. Validación técnica: <code>php -l</code> y <code>git diff --check</code>.</p></div>
-          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A6</span> — Borrado por IDs seguro</div><span class="state done">Hecho</span></div><p>Impide que el borrado individual y por IDs elimine envíos <code>pending</code>, <code>running</code> o inexistentes.</p><p class="small">Archivos: <code>includes/ajax-handlers.php</code>, <code>includes/functions-scheduled.php</code>. Validación técnica: <code>php -l</code> y <code>git diff --check</code>.</p></div>
-          <div class="plan-item warn"><div class="plan-head"><div><span class="code">A7</span> — ZIP/release sin <code>_dev/</code></div><span class="state blocked">Pendiente release</span></div><p>Ajustar workflow/exclusiones para que <code>_dev/</code> no entre en ZIP/release.</p><p class="small">Archivo probable: <code>.github/workflows/release.yml</code>. Validación: revisar ZIP generado.</p></div>
+          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A2</span> — Estados/logs reales</div><span class="state done">Hecho</span></div><p>Evita que <code>completed</code> signifique solo lotes programados; se completa al cubrir logs acumulados.</p><p class="small">QA funcional pendiente.</p></div>
+          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A3</span> — Snapshot seguro de destinatarios</div><span class="state done">Hecho</span></div><p>Conserva snapshot hasta completar o eliminar el envío.</p><p class="small">QA programación pendiente.</p></div>
+          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A4</span> — Preview no obsoleto</div><span class="state done">Hecho</span></div><p>Invalida preview y bloquea envío si cambia audiencia/configuración.</p><p class="small">Compilado con <code>npm run build</code>.</p></div>
+          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A5</span> — Escape de <code>{customer_name}</code></div><span class="state done">Hecho</span></div><p>Escapa el nombre del destinatario antes de insertarlo en email HTML y valida email destino.</p><p class="small">Validación técnica: <code>php -l</code> y <code>git diff --check</code>.</p></div>
+          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A6</span> — Borrado por IDs seguro</div><span class="state done">Hecho</span></div><p>Impide que el borrado individual y por IDs elimine envíos <code>pending</code>, <code>running</code> o inexistentes.</p><p class="small">Validación técnica: <code>php -l</code> y <code>git diff --check</code>.</p></div>
+          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A7</span> — ZIP/release sin <code>_dev/</code></div><span class="state done">Hecho</span></div><p>Workflow release excluye <code>_dev/</code>.</p><p class="small">ZIP real pendiente de release.</p></div>
         </div>
       </div>
 
       <div class="card">
-        <h2>Planes separados</h2>
-        <ul>
-          <li><strong>Plan A:</strong> fixes mínimos del plugin principal antes de QA/release.</li>
-          <li><strong>QA:</strong> pruebas funcionales con posibles envíos/logs/acciones; requiere permiso aparte.</li>
-          <li><strong>Email String Editor:</strong> funcionalidad futura documentada en <code>incorporacion-email-string-editor.md</code> y <code>arquitectura-email-string-editor.md</code>.</li>
-          <li><strong>Release:</strong> no preparar ZIP/tag/push hasta cerrar A7 y checklist release.</li>
+        <h2>Checklist QA pendiente</h2>
+        <ul class="checklist">
+          <li><span class="box pending"></span><span>Panel carga sin errores JS.</span></li>
+          <li><span class="box pending"></span><span>Preview audiencia global con deduplicación.</span></li>
+          <li><span class="box pending"></span><span>A4: cambiar audiencia/configuración y confirmar bloqueo.</span></li>
+          <li><span class="box pending"></span><span>A5: email con nombre HTML escapado.</span></li>
+          <li><span class="box pending"></span><span>A2: envío instantáneo y programado con logs reales.</span></li>
+          <li><span class="box pending"></span><span>A6: borrado solo en completed/cancelled.</span></li>
+          <li><span class="box pending"></span><span>ZIP de prueba sin <code>_dev/</code>.</span></li>
         </ul>
       </div>
     </section>
 
     <section class="grid cols-2">
-      <div class="card">
-        <h2>Checklist QA pendiente</h2>
-        <ul class="checklist">
-          <li><span class="box done"></span><span>Confirmar Action Scheduler presente por MCP WooCommerce.</span></li>
-          <li><span class="box done"></span><span>Confirmar aviso Action Scheduler en admin.</span></li>
-          <li><span class="box pending"></span><span>Probar A5 con nombre que contenga caracteres HTML.</span></li>
-          <li><span class="box pending"></span><span>Probar A6 con registros completados, cancelados, pendientes y en ejecución.</span></li>
-          <li><span class="box pending"></span><span>Previsualizar audiencia global con deduplicación.</span></li>
-          <li><span class="box pending"></span><span>Enviar campaña instantánea con email catcher.</span></li>
-          <li><span class="box pending"></span><span>Programar campaña futura.</span></li>
-          <li><span class="box pending"></span><span>Comprobar logs reales tras ejecución de lotes.</span></li>
-        </ul>
-      </div>
-      <div class="card warn"><h2>Bloqueos</h2><ul><li>QA funcional requiere permiso porque crea envíos/logs/acciones.</li><li>Release, ZIP, tag, push y deploy requieren permiso explícito.</li><li>No usar workflow actual para release sin excluir <code>_dev/</code>.</li></ul></div>
+      <div class="card warn"><h2>Bloqueos</h2><ul><li>QA funcional requiere permiso porque crea envíos/logs/acciones.</li><li>Release, ZIP, tag, push y deploy requieren permiso explícito.</li><li>No publicar sin ZIP de prueba y checklist release.</li></ul></div>
+      <div class="card"><h2>Próximo paso recomendado</h2><p>Ejecutar QA funcional controlado del Plan A completo. Si pasa, pasar a checklist release.</p></div>
     </section>
 
     <footer>Vista local estática. No incluir en ZIP, release ni deploy público.</footer>

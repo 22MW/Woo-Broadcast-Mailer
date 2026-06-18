@@ -408,7 +408,7 @@ function execute_scheduled_email($scheduled_id)
         }
 
         // Programar lotes usando el sistema existente
-        schedule_email_batches(
+        $scheduled_count = schedule_email_batches(
             $users,
             $scheduled->subject,
             $scheduled->message,
@@ -417,8 +417,9 @@ function execute_scheduled_email($scheduled_id)
             $scheduled_id
         );
 
-        // Actualizar estado a completed
-        update_scheduled_email_status($scheduled_id, 'completed');
+        if ($scheduled_count < 1) {
+            throw new \Exception(__('No se pudieron programar lotes de envío', 'wc-pbm'));
+        }
     } catch (\Exception $e) {
         // Crear log de error
         global $wpdb;
@@ -436,7 +437,7 @@ function execute_scheduled_email($scheduled_id)
             array('%d', '%s', '%s', '%d', '%d', '%s')
         );
 
-        update_scheduled_email_status($scheduled_id, 'completed');
+        update_scheduled_email_status($scheduled_id, 'cancelled');
     }
 }
 
@@ -452,7 +453,6 @@ function get_scheduled_recipients_snapshot($scheduled_id)
     $recipients = get_option($option_key, array());
 
     if (is_array($recipients) && ! empty($recipients)) {
-        delete_option($option_key);
         return $recipients;
     }
 
@@ -479,6 +479,60 @@ function update_scheduled_email_status($scheduled_id, $status)
         array('%s'),
         array('%d')
     );
+}
+
+/**
+ * Obtiene el total esperado de mensajes para un envío.
+ *
+ * @param int $scheduled_id ID del envío.
+ * @return int Total esperado.
+ */
+function get_expected_messages_count($scheduled_id)
+{
+    $recipients = get_option('pbm_scheduled_recipients_' . absint($scheduled_id), array());
+    if (is_array($recipients) && ! empty($recipients)) {
+        return count($recipients);
+    }
+
+    global $wpdb;
+    $table = $wpdb->prefix . 'pbm_scheduled_emails';
+    $scheduled = $wpdb->get_row($wpdb->prepare(
+        "SELECT user_role FROM {$table} WHERE id = %d",
+        absint($scheduled_id)
+    ));
+
+    if (! $scheduled || empty($scheduled->user_role)) {
+        return 0;
+    }
+
+    $users = get_users_by_role($scheduled->user_role);
+    return is_array($users) ? count($users) : 0;
+}
+
+/**
+ * Actualiza a completado cuando los logs cubren todos los mensajes esperados.
+ *
+ * @param int $scheduled_id ID del envío.
+ * @return void
+ */
+function maybe_complete_scheduled_email($scheduled_id)
+{
+    $expected = get_expected_messages_count($scheduled_id);
+    if ($expected < 1) {
+        return;
+    }
+
+    $logs = get_scheduled_logs($scheduled_id);
+    $processed = 0;
+    foreach ((array) $logs as $log) {
+        $processed += (int) ($log->total_sent ?? 0);
+        $processed += (int) ($log->total_failed ?? 0);
+    }
+
+    if ($processed >= $expected) {
+        update_scheduled_email_status($scheduled_id, 'completed');
+        delete_option('pbm_scheduled_recipients_' . absint($scheduled_id));
+    }
 }
 
 /**

@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.1.2
+- Completed Plan A hardening before QA/release.
+- Kept scheduled deliveries in `running` until batch logs cover expected recipients.
+- Preserved scheduled recipient snapshots until completion or deletion.
+- Added stale-preview protection in React admin and rebuilt assets.
+- Escaped `{customer_name}` in HTML emails and validated recipient email before send.
+- Restricted scheduled deletion by ID to completed or cancelled records.
+- Excluded `_dev/` from release ZIP workflow.
+
+## 2.0.1.1
+- Added Action Scheduler availability checks and admin status notice.
+- Blocked send/schedule actions when Action Scheduler is unavailable.
+- Added internal `_dev/` Plan A memory and Email String Editor planning notes.
+
 ## 2.0.0
 - Major admin migration to React for core broadcast workflow.
 - Removed legacy selector/preview/send admin block (legacy markup and inline JS cleanup).

@@ -17,6 +17,9 @@
 - **Revisión global inicial 2026-06-18**: se realizó en solo lectura. No se tocó código, base de datos, settings, build ni release.
 - **Revisión completa por especialistas 2026-06-18**: arquitectura, seguridad, QA y release revisados en solo lectura.
 - **Documento Email String Editor 2026-06-18**: se creó `_dev/incorporacion-email-string-editor.md` como documento de planificación. No autoriza implementación.
+- **Plan A cerrado**: A1-A7 aplicados a nivel de código, React build y workflow release.
+- **Node local para build**: Node/npm se instalaron en `/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin` porque el sistema no encontraba `node`/`npm`.
+- **node_modules local**: se copió `node_modules/` desde el plugin anterior `/Users/22mw/Local Sites/test/app/public/wp-content/plugins/woo-broadcast-mailer/node_modules/`.
 
 ## Decisiones operativas derivadas de la auditoría
 
@@ -38,8 +41,6 @@
 - ¿Borrar `_dev/_md/` del repo ahora que existe `_dev/` consolidado?
 - ¿Sincronizar versión de `package.json`/`package-lock.json` con la versión del plugin o mantenerla como versión interna del paquete JS?
 - ¿Actualizar `CHANGELOG.md` y `README.md` con entrada `2.0.1` antes del próximo push/release?
-- ¿Cambiar semántica de estado para que `completed` signifique realmente todos los lotes finalizados?
-- ¿Aplicar ahora el bloque técnico mínimo antes de QA?
 - ¿Excluir `src/`, `package.json` y `package-lock.json` del ZIP distribuible o mantenerlos?
 - Email String Editor: ¿submenú separado o pestaña React?
 - Email String Editor: ¿afectar solo emails WooCommerce o todo dominio `woocommerce`?
@@ -49,8 +50,8 @@
 
 ## Recomendaciones acordadas como siguiente paso
 
-- Priorizar correcciones mínimas antes de QA funcional.
-- Ejecutar QA funcional controlado después de corregir riesgos principales.
+- Ejecutar QA funcional controlado del Plan A completo.
+- Si QA pasa, preparar checklist release: changelog, build, ZIP de prueba y exclusiones.
 - Preparar release solo al final: exclusiones, documentación, build, updater y staging.
 - Tratar Email String Editor como funcionalidad futura bloqueada por decisiones, no como implementación inmediata.
 

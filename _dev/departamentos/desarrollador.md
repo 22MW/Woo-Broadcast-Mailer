@@ -6,7 +6,7 @@
 
 ## Resumen humano
 
-Implementados A1, A5 y A6 del Plan A. El plugin ahora comprueba Action Scheduler antes de programar envíos, escapa el nombre del destinatario antes de insertarlo en emails HTML y bloquea el borrado de envíos activos por ID.
+Plan A completo aplicado: A1-A7. A4 fue compilado con Node local y `build/` quedó sincronizado con `src/admin/App.js`.
 
 ## Descubierto
 
@@ -14,6 +14,10 @@ Implementados A1, A5 y A6 del Plan A. El plugin ahora comprueba Action Scheduler
 - El código anterior comprobaba `function_exists('as_schedule_single_action')`, pero podía devolver éxito aunque no se programara acción.
 - `send_single_email()` insertaba `{customer_name}` sin escape contextual.
 - El borrado individual y por IDs dependía de la visibilidad del frontend, pero el backend no verificaba estado antes de borrar.
+- El estado `completed` se marcaba justo después de programar lotes, no al finalizar ejecución real.
+- El snapshot `pbm_scheduled_recipients_{id}` se borraba al leerlo, antes de confirmar que los lotes se programaron/ejecutaron.
+- La preview podía quedar obsoleta si cambiaba audiencia/configuración antes de enviar.
+- El workflow release no excluía `_dev/`.
 
 ## Hecho
 
@@ -29,6 +33,32 @@ Implementados A1, A5 y A6 del Plan A. El plugin ahora comprueba Action Scheduler
 - Envío programado e instantáneo usan la comprobación centralizada.
 - `ajax_create_scheduled_email()`, `ajax_cancel_scheduled_email()` y `ajax_run_scheduled_now()` bloquean si Action Scheduler no está disponible.
 
+### A2
+
+- El envío instantáneo ya no cambia a `completed` tras programar lotes.
+- El envío programado ya no cambia a `completed` tras programar lotes.
+- Añadidos helpers:
+  - `get_expected_messages_count()`
+  - `maybe_complete_scheduled_email()`
+- `process_email_batch()` llama a `maybe_complete_scheduled_email()` después de crear cada log.
+- Si un envío programado no consigue programar lotes, se registra error y pasa a `cancelled`.
+
+### A3
+
+- `get_scheduled_recipients_snapshot()` ya no borra la opción al leerla.
+- El snapshot se conserva durante ejecución.
+- `maybe_complete_scheduled_email()` borra `pbm_scheduled_recipients_{id}` al completar.
+- `delete_scheduled_email_with_logs()` borra snapshot al eliminar.
+- `bulk_delete_scheduled_by_status()` borra snapshot al borrar completados/cancelados.
+
+### A4
+
+- Añadida firma de preview en `src/admin/App.js`.
+- La firma cubre audiencia global, emails manuales, lote, emails por hora, programación y fecha.
+- Si cambia la audiencia/configuración tras previsualizar, se muestra aviso.
+- El botón de envío queda bloqueado si la preview está obsoleta.
+- Se compiló `build/` con Node local.
+
 ### A5
 
 - `send_single_email()` valida el email destino con `sanitize_email()` e `is_email()`.
@@ -41,22 +71,31 @@ Implementados A1, A5 y A6 del Plan A. El plugin ahora comprueba Action Scheduler
 - `ajax_delete_scheduled_email()` bloquea borrado individual de envíos no borrables.
 - `ajax_bulk_delete_scheduled_ids()` bloquea el lote completo si incluye algún ID no borrable o inexistente.
 
+### A7
+
+- `.github/workflows/release.yml` excluye `_dev/` del ZIP/release.
+
 ## Pendiente
 
 - QA funcional real del aviso admin y rutas AJAX.
+- QA de A2 con envío instantáneo, envío programado, ejecución de lotes y logs acumulados.
+- QA de A4: preview, cambio de audiencia/configuración y bloqueo de envío.
 - Prueba específica con caracteres HTML en nombre de destinatario.
 - QA de borrado con registros `completed`, `cancelled`, `pending` y `running`.
-- A2 estado `completed` ambiguo.
-- A3 snapshot seguro.
-- A4 preview obsoleto.
-- A7 ZIP/release.
+- Validar ZIP/release real antes de publicar.
 
 ## No volver a investigar
 
 - A1 implementado: Action Scheduler obligatorio y aviso admin.
+- A2 implementado: `completed` queda ligado a logs acumulados.
+- A3 implementado: snapshot se conserva hasta completar/eliminar.
+- A4 implementado y compilado: preview obsoleta bloquea envío.
 - A5 implementado: escape de `{customer_name}` y validación de email destino.
 - A6 implementado: borrado por ID limitado a `completed` y `cancelled`.
+- A7 implementado: workflow release excluye `_dev/`.
 - No se ejecutaron envíos ni acciones programadas durante estas implementaciones.
+- Node local disponible en `/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin`.
+- `node_modules/` se copió desde el plugin anterior.
 
 ## Riesgos o bloqueos
 
@@ -65,4 +104,4 @@ Implementados A1, A5 y A6 del Plan A. El plugin ahora comprueba Action Scheduler
 
 ## Próximo paso recomendado
 
-- Continuar con A2 o A3.
+- Ejecutar QA funcional controlado del Plan A completo.

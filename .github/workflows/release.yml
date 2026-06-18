@@ -18,7 +18,7 @@ jobs:
       - name: Build release zip
         run: |
           mkdir -p dist/woo-broadcast-mailer
-          rsync -a --exclude='.git' --exclude='.github' --exclude='.DS_Store' --exclude='LOCAL_*' --exclude='_md' ./ dist/woo-broadcast-mailer/
+          rsync -a --exclude='.git' --exclude='.github' --exclude='.DS_Store' --exclude='LOCAL_*' --exclude='_dev' --exclude='_md' ./ dist/woo-broadcast-mailer/
           cd dist
           zip -r woo-broadcast-mailer.zip woo-broadcast-mailer
 
