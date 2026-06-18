@@ -33,6 +33,7 @@ Este bloque agrupa los fixes detectados en auditoría. Cada código A debe mante
 
 - QA funcional controlado del Plan A completo.
 - QA admin de Email String Editor E1-E3.1.
+- Validar bugfix HPOS con producto `380` y pedidos `655`, `656`, `711`.
 - A7 requiere validación real de ZIP antes de cualquier release.
 
 ## Recomendado

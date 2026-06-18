@@ -6,7 +6,7 @@
 
 ## Resumen humano
 
-Plugin funcional en v2.0.1.3 dev. Migración a React completada. Flujo multi-fuente con audiencia global implementado. Action Scheduler integrado. Updater activo vía GitHub Releases. El Plan A completo está aplicado. Email String Editor E1-E3.2 + E2.3 está implementado como MVP admin seguro, sin aplicación `gettext` todavía.
+Plugin funcional en v2.0.1.4 dev. Migración a React completada. Flujo multi-fuente con audiencia global implementado. Action Scheduler integrado. Updater activo vía GitHub Releases. El Plan A completo está aplicado. Email String Editor E1-E3.2 + E2.3 está implementado como MVP admin seguro, sin aplicación `gettext` todavía.
 
 ## Estado general
 
@@ -49,6 +49,7 @@ Funcional con Plan A aplicado y Email String Editor E1-E3.2 + E2.3 añadido. Pen
 - Email String Editor E3 implementado: guardado/borrado en `pbm_email_string_overrides` con lectura compatible de `wc_custom_email_strings`.
 - Email String Editor E3.1 implementado: guardado multiidioma por string/email desde una única pantalla.
 - Email String Editor E3.2 implementado: edición directa desde la pestaña Cambios guardados.
+- Bugfix HPOS destinatarios por producto implementado: fallback a escaneo por `line_items` cuando la tabla lookup no devuelve destinatarios.
 
 ## En curso
 
@@ -113,12 +114,13 @@ Funcional con Plan A aplicado y Email String Editor E1-E3.2 + E2.3 añadido. Pen
 - Que el updater descargue correctamente la release actual.
 - Que el ZIP final excluya `_dev/` y archivos internos.
 - Que Email String Editor carga el submenú, busca en todas las plantillas y todos los idiomas, edita varios idiomas, edita cambios guardados, guarda y borra sin afectar emails aún.
+- Que el fallback HPOS devuelve emails para producto `380` con los pedidos `655`, `656`, `711`.
 
 ## No volver a investigar
 
 - Ruta real del plugin: `app/public/wp-content/plugins/Woo-Broadcast-Mailer/`.
 - Rama de trabajo del plugin: `devWooBM`.
-- Versión dev actual del plugin: `2.0.1.3`.
+- Versión dev actual del plugin: `2.0.1.4`.
 - Versión pública base: `2.0.1`.
 - Text domain correcto del plugin: `wc-pbm`.
 - Los planes de `_dev/_md/` (`PLAN_MULTI_FUENTE` y `PLAN_MIGRACION`) están implementados en v2.0.0. No re-investigar como pendientes.

@@ -76,7 +76,7 @@ Plan A completo aplicado: A1-A7. Email String Editor E1-E3 implementado como MVP
 
 - `.github/workflows/release.yml` excluye `_dev/` del ZIP/release.
 
-### Email String Editor E1-E3
+### Email String Editor E1-E3.2 + E2.3
 
 - Añadido cargador `includes/email-string-editor.php`.
 - Añadidas clases base bajo `includes/email-string-editor/`.
@@ -92,6 +92,12 @@ Plan A completo aplicado: A1-A7. Email String Editor E1-E3 implementado como MVP
 - Añadida lectura compatible de `wc_custom_email_strings`.
 - No se activó aplicación `gettext` real en emails; queda para E4.
 
+### Bugfix destinatarios producto HPOS
+
+- Aplicado fallback en `get_recipients_from_orders()`.
+- Si HPOS está activo pero `get_recipients_from_order_lookup()` no devuelve destinatarios, ahora se escanean pedidos por `line_items`.
+- Mantiene la deduplicación por email y el filtro de idioma existente.
+
 ## Pendiente
 
 - QA funcional real del aviso admin y rutas AJAX.
@@ -101,6 +107,7 @@ Plan A completo aplicado: A1-A7. Email String Editor E1-E3 implementado como MVP
 - QA de borrado con registros `completed`, `cancelled`, `pending` y `running`.
 - Validar ZIP/release real antes de publicar.
 - QA admin de Email String Editor E1-E3.1.
+- Validar QA funcional del bugfix HPOS con producto `380` y pedidos `655`, `656`, `711`.
 - E4: aplicar overrides solo en emails WooCommerce cuando se confirme hook seguro.
 
 ## No volver a investigar

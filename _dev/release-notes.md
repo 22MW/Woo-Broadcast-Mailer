@@ -1,5 +1,11 @@
 # Release notes internas
 
+## 2.0.1.4 — Dev checkpoint — 2026-06-18
+
+- Bugfix HPOS destinatarios por producto: fallback a escaneo por `line_items` cuando `wp_wc_order_product_lookup` no devuelve resultados.
+- Validado por QA con producto `380` y pedidos `655`, `656`, `711`.
+- Mantiene deduplicación por email y filtro de idioma existente.
+
 ## 2.0.1.3 — Dev checkpoint — 2026-06-18
 
 - Email String Editor E1-E3.2 + E2.3 añadido como módulo admin bajo WooCommerce.

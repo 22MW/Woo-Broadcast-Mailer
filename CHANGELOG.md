@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.1.4
+- Added HPOS fallback for product recipients when WooCommerce order lookup returns no results.
+- Product recipient counts now scan order line items if the HPOS lookup path is empty.
+- Preserved existing email deduplication and WPML language filtering.
+
 ## 2.0.1.3
 - Added Email String Editor admin module under WooCommerce.
 - Added global template string search across allowed WooCommerce email templates.

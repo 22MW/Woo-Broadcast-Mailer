@@ -189,7 +189,10 @@ function get_recipients_from_orders($product_id)
     $target_lang = get_wpml_language_code($product_id);
 
     if (is_hpos_enabled()) {
-        return get_recipients_from_order_lookup($product_ids, $target_lang);
+        $lookup_recipients = get_recipients_from_order_lookup($product_ids, $target_lang);
+        if (! empty($lookup_recipients)) {
+            return $lookup_recipients;
+        }
     }
 
     // Obtener pedidos por páginas para evitar consumo excesivo de memoria
