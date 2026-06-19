@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.1.9
+- Updated Email String Editor search UI: placeholder clarifies global template search, and the template select keeps "Todas las plantillas al buscar".
+- Removed duplicate helper text below the search field.
+- Updated React build assets.
+
 ## 2.0.1.8
 - Adjusted broadcast admin layout for audience source, manual emails, global audience list, preview result, and header shortcut.
 - Added direct header link to Email String Editor.

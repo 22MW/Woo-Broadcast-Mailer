@@ -1,10 +1,20 @@
 # Release notes internas
 
+## 2.0.1.9 — Dev checkpoint — 2026-06-19
+
+- Ajustado el campo Buscar del Email String Editor para que muestre como placeholder: "Si no eliges plantilla, la búsqueda recorre todas las plantillas permitidas."
+- El select de Email / plantilla mantiene "Todas las plantillas al buscar".
+- Eliminada la ayuda duplicada debajo del campo Buscar.
+- Build React actualizado.
+
 ## 2.0.1.8 — Dev checkpoint — 2026-06-19
 
 - Ajustes visuales del admin Broadcast principal: fuentes a la izquierda; emails manuales, lista global y botón preview a la derecha.
 - Resultado preview movido encima de `Asunto`.
 - Añadido acceso directo `Editor de emails` en el header.
+- Header del Editor de emails alineado visualmente con Broadcast e incluye acceso de vuelta a Broadcast.
+- Editor de emails reutiliza clases visuales del Broadcast para filtros, tablas y tabs.
+- Tabs del Editor sustituidos por botones estilo fuente y descripción movida al bloque principal.
 - Build React actualizado.
 
 ## 2.0.1.7 — Dev checkpoint — 2026-06-19

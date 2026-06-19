@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, Notice, SelectControl, Spinner, TabPanel, TextControl, TextareaControl } from '@wordpress/components';
+import { Button, Card, CardBody, Notice, SelectControl, Spinner, TextControl, TextareaControl } from '@wordpress/components';
 import { useEffect, useMemo, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { emailEditorRequest } from './api';
@@ -86,7 +86,7 @@ function EditorTab({ templates, languages, onMessage }) {
   };
 
   return (
-    <Card>
+    <Card className="pbm-react-send-config">
       <CardBody>
         <div className="pbm-email-editor-filters">
           <SelectControl
@@ -97,11 +97,11 @@ function EditorTab({ templates, languages, onMessage }) {
           />
           <TextControl
             label={__('Buscar', 'wc-pbm')}
+            placeholder={__('Si no eliges plantilla, la búsqueda recorre todas las plantillas permitidas.', 'wc-pbm')}
             value={search}
             onChange={setSearch}
-            help={__('Si no eliges plantilla, la búsqueda recorre todas las plantillas permitidas.', 'wc-pbm')}
           />
-          <Button variant="secondary" onClick={searchStrings} disabled={loading}>
+          <Button variant="secondary" className="pbm-react-source-btn" onClick={searchStrings} disabled={loading}>
             {loading ? __('Buscando...', 'wc-pbm') : __('Buscar / cargar strings', 'wc-pbm')}
           </Button>
         </div>
@@ -110,7 +110,7 @@ function EditorTab({ templates, languages, onMessage }) {
 
         {items.length > 0 && (
           <>
-            <table className="widefat striped pbm-email-editor-table">
+            <table className="widefat striped wp-list-table pbm-email-editor-table">
               <thead>
                 <tr>
                   <th>{__('Plantilla', 'wc-pbm')}</th>
@@ -232,7 +232,7 @@ function ChangesTab({ refreshKey, onMessage }) {
   }
 
   return (
-    <table className="widefat striped pbm-email-editor-table">
+    <table className="widefat striped wp-list-table pbm-email-editor-table">
       <thead>
         <tr>
           <th>{__('Idioma', 'wc-pbm')}</th>
@@ -282,6 +282,7 @@ export default function EmailStringEditorApp() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [activeTab, setActiveTab] = useState('editor');
 
   useEffect(() => {
     const bootstrap = async () => {
@@ -312,26 +313,37 @@ export default function EmailStringEditorApp() {
   }
 
   return (
-    <div className="pbm-email-editor-react">
+    <div className="pbm-email-editor-react pbm-react-shell">
       <Message message={message} onRemove={() => setMessage(null)} />
       {hasLegacyData && (
         <Notice status="info" isDismissible={false}>
           {__('Se han detectado datos antiguos en wc_custom_email_strings. Se muestran como compatibilidad, sin migración automática.', 'wc-pbm')}
         </Notice>
       )}
-      <TabPanel
-        className="pbm-email-editor-tabs"
-        tabs={[
-          { name: 'editor', title: __('Editor', 'wc-pbm') },
-          { name: 'changes', title: __('Cambios guardados', 'wc-pbm') },
-        ]}
-      >
-        {(tab) => (
-          tab.name === 'changes'
-            ? <ChangesTab refreshKey={refreshKey} onMessage={handleMessage} />
-            : <EditorTab templates={templates} languages={languages} onMessage={handleMessage} />
-        )}
-      </TabPanel>
+      <div className="pbm-react-global-list pbm-email-editor-tabs">
+        <p className="pbm-email-editor-intro">
+          {__('Editor de emails WooCommerce: busca strings en plantillas de emails y ajusta sus textos por idioma.', 'wc-pbm')}
+        </p>
+        <div className="pbm-react-source-buttons pbm-email-editor-tab-buttons">
+          <Button
+            variant={activeTab === 'editor' ? 'primary' : 'secondary'}
+            className="pbm-react-source-btn"
+            onClick={() => setActiveTab('editor')}
+          >
+            {__('Editor', 'wc-pbm')}
+          </Button>
+          <Button
+            variant={activeTab === 'changes' ? 'primary' : 'secondary'}
+            className="pbm-react-source-btn"
+            onClick={() => setActiveTab('changes')}
+          >
+            {__('Cambios guardados', 'wc-pbm')}
+          </Button>
+        </div>
+        {activeTab === 'changes'
+          ? <ChangesTab refreshKey={refreshKey} onMessage={handleMessage} />
+          : <EditorTab templates={templates} languages={languages} onMessage={handleMessage} />}
+      </div>
     </div>
   );
 }

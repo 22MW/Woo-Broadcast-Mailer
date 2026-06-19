@@ -119,6 +119,11 @@ Plan A completo aplicado: A1-A7. Email String Editor E1-E4 implementado y R1 apl
 - El resultado de la vista previa se movió encima de `Asunto`, manteniendo el botón de preview en la columna derecha.
 - Eliminado `box-shadow` de `.components-card__body` dentro del admin del plugin.
 - Añadido botón `Editor de emails` en el header del Broadcast principal, a la izquierda del logo 22MW.
+- Editor de emails recibe header visual equivalente: título, versión, enlace a Broadcast y logo 22MW.
+- Editor de emails reutiliza clases visuales existentes del Broadcast para filtros, tablas, tabs y wrapper React.
+- Tabs del Editor de emails reemplazados por botones visuales tipo fuente y la descripción se movió al mismo bloque.
+- Placeholder del campo Buscar del Email String Editor actualizado por el texto: "Si no eliges plantilla, la búsqueda recorre todas las plantillas permitidas.".
+- Select de Email / plantilla del Email String Editor mantiene el texto: "Todas las plantillas al buscar.".
 - En móvil la grid vuelve a una columna.
 - No se tocó lógica de audiencia, preview, envío ni AJAX.
 

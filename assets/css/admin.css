@@ -77,21 +77,24 @@
   gap: 10px;
 }
 
-.pbm-admin .pbm-email-editor-link {
+.pbm-admin .pbm-email-editor-link,
+.pbm-admin .pbm-broadcast-link {
   align-items: center;
-  background: var(--pbm-bg-pill-active);
+  background: #1b1b1b;
   border-radius: 999px;
-  color: var(--pbm-text-accent);
+  color: #fafafa;
   display: inline-flex;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 400;
   min-height: 36px;
   padding: 0 14px;
   text-decoration: none;
 }
 
 .pbm-admin .pbm-email-editor-link:hover,
-.pbm-admin .pbm-email-editor-link:focus {
+.pbm-admin .pbm-email-editor-link:focus,
+.pbm-admin .pbm-broadcast-link:hover,
+.pbm-admin .pbm-broadcast-link:focus {
   background: var(--pbm-btn-primary);
   color: #fff;
 }
@@ -107,7 +110,7 @@
   font-weight: 400;
 }
 .pbm-admin p {
-  font-size: 18px;
+  font-size: 16px;
 }
 .pbm-admin p,
 .pbm-admin label,
@@ -174,8 +177,23 @@
   min-height: 36px;
   padding: 0 18px;
   text-decoration: none;
+  font-size: 15px;
 }
-
+.pbm-admin .components-button.is-destructive {
+  background: var(--pbm-btn-danger);
+  border: none;
+  border-radius: 999px;
+  box-shadow: none;
+  color: #fff;
+  min-height: 36px;
+  padding: 0 18px;
+  text-decoration: none;
+  font-size: 15px;
+  margin: 12px 0;
+}
+.pbm-admin .components-button.is-destructive:hover {
+  background: var(--pbm-btn-danger-hover);
+}
 .pbm-admin #pbm-preview-btn:hover,
 .pbm-admin .pbm-bulk-delete:hover,
 .pbm-admin .pbm-view-logs:hover,
@@ -394,6 +412,7 @@
   border-radius: 999px !important;
   min-height: 36px !important;
   padding: 4px 14px !important;
+  font-size: 15px;
 }
 
 .pbm-admin .pbm-react-source-btn.is-primary {
@@ -401,7 +420,9 @@
   border: none !important;
   color: var(--pbm-text-accent) !important;
 }
-
+.pbm-admin .pbm-email-editor-table {
+  margin: 20px 0;
+}
 .pbm-admin .pbm-pill {
   background: var(--pbm-bg-pill);
   border: none;
@@ -551,7 +572,7 @@
   padding: 22px;
   width: auto;
 }
-.pbm-admin #inspector-textarea-control-0 {
+.pbm-admin .components-textarea-control__input {
   background: var(--pbm-bg-pill-active);
   border-radius: 10px;
   border: none;
@@ -570,6 +591,10 @@
   margin: 10px !important;
   color: #000000 !important;
   font-weight: bold !important;
+}
+.pbm-admin .components-notice__dismiss {
+  background: transparent !important;
+  color: #000 !important;
 }
 .pbm-admin .pbm-status-badge {
   border-radius: 999px;
@@ -725,6 +750,33 @@
 
 @media (max-width: 960px) {
   .pbm-admin .pbm-react-audience-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pbm-admin .pbm-email-editor-intro {
+  margin: 0 0 12px;
+}
+
+.pbm-admin .pbm-email-editor-tab-buttons {
+  margin-bottom: 14px;
+}
+
+.pbm-admin .pbm-email-editor-filters {
+  align-items: start;
+  display: grid;
+  gap: 22px;
+  grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) auto;
+}
+.pbm-admin .pbm-email-editor-filters button {
+  margin-top: 23px;
+}
+.pbm-admin .pbm-email-editor-filters .components-base-control {
+  margin-bottom: 0;
+}
+
+@media (max-width: 960px) {
+  .pbm-admin .pbm-email-editor-filters {
     grid-template-columns: 1fr;
   }
 }

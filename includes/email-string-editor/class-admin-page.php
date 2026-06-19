@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Admin page for Email String Editor.
  *
@@ -68,13 +69,28 @@ class Admin_Page
         }
 
         $this->enqueue_assets();
-        ?>
-        <div class="wrap pbm-email-string-editor">
-            <h1><?php esc_html_e('Editor de emails WooCommerce', 'wc-pbm'); ?></h1>
-            <p><?php esc_html_e('Busca strings en plantillas de emails WooCommerce y ajusta sus textos por idioma.', 'wc-pbm'); ?></p>
+        $plugin_file = dirname(__DIR__, 2) . '/woo-broadcast-mailer.php';
+?>
+        <div class="wrap pbm-admin pbm-email-string-editor">
+            <h1>
+                <span class="pbm-title-wrap">
+                    <?php esc_html_e('Broadcast Mailer', 'wc-pbm'); ?>
+                    <small class="pbm-version">
+                        <?php echo esc_html(sprintf(__('(v%s)', 'wc-pbm'), \WC_Product_Broadcast_Mailer\get_plugin_version())); ?>
+                    </small>
+                </span>
+                <span class="pbm-header-actions">
+                    <a class="pbm-broadcast-link" href="<?php echo esc_url(admin_url('admin.php?page=product-broadcast-mailer')); ?>">
+                        <?php esc_html_e('Broadcast', 'wc-pbm'); ?>
+                    </a>
+                    <a class="pbm-brand-link" href="https://22mw.online/" target="_blank" rel="noopener noreferrer">
+                        <img src="<?php echo esc_url(plugin_dir_url($plugin_file) . 'assets/img/22mw.svg'); ?>" alt="22MW">
+                    </a>
+                </span>
+            </h1>
             <div id="pbm-email-string-editor-app"></div>
         </div>
-        <?php
+    <?php
     }
 
     /**
@@ -105,6 +121,13 @@ class Admin_Page
                 'ajaxUrl' => admin_url('admin-ajax.php'),
                 'nonce'   => wp_create_nonce('pbm_email_editor_action'),
             )
+        );
+
+        wp_enqueue_style(
+            'pbm-admin',
+            plugin_dir_url($plugin_file) . 'assets/css/admin.css',
+            array(),
+            $version
         );
 
         $style_file = dirname(__DIR__, 2) . '/build/index.css';
@@ -309,7 +332,7 @@ class Admin_Page
      */
     private function render_editor_filters($templates, $template_id, $search)
     {
-        ?>
+    ?>
         <form method="get" action="<?php echo esc_url(admin_url('admin.php')); ?>">
             <input type="hidden" name="page" value="<?php echo esc_attr(self::MENU_SLUG); ?>">
             <input type="hidden" name="tab" value="editor">
@@ -331,13 +354,12 @@ class Admin_Page
                     <th scope="row"><label for="pbm-email-string-search"><?php esc_html_e('Buscar en todos los strings', 'wc-pbm'); ?></label></th>
                     <td>
                         <input id="pbm-email-string-search" type="search" name="s" value="<?php echo esc_attr($search); ?>" class="regular-text">
-                        <p class="description"><?php esc_html_e('Si no eliges plantilla, la búsqueda recorre todas las plantillas permitidas y compara original, traducciones y personalizaciones guardadas.', 'wc-pbm'); ?></p>
                     </td>
                 </tr>
             </table>
             <?php submit_button(__('Buscar / cargar strings', 'wc-pbm'), 'secondary'); ?>
         </form>
-        <?php
+    <?php
     }
 
     /**
@@ -354,7 +376,7 @@ class Admin_Page
             echo '<p>' . esc_html__('Selecciona una plantilla o busca una palabra para ver strings editables.', 'wc-pbm') . '</p>';
             return;
         }
-        ?>
+    ?>
         <?php if ('' !== $search) : ?>
             <h2><?php echo esc_html(sprintf(__('Resultados para: %s', 'wc-pbm'), $search)); ?></h2>
         <?php endif; ?>
@@ -402,7 +424,7 @@ class Admin_Page
             </table>
             <?php submit_button(__('Guardar personalizaciones', 'wc-pbm')); ?>
         </form>
-        <?php
+    <?php
     }
 
     /**
@@ -414,7 +436,7 @@ class Admin_Page
     private function render_changes($languages)
     {
         $has_changes = false;
-        ?>
+    ?>
         <table class="widefat striped">
             <thead>
                 <tr>
@@ -465,7 +487,7 @@ class Admin_Page
         <?php if (! $has_changes) : ?>
             <p><?php esc_html_e('No hay cambios guardados todavía.', 'wc-pbm'); ?></p>
         <?php endif; ?>
-        <?php
+<?php
     }
 
     /**

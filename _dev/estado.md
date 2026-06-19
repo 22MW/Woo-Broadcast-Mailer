@@ -55,6 +55,11 @@ Funcional con Plan A aplicado, Email String Editor E1-E5 añadido y R1 React imp
 - Plan B 22MW-BACK creado como propuesta por fases; pendiente decisión de piloto.
 - Ajuste visual aplicado: fuentes a la izquierda; emails manuales, lista global de audiencias y botón de vista previa a la derecha; resultado de preview encima de `Asunto`, sin tocar lógica funcional.
 - Header del Broadcast principal incluye acceso directo al Editor de emails.
+- Header del Editor de emails iguala el estilo visual del Broadcast principal e incluye enlace de vuelta a Broadcast.
+- Editor de emails reutiliza estilos existentes del Broadcast para mantener coherencia visual sin crear un sistema paralelo.
+- Tabs del Editor de emails usan botones visuales tipo fuente y la descripción queda dentro del mismo bloque.
+- Placeholder del campo Buscar del Email String Editor actualizado por el texto: "Si no eliges plantilla, la búsqueda recorre todas las plantillas permitidas.".
+- Select de Email / plantilla del Email String Editor mantiene el texto: "Todas las plantillas al buscar.".
 - Bugfix HPOS destinatarios por producto implementado: fallback a escaneo por `line_items` cuando la tabla lookup no devuelve destinatarios.
 
 ## En curso
