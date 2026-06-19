@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Woo Broadcast Mailer
  * Description: Sistema de envío masivo de emails: envía a compradores de productos específicos o programa envíos por rol de usuario. Compatible con HPOS y Action Scheduler.
- * Version: 2.0.2.1
+ * Version: 2.0.3
  * Author: 22MW · The Capricho Studio
  * Author URI: https://22mw.online
  * License: GPLv2 or later
@@ -11,7 +11,7 @@
  * Requires at least: 6.5
  * Requires PHP: 8.1
  * WC requires at least: 10.0
- * WC tested up to: 10.4.3    
+ * WC tested up to: 10.4.3
  * Requires Plugins: woocommerce
  * Text Domain: wc-pbm
  *

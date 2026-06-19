@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes del proyecto se documentan en este archivo.
 
+## 2.0.3
+
+- Consolidada la versión dev `2.0.2.1` como release estable.
+- Mejorado el Email String Editor para localizar strings de emails WooCommerce en plantillas block y clases de email.
+- Añadido soporte para overrides de `additional_content` en emails WooCommerce, incluyendo textos con `{store_email}` y `%s`.
+- Corregida la aplicación del texto dinámico del footer de emails WooCommerce.
+- Añadido modo ocultar texto en overrides del editor de emails.
+- Mejorada la UI de resultados del editor con tarjetas por string y build actualizado.
+
 ## 2.0.2
 
 - Consolidada la serie dev `2.0.1.1` a `2.0.1.9` en una release estable.

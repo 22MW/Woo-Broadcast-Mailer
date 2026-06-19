@@ -1,5 +1,13 @@
 # Release notes internas
 
+## 2.0.3 — Release en preparación — 2026-06-20
+
+- Consolidada `2.0.2.1` como release estable `2.0.3`.
+- Incluye mejoras del Email String Editor para plantillas block, clases de email y contenido adicional WooCommerce.
+- Incluye fix de aplicación real para textos con `{store_email}` y `%s`.
+- Incluye corrección del filtro de footer dinámico WooCommerce.
+- Validaciones previstas: `php -l`, `npm run build`, `git diff --check`, tag `v2.0.3` y GitHub Release con ZIP limpio.
+
 ## 2.0.2 — Release publicada — 2026-06-19
 
 - Release estable publicada en GitHub: `v2.0.2`.
