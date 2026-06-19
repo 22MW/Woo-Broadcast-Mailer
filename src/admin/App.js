@@ -578,39 +578,47 @@ export default function App() {
   return (
     <Card className="pbm-react-shell">
       <CardBody>
-        <SourceSelector sources={sourceOptions} source={source} onChange={setSource} />
-        <DependentSelector
-          source={source}
-          topItems={topItemsBySource[source] || []}
-          searchTerm={searchTerm}
-          onSearchTermChange={setSearchTerm}
-          searchResults={searchResults}
-          selectedValues={selectedValues}
-          onToggleSelection={toggleSelection}
-          countByKey={countByKey}
-        />
-        <AudienceBuilder
-          canAdd={selectedValues.length > 0}
-          selectedLabel={selectedLabel}
-          onAdd={addToGlobalAudience}
-          message={message}
-        />
-        <ManualEmailsInput onAddManualEmails={addManualEmails} />
-        <GlobalAudienceList
-          items={listItems}
-          onRemove={removeFromGlobalAudience}
-          onClear={clearGlobalAudience}
-          summary={summary}
-        />
-        <div className="pbm-react-preview-panel">
-          <Button variant="secondary" onClick={previewAudience} disabled={previewLoading || listItems.length === 0}>
-            {previewLoading ? __('Cargando…', 'wc-pbm') : __('Vista Previa de Destinatarios', 'wc-pbm')}
-          </Button>
-          {isPreviewStale && (
-            <div className="pbm-react-notice pbm-react-notice-warning">
-              {__('La audiencia o configuración cambió. Actualiza la vista previa antes de enviar.', 'wc-pbm')}
+        <div className="pbm-react-audience-grid">
+          <div className="pbm-react-audience-sources">
+            <SourceSelector sources={sourceOptions} source={source} onChange={setSource} />
+            <DependentSelector
+              source={source}
+              topItems={topItemsBySource[source] || []}
+              searchTerm={searchTerm}
+              onSearchTermChange={setSearchTerm}
+              searchResults={searchResults}
+              selectedValues={selectedValues}
+              onToggleSelection={toggleSelection}
+              countByKey={countByKey}
+            />
+            <AudienceBuilder
+              canAdd={selectedValues.length > 0}
+              selectedLabel={selectedLabel}
+              onAdd={addToGlobalAudience}
+              message={message}
+            />
+          </div>
+          <div className="pbm-react-audience-manual">
+            <ManualEmailsInput onAddManualEmails={addManualEmails} />
+            <GlobalAudienceList
+              items={listItems}
+              onRemove={removeFromGlobalAudience}
+              onClear={clearGlobalAudience}
+              summary={summary}
+            />
+            <div className="pbm-react-preview-panel">
+              <Button variant="secondary" onClick={previewAudience} disabled={previewLoading || listItems.length === 0}>
+                {previewLoading ? __('Cargando…', 'wc-pbm') : __('Vista Previa de Destinatarios', 'wc-pbm')}
+              </Button>
+              {isPreviewStale && (
+                <div className="pbm-react-notice pbm-react-notice-warning">
+                  {__('La audiencia o configuración cambió. Actualiza la vista previa antes de enviar.', 'wc-pbm')}
+                </div>
+              )}
             </div>
-          )}
+          </div>
+        </div>
+        <div className="pbm-react-send-config">
           {previewData && (
             <div className="pbm-react-preview-box">
               <p><strong>{__('Total de destinatarios únicos:', 'wc-pbm')}</strong> {previewData.total || 0}</p>
@@ -618,8 +626,6 @@ export default function App() {
               <div className="pbm-react-preview-emails">{(previewData.emails || []).join(', ')}</div>
             </div>
           )}
-        </div>
-        <div className="pbm-react-send-config">
           <TextControl label={__('Asunto', 'wc-pbm')} value={subject} onChange={setSubject} />
           <div className="pbm-react-classic-editor">
             <label htmlFor="pbm_message">{__('Mensaje', 'wc-pbm')}</label>

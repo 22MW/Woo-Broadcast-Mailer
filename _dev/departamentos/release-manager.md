@@ -6,11 +6,11 @@
 
 ## Resumen humano
 
-Revisión release/versionado actualizada. El plugin queda preparado para checkpoint dev `2.0.1.7` con A4 post-fix y Plan B 22MW-BACK documentado. Pendiente generar y revisar ZIP real antes de cualquier publicación.
+Revisión release/versionado actualizada. El plugin queda preparado para checkpoint dev `2.0.1.8` con ajustes visuales del admin Broadcast principal. Pendiente generar y revisar ZIP real antes de cualquier publicación.
 
 ## Descubierto
 
-- Cabecera del plugin está en `2.0.1.7` dev.
+- Cabecera del plugin está en `2.0.1.8` dev.
 - `readme.txt` está en versión pública base `2.0.1`.
 - `readme.txt` incluye changelog y upgrade notice de `2.0.1`.
 - `CHANGELOG.md` y `README.md` llegan a `2.0.0`, falta `2.0.1`.
@@ -37,6 +37,7 @@ Revisión release/versionado actualizada. El plugin queda preparado para checkpo
 - Commit `1ec86c4` pusheado en `devWooBM`.
 - Preparado checkpoint dev `2.0.1.5` para E4 Email String Editor con QA OK reportado por usuario.
 - Preparado checkpoint dev `2.0.1.7` para A4 post-fix y Plan B 22MW-BACK.
+- Preparado checkpoint dev `2.0.1.8` para ajustes visuales del admin Broadcast principal.
 
 ## Pendiente
 
@@ -45,12 +46,12 @@ Revisión release/versionado actualizada. El plugin queda preparado para checkpo
 - Decidir si `src/`, `package.json` y `package-lock.json` entran en ZIP distribuible.
 - Añadir entrada `2.0.1` en `CHANGELOG.md` y decidir actualización de `README.md`.
 - Decidir versión de `package.json`/`package-lock.json`.
-- Consolidar checkpoints dev `2.0.1.1` a `2.0.1.7` en versión pública estable antes de release.
+- Consolidar checkpoints dev `2.0.1.1` a `2.0.1.8` en versión pública estable antes de release.
 - Probar updater en staging.
 
 ## No volver a investigar
 
-- Versión dev confirmada: `2.0.1.7` en cabecera.
+- Versión dev confirmada: `2.0.1.8` en cabecera.
 - Versión pública base confirmada: `2.0.1` en `readme.txt`.
 - Updater GitHub Releases confirmado.
 - Riesgo original confirmado: workflow no excluía `_dev/`.

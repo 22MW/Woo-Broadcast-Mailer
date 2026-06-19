@@ -111,6 +111,17 @@ Plan A completo aplicado: A1-A7. Email String Editor E1-E4 implementado y R1 apl
 - Añadida UI React mínima con tabs Editor / Cambios guardados, filtros, tabla editable por idioma, guardado por lote, edición inline y borrado.
 - Build React actualizado en `build/` con Node local.
 
+### Ajuste visual audiencia
+
+- `Fuente`, selector dependiente y botón de añadir quedan agrupados junto a `Emails manuales` en una grid de dos columnas en desktop.
+- `Lista global de audiencias` se movió debajo de `Emails manuales` dentro de la columna derecha.
+- `Vista Previa de Destinatarios` se movió debajo de la lista global dentro de la misma columna derecha.
+- El resultado de la vista previa se movió encima de `Asunto`, manteniendo el botón de preview en la columna derecha.
+- Eliminado `box-shadow` de `.components-card__body` dentro del admin del plugin.
+- Añadido botón `Editor de emails` en el header del Broadcast principal, a la izquierda del logo 22MW.
+- En móvil la grid vuelve a una columna.
+- No se tocó lógica de audiencia, preview, envío ni AJAX.
+
 ## Pendiente
 
 - QA funcional real del aviso admin y rutas AJAX.
@@ -121,6 +132,7 @@ Plan A completo aplicado: A1-A7. Email String Editor E1-E4 implementado y R1 apl
 - QA de borrado con registros `completed`, `cancelled`, `pending` y `running`.
 - Validar ZIP/release real antes de publicar.
 - QA admin de Email String Editor React R1: bootstrap, búsqueda, guardado por lote, edición inline y borrado.
+- QA visual del ajuste de audiencia en desktop y móvil.
 - Validar QA funcional del bugfix HPOS con producto `380` y pedidos `655`, `656`, `711`.
 - QA de E4 en email WooCommerce controlado: confirmar que aplica override y no afecta admin/frontend.
 

@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.1.8
+- Adjusted broadcast admin layout for audience source, manual emails, global audience list, preview result, and header shortcut.
+- Added direct header link to Email String Editor.
+- Updated React build assets.
+
 ## 2.0.1.7
 - Fixed stale preview detection so scheduling and scheduled datetime changes do not invalidate recipient preview.
 - Kept stale preview protection for audience, manual emails, batch size, and emails per hour.

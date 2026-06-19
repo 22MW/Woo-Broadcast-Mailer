@@ -1,43 +1,41 @@
-@import url('https://fonts.googleapis.com/css2?family=Afacad:ital,wght@0,400..700;1,400..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Afacad:ital,wght@0,400..700;1,400..700&display=swap");
 
 :root {
-    --vfwoo-bg: #f6f5f3;
-    --vfwoo-white: #ffffff;
-    --vfwoo-text: #1a1a1a;
-    --vfwoo-verde: #0e415d;
-    --vfwoo-azul: #7f8bec;
-    --vfwoo-azul-light: #d0d5fb;
-    --vfwoo-red: #b33654;
-    --vfwoo-orange: #f98c59;
-    --vfwoo-orange-light: #ffdccc;
+  --vfwoo-bg: #f6f5f3;
+  --vfwoo-white: #ffffff;
+  --vfwoo-text: #1a1a1a;
+  --vfwoo-verde: #0e415d;
+  --vfwoo-azul: #7f8bec;
+  --vfwoo-azul-light: #d0d5fb;
+  --vfwoo-red: #b33654;
+  --vfwoo-orange: #f98c59;
+  --vfwoo-orange-light: #ffdccc;
 }
 
 .pbm-admin {
-    --pbm-bg-page: var(--vfwoo-bg);
-    --pbm-bg-card: var(--vfwoo-white);
-    --pbm-bg-soft: #eeedf4;
-    --pbm-bg-pill: #eceffc;
-    --pbm-bg-pill-active: var(--vfwoo-azul-light);
-    --pbm-bg-accent-soft: #eaf0ff;
-    --pbm-text-main: var(--vfwoo-text);
-    --pbm-text-muted: #555;
-    --pbm-text-accent: var(--vfwoo-verde);
-    --pbm-border: transparent;
-    --pbm-border-soft: transparent;
-    --pbm-border-accent: var(--vfwoo-azul);
-    --pbm-btn-dark: #17181c;
-    --pbm-btn-primary: var(--vfwoo-azul);
-    --pbm-btn-primary-hover: #6d7de8;
-    --pbm-btn-danger: var(--vfwoo-red);
-    --pbm-btn-danger-hover: #9f2f4b;
+  --pbm-bg-page: var(--vfwoo-bg);
+  --pbm-bg-card: var(--vfwoo-white);
+  --pbm-bg-soft: var(--vfwoo-bg);
+  --pbm-bg-pill: #eceffc;
+  --pbm-bg-pill-active: var(--vfwoo-azul-light);
+  --pbm-bg-accent-soft: #eaf0ff;
+  --pbm-text-main: var(--vfwoo-text);
+  --pbm-text-muted: #555;
+  --pbm-text-accent: var(--vfwoo-verde);
+  --pbm-border: transparent;
+  --pbm-border-soft: transparent;
+  --pbm-border-accent: var(--vfwoo-azul);
+  --pbm-btn-dark: #17181c;
+  --pbm-btn-primary: var(--vfwoo-azul);
+  --pbm-btn-primary-hover: #6d7de8;
+  --pbm-btn-danger: var(--vfwoo-red);
+  --pbm-btn-danger-hover: #9f2f4b;
 
-    font-family: "Afacad", sans-serif;
-    font-size: 14px;
-    background: var(--pbm-bg-page);
-    border-radius: 20px;
-    color: var(--pbm-text-main);
-    margin-top: 18px;
-    padding: 16px 18px 22px;
+  font-family: "Afacad", sans-serif;
+  font-size: 16px;
+  border-radius: 20px;
+  color: var(--pbm-text-main);
+  margin-top: 18px;
 }
 
 .pbm-admin h1,
@@ -47,88 +45,115 @@
 .pbm-admin th,
 .pbm-admin label,
 .pbm-admin summary {
-    color: var(--pbm-text-main);
-    font-weight: 700;
+  color: var(--pbm-text-main);
+  font-weight: 700;
 }
 
 .pbm-admin > h1 {
-    align-items: center;
-    background: var(--pbm-bg-card);
-    border-radius: 18px;
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    margin: 0 0 16px;
-    padding: 14px 20px;
+  align-items: center;
+  background: var(--pbm-bg-card);
+  border-radius: 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 14px 20px;
 }
 
 .pbm-admin .pbm-title-wrap {
-    align-items: center;
-    display: inline-flex;
-    gap: 10px;
+  align-items: center;
+  display: inline-flex;
+  gap: 10px;
 }
 
 .pbm-admin .pbm-brand-link {
-    align-items: center;
-    display: inline-flex;
+  align-items: center;
+  display: inline-flex;
+}
+
+.pbm-admin .pbm-header-actions {
+  align-items: center;
+  display: inline-flex;
+  gap: 10px;
+}
+
+.pbm-admin .pbm-email-editor-link {
+  align-items: center;
+  background: var(--pbm-bg-pill-active);
+  border-radius: 999px;
+  color: var(--pbm-text-accent);
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: 700;
+  min-height: 36px;
+  padding: 0 14px;
+  text-decoration: none;
+}
+
+.pbm-admin .pbm-email-editor-link:hover,
+.pbm-admin .pbm-email-editor-link:focus {
+  background: var(--pbm-btn-primary);
+  color: #fff;
 }
 
 .pbm-admin .pbm-brand-link img {
-    display: block;
-    height: 44px;
-    width: auto;
+  display: block;
+  height: 44px;
+  width: auto;
 }
 
 .pbm-admin .pbm-version {
-    color: #666;
-    font-weight: 400;
+  color: #666;
+  font-weight: 400;
 }
-
+.pbm-admin p {
+  font-size: 18px;
+}
 .pbm-admin p,
 .pbm-admin label,
 .pbm-admin input,
 .pbm-admin select,
 .pbm-admin textarea,
 .pbm-admin button {
-    font-family: inherit;
+  font-family: inherit;
 }
 
 .pbm-admin #pbm-broadcast-form {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .pbm-admin .pbm-legacy-data {
-    display: none;
+  display: none;
 }
 
 .pbm-admin .form-table th {
-    font-size: 16px;
-    padding-top: 18px;
-    vertical-align: top;
-    width: 190px;
+  font-size: 16px;
+  padding-top: 18px;
+  vertical-align: top;
+  width: 190px;
 }
 
 .pbm-admin .form-table td {
-    padding-top: 16px;
+  padding-top: 16px;
 }
 
 .pbm-admin select,
 .pbm-admin input[type="text"],
 .pbm-admin input[type="number"],
 .pbm-admin input[type="datetime-local"] {
-    background: #fff;
-    border: none;
-    border-radius: 12px;
-    box-shadow: none;
-    min-height: 40px;
-    padding: 8px 12px;
+  background: #fff;
+  border: none;
+  border-radius: 12px;
+  box-shadow: none;
+  min-height: 40px;
+  padding: 8px 12px;
 }
 
 .pbm-admin #pbm_recipient_source,
 .pbm-admin #pbm_user_role,
 .pbm-admin #pbm_mailmint_list {
-    min-width: 250px;
+  min-width: 250px;
 }
 
 .pbm-admin #pbm-preview-btn,
@@ -141,14 +166,14 @@
 .pbm-admin .button.button-primary,
 .pbm-admin .button.button-secondary,
 .pbm-admin .components-button:not(.is-link) {
-    background: var(--pbm-btn-primary);
-    border: none;
-    border-radius: 999px;
-    box-shadow: none;
-    color: #fff;
-    min-height: 36px;
-    padding: 0 18px;
-    text-decoration: none;
+  background: var(--pbm-btn-primary);
+  border: none;
+  border-radius: 999px;
+  box-shadow: none;
+  color: #fff;
+  min-height: 36px;
+  padding: 0 18px;
+  text-decoration: none;
 }
 
 .pbm-admin #pbm-preview-btn:hover,
@@ -161,77 +186,77 @@
 .pbm-admin .button.button-primary:hover,
 .pbm-admin .button.button-secondary:hover,
 .pbm-admin .components-button:not(.is-link):hover {
-    background: var(--pbm-btn-primary-hover);
-    color: #fff;
+  background: var(--pbm-btn-primary-hover);
+  color: #fff;
 }
 
 .pbm-admin .components-button:not(.is-link)[disabled],
 .pbm-admin .button[disabled] {
-    background: #bfc5d7 !important;
-    color: #edf0f7 !important;
-    cursor: not-allowed;
+  background: #bfc5d7 !important;
+  color: #edf0f7 !important;
+  cursor: not-allowed;
 }
 
 .pbm-admin .components-button.is-destructive:not(.is-link),
 .pbm-admin .pbm-delete-scheduled {
-    background: var(--pbm-btn-danger) !important;
-    color: #fff !important;
+  background: var(--pbm-btn-danger) !important;
+  color: #fff !important;
 }
 
 .pbm-admin .components-button.is-destructive:not(.is-link):hover,
 .pbm-admin .pbm-delete-scheduled:hover {
-    background: var(--pbm-btn-danger-hover) !important;
+  background: var(--pbm-btn-danger-hover) !important;
 }
 
 .pbm-admin #pbm-preview-results,
 .pbm-admin #pbm-interval-preview,
 .pbm-admin .pbm-info-box {
-    background: var(--pbm-bg-soft);
-    border: none;
-    border-radius: 14px;
+  background: var(--vfwoo-white);
+  border: none;
+  border-radius: 14px;
 }
 
 .pbm-admin .pbm-warning-text {
-    color: #b32d2e;
-    margin-top: 8px;
+  color: #b32d2e;
+  margin-top: 8px;
 }
 
 .pbm-admin .pbm-info-box {
-    margin-top: 20px;
-    padding: 20px 30px;
+  margin-top: 20px;
+  padding: 20px 30px;
 }
 
 .pbm-admin .pbm-info-box-compact {
-    padding: 10px 30px;
+  padding: 10px 30px;
 }
 
 .pbm-admin .wp-list-table {
-    border: none;
-    border-radius: 12px;
-    overflow: hidden;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .pbm-admin .wp-list-table th {
-    background: #eef1fb;
-    font-size: 13px;
-    padding: 10px;
+  background: #eef1fb;
+  font-size: 13px;
+  padding: 10px;
 }
 
 .pbm-admin .wp-list-table td {
-    padding: 10px;
-    vertical-align: top;
+  padding: 10px;
+  vertical-align: top;
 }
 
 .pbm-admin #pbm-logs-modal > div {
-    border-radius: 16px;
+  border-radius: 16px;
 }
 
 .pbm-admin #pbm-source-row-legacy {
-    display: none;
+  display: none;
 }
 
 .pbm-admin #pbm-selector-row-legacy .pbm-selector-legacy-block {
-    display: none !important;
+  display: none !important;
 }
 
 .pbm-admin #pbm-subject-row-legacy,
@@ -242,21 +267,30 @@
 .pbm-admin #pbm-submit-wrap-legacy,
 .pbm-admin #pbm-preview-btn,
 .pbm-admin #pbm-preview-results {
-    display: none !important;
+  display: none !important;
 }
 
 .pbm-admin .pbm-react-classic-editor {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .pbm-admin .pbm-react-classic-editor > label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 6px;
+  display: block;
+  font-weight: 600;
+  margin-bottom: -26px;
+  margin-top: 20px;
 }
 
 .pbm-admin .pbm-react-shell {
-    margin-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+.pbm-admin .components-card,
+.pbm-admin .components-card[class*="css-"],
+.pbm-admin .pbm-react-shell,
+.pbm-admin .pbm-react-shell[class*="css-"],
+.pbm-admin .components-card__body {
+  box-shadow: none !important;
 }
 
 .pbm-admin .pbm-react-source,
@@ -264,364 +298,433 @@
 .pbm-admin .pbm-react-audience-builder,
 .pbm-admin .pbm-react-manual-emails,
 .pbm-admin .pbm-react-global-list {
-    margin-bottom: 14px;
+  margin-bottom: 14px;
 }
 
 .pbm-admin .pbm-react-preview-panel,
 .pbm-admin .pbm-react-send-config {
-    margin-bottom: 14px;
+  margin-bottom: 14px;
 }
 
 .pbm-admin .pbm-react-preview-box,
 .pbm-admin .pbm-react-send-config {
-    background: #f5f6fb;
-    border: none;
-    border-radius: 12px;
-    margin-top: 10px;
-    padding: 12px;
+  background: var(--pbm-bg-pill-active);
+  border: none;
+  border-radius: 12px;
+  margin-top: 10px;
+  padding: 12px;
 }
 
 .pbm-admin .pbm-react-preview-emails {
-    max-height: 110px;
-    overflow: auto;
-    word-break: break-word;
+  max-height: 110px;
+  overflow: auto;
+  word-break: break-word;
 }
 
 .pbm-admin .pbm-react-send-grid {
-    align-items: end;
-    display: grid;
-    gap: 10px;
-    grid-template-columns: 170px 170px 190px minmax(260px, 1fr);
+  align-items: end;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 170px 170px 190px minmax(260px, 1fr);
 }
 
 .pbm-admin .pbm-react-send-grid .components-base-control {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .pbm-admin .pbm-react-send-grid .components-datetime__date {
-    min-width: 220px;
-    width: 220px;
+  min-width: 220px;
+  width: 220px;
 }
 
 .pbm-admin .pbm-react-send-grid .components-checkbox-control {
-    align-self: end;
-    margin-bottom: 2px;
+  align-self: end;
+  margin-bottom: 2px;
 }
 
 .pbm-admin .pbm-react-send-grid .components-text-control__input[type="number"] {
-    width: 100%;
+  width: 100%;
 }
 
 .pbm-admin .pbm-react-estimate {
-    background: var(--pbm-bg-soft);
-    border-radius: 12px;
-    grid-column: 1 / -1;
-    margin-top: 10px;
-    padding: 10px 12px;
+  background: var(--pbm-bg-soft);
+  border-radius: 12px;
+  grid-column: 1 / -1;
+  margin-top: 10px;
+  padding: 10px 12px;
 }
 
 .pbm-admin .pbm-react-send-actions {
-    grid-column: 1 / -1;
-    margin-top: 10px;
+  grid-column: 1 / -1;
+  margin-top: 10px;
 }
 
 @media (max-width: 960px) {
-    .pbm-admin .pbm-react-send-grid {
-        grid-template-columns: 1fr;
-    }
+  .pbm-admin .pbm-react-send-grid {
+    grid-template-columns: 1fr;
+  }
 
-    .pbm-admin .pbm-react-send-grid .components-datetime__date {
-        min-width: 0;
-        width: 100%;
-    }
+  .pbm-admin .pbm-react-send-grid .components-datetime__date {
+    min-width: 0;
+    width: 100%;
+  }
 }
 
 .pbm-admin .pbm-react-source h3,
 .pbm-admin .pbm-react-selector h3,
 .pbm-admin .pbm-react-manual-emails h3,
 .pbm-admin .pbm-react-global-list h3 {
-    font-size: 16px;
-    margin: 0 0 8px;
+  font-size: 16px;
+  margin: 0 0 8px;
 }
 
 .pbm-admin .pbm-react-source-buttons,
 .pbm-admin .pbm-top-items,
 .pbm-admin .pbm-search-results,
 .pbm-admin .pbm-selected-values {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
 }
-
+.pbm-admin .pbm-selected-values {
+  padding: 10px 5px;
+}
 .pbm-admin .pbm-react-source-btn {
-    border-radius: 999px !important;
-    min-height: 36px !important;
-    padding: 4px 14px !important;
+  border-radius: 999px !important;
+  min-height: 36px !important;
+  padding: 4px 14px !important;
 }
 
 .pbm-admin .pbm-react-source-btn.is-primary {
-    background: var(--pbm-bg-pill-active) !important;
-    border: none !important;
-    color: var(--pbm-text-accent) !important;
+  background: var(--pbm-bg-pill-active) !important;
+  border: none !important;
+  color: var(--pbm-text-accent) !important;
 }
 
 .pbm-admin .pbm-pill {
-    background: var(--pbm-bg-pill);
-    border: none;
-    border-radius: 999px;
-    color: #273856;
-    cursor: pointer;
-    font-size: 14px;
-    line-height: 1.2;
-    padding: 6px 10px;
+  background: var(--pbm-bg-pill);
+  border: none;
+  border-radius: 999px;
+  color: #273856;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1.2;
+  padding: 6px 10px;
 }
 
 .pbm-admin .pbm-pill.is-selected {
-    background: var(--pbm-bg-pill-active);
-    border-color: #aeb9fb;
+  background: var(--pbm-bg-pill-active);
+  border-color: #aeb9fb;
 }
 
 .pbm-admin .pbm-selected-chip,
 .pbm-admin .pbm-count-pill {
-    background: var(--pbm-bg-accent-soft);
-    border-radius: 999px;
-    color: #1e3f67;
-    font-size: 14px;
+  background: var(--pbm-bg-accent-soft);
+  border-radius: 999px;
+  color: #1e3f67;
+  font-size: 14px;
 }
 
 .pbm-admin .pbm-selected-chip {
-    padding: 4px 8px;
+  padding: 4px 8px;
 }
 
 .pbm-admin .pbm-count-pill {
-    display: inline-block;
-    font-style: normal;
-    margin-left: 8px;
-    padding: 2px 8px;
+  display: inline-block;
+  font-style: normal;
+  margin-left: 8px;
+  padding: 2px 8px;
 }
 
 .pbm-admin .pbm-react-audience-builder .components-button {
-    border-radius: 999px;
+  border-radius: 999px;
 }
 
 .pbm-admin .pbm-react-manual-emails .components-base-control {
-    max-width: 520px;
+  max-width: 520px;
 }
 
 .pbm-admin .pbm-react-global-list {
-    background: #f5f6fb;
-    border: none;
-    border-radius: 12px;
-    padding: 12px;
+  background: var(--vfwoo-white);
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
 }
 
 .pbm-admin .pbm-react-global-list-header {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
 }
 
 .pbm-admin .pbm-react-global-list-items {
-    display: grid;
-    gap: 8px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .pbm-admin .pbm-react-global-list-items li {
-    background: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 8px 10px;
+  background: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 10px;
 }
 
 .pbm-admin .pbm-list-main {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
 }
 
 .pbm-admin .pbm-list-actions {
-    display: flex;
-    gap: 6px;
+  display: flex;
+  gap: 6px;
 }
 
 .pbm-admin .pbm-react-summary {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 10px;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
 }
 
 .pbm-admin .pbm-list-detail {
-    color: #4a4f61;
-    font-size: 14px;
-    margin-top: 6px;
-    word-break: break-word;
+  color: #4a4f61;
+  font-size: 14px;
+  margin-top: 6px;
+  word-break: break-word;
 }
 
 .pbm-admin .pbm-legacy-scheduled {
-    display: none;
+  display: none;
 }
 
 .pbm-admin .pbm-react-scheduled {
-    background: #f5f6fb;
-    border: none;
-    border-radius: 12px;
-    padding: 12px;
+  background: var(--pbm-bg-pill-active);
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
 }
 
 .pbm-admin .pbm-react-scheduled-header {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
 
 .pbm-admin .pbm-react-scheduled-actions {
-    display: flex;
-    gap: 8px;
+  display: flex;
+  gap: 8px;
 }
 
 .pbm-admin .pbm-react-scheduled-sort {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 .pbm-admin .pbm-sort-btn {
-    background: var(--pbm-bg-pill);
-    border: none;
-    border-radius: 999px;
-    cursor: pointer;
-    font-size: 14px;
-    padding: 6px 10px;
+  background: var(--pbm-bg-pill);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 6px 10px;
 }
 
 .pbm-admin .pbm-react-scheduled-list {
-    display: grid;
-    gap: 10px;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
 .pbm-admin .pbm-scheduled-card {
-    background: #fff;
-    border: none;
-    border-radius: 10px;
-    min-width: 0;
-    padding: 22px;
-    width: auto;
+  background: #fff;
+  border: none;
+  border-radius: 10px;
+  min-width: 0;
+  padding: 22px;
+  width: auto;
 }
 .pbm-admin #inspector-textarea-control-0 {
-    background: var(--pbm-bg-pill);
-    border-radius: 10px;
-    border: none;
+  background: var(--pbm-bg-pill-active);
+  border-radius: 10px;
+  border: none;
+  margin-bottom: 20px;
 }
 .pbm-admin .pbm-scheduled-card-head {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    line-height: 1.3;
-    margin-bottom: 8px;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  line-height: 1.3;
+  margin-bottom: 8px;
 }
-
+.pbm-admin .components-notice {
+  border: #fff !important;
+  border-radius: 999px !important;
+  margin: 10px !important;
+  color: #000000 !important;
+  font-weight: bold !important;
+}
 .pbm-admin .pbm-status-badge {
-    border-radius: 999px;
-    display: inline-block;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 4px 10px;
+  border-radius: 999px;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
 }
 
 .pbm-admin .pbm-status-pending {
-    background: #ffdccc;
-    color: #8a3f1f;
+  background: #ffdccc;
+  color: #8a3f1f;
 }
 
 .pbm-admin .pbm-status-running {
-    background: #d0d5fb;
-    color: #24306f;
+  background: #d0d5fb;
+  color: #24306f;
 }
 
 .pbm-admin .pbm-status-completed {
-    background: #d9f2e3;
-    color: #1f5d3b;
+  background: #d9f2e3;
+  color: #1f5d3b;
 }
 
 .pbm-admin .pbm-status-cancelled {
-    background: #ffd9e2;
-    color: #8a2a44;
+  background: #ffd9e2;
+  color: #8a2a44;
 }
 
 .pbm-admin .pbm-scheduled-card div {
-    overflow-wrap: anywhere;
-    word-break: break-word;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .pbm-admin .pbm-scheduled-card-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .pbm-admin .pbm-react-pagination {
-    align-items: center;
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 12px;
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 12px;
 }
 
 .pbm-admin .pbm-react-logs-modal {
-    align-items: center;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    inset: 0;
-    justify-content: center;
-    position: fixed;
-    z-index: 99999;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  position: fixed;
+  z-index: 99999;
 }
 
 .pbm-admin .pbm-react-logs-box {
-    background: #fff;
-    border-radius: 10px;
-    max-height: 80vh;
-    max-width: 760px;
-    overflow: auto;
-    padding: 18px;
-    width: calc(100% - 32px);
+  background: #fff;
+  border-radius: 10px;
+  max-height: 80vh;
+  max-width: 760px;
+  overflow: auto;
+  padding: 18px;
+  width: calc(100% - 32px);
 }
 
 @media (max-width: 1200px) {
-    .pbm-admin .pbm-react-scheduled-list {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+  .pbm-admin .pbm-react-scheduled-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
-
 @media (max-width: 960px) {
-    .pbm-admin .form-table th {
-        font-size: 16px;
-        width: 100%;
-    }
+  .pbm-admin .form-table th {
+    font-size: 16px;
+    width: 100%;
+  }
 
-    .pbm-admin .form-table,
-    .pbm-admin .form-table tbody,
-    .pbm-admin .form-table tr,
-    .pbm-admin .form-table td,
-    .pbm-admin .form-table th {
-        display: block;
-    }
+  .pbm-admin .form-table,
+  .pbm-admin .form-table tbody,
+  .pbm-admin .form-table tr,
+  .pbm-admin .form-table td,
+  .pbm-admin .form-table th {
+    display: block;
+  }
 
-    .pbm-admin .form-table td {
-        padding-top: 4px;
-    }
+  .pbm-admin .form-table td {
+    padding-top: 4px;
+  }
 }
 
 @media (max-width: 720px) {
-    .pbm-admin .pbm-react-scheduled-list {
-        grid-template-columns: minmax(0, 1fr);
-    }
+  .pbm-admin .pbm-react-scheduled-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.pbm-admin .components-input-control__container {
+  border-radius: 999px !important;
+}
+.pbm-admin .pbm-react-audience-grid {
+  align-items: start;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  margin-bottom: 14px;
+  background: #f6f5f3;
+  padding: 20px;
+  border-radius: 20px;
+}
+
+.pbm-admin .pbm-react-audience-grid .pbm-react-manual-emails,
+.pbm-admin .pbm-react-audience-grid .pbm-react-global-list,
+.pbm-admin .pbm-react-audience-grid .pbm-react-preview-panel,
+.pbm-admin .pbm-react-audience-grid .pbm-react-source,
+.pbm-admin .pbm-react-audience-grid .pbm-react-selector,
+.pbm-admin .pbm-react-audience-grid .pbm-react-audience-builder {
+  margin-bottom: 0;
+}
+
+.pbm-admin .pbm-react-audience-grid .pbm-react-preview-panel {
+  background: var(--pbm-bg-soft);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.pbm-admin .pbm-react-audience-grid .pbm-react-source,
+.pbm-admin .pbm-react-audience-grid .pbm-react-selector,
+.pbm-admin .pbm-react-audience-grid .pbm-react-audience-builder,
+.pbm-admin .pbm-react-audience-grid .pbm-react-manual-emails {
+  background: var(--pbm-bg-soft);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.pbm-admin .pbm-react-audience-sources {
+  display: grid;
+  gap: 12px;
+}
+
+.pbm-admin .pbm-react-audience-manual {
+  display: grid;
+  gap: 12px;
+}
+
+.pbm-admin
+  .pbm-react-audience-grid
+  .pbm-react-manual-emails
+  .components-base-control {
+  max-width: none;
+}
+
+@media (max-width: 960px) {
+  .pbm-admin .pbm-react-audience-grid {
+    grid-template-columns: 1fr;
+  }
 }

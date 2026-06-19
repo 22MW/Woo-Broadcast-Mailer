@@ -1,11 +1,19 @@
 # Release notes internas
 
+## 2.0.1.8 — Dev checkpoint — 2026-06-19
+
+- Ajustes visuales del admin Broadcast principal: fuentes a la izquierda; emails manuales, lista global y botón preview a la derecha.
+- Resultado preview movido encima de `Asunto`.
+- Añadido acceso directo `Editor de emails` en el header.
+- Build React actualizado.
+
 ## 2.0.1.7 — Dev checkpoint — 2026-06-19
 
 - A4 ajustado: activar programación o cambiar fecha/hora ya no invalida la preview porque no cambia destinatarios.
 - Build React actualizado tras el ajuste.
 - QA A4 post-fix reportado OK por usuario.
 - Plan B 22MW-BACK añadido como propuesta por fases.
+- Ajuste visual posterior sin checkpoint: fuentes a la izquierda; emails manuales, lista global y botón preview a la derecha; resultado preview encima de `Asunto`.
 
 ## 2.0.1.6 — Dev checkpoint — 2026-06-19
 

@@ -6,7 +6,7 @@
 
 ## Resumen humano
 
-Plugin funcional en v2.0.1.7 dev. Migración a React completada. Flujo multi-fuente con audiencia global implementado. Action Scheduler integrado. Updater activo vía GitHub Releases. El Plan A completo está aplicado. Email String Editor E1-E4 está implementado: admin seguro y aplicación `gettext` limitada al contexto de emails WooCommerce.
+Plugin funcional en v2.0.1.8 dev. Migración a React completada. Flujo multi-fuente con audiencia global implementado. Action Scheduler integrado. Updater activo vía GitHub Releases. El Plan A completo está aplicado. Email String Editor E1-E4 está implementado: admin seguro y aplicación `gettext` limitada al contexto de emails WooCommerce.
 
 ## Estado general
 
@@ -53,6 +53,8 @@ Funcional con Plan A aplicado, Email String Editor E1-E5 añadido y R1 React imp
 - R1 implementado: interfaz admin del Editor de emails migrada a React con AJAX seguro.
 - QA A4 post-fix reportado OK por usuario.
 - Plan B 22MW-BACK creado como propuesta por fases; pendiente decisión de piloto.
+- Ajuste visual aplicado: fuentes a la izquierda; emails manuales, lista global de audiencias y botón de vista previa a la derecha; resultado de preview encima de `Asunto`, sin tocar lógica funcional.
+- Header del Broadcast principal incluye acceso directo al Editor de emails.
 - Bugfix HPOS destinatarios por producto implementado: fallback a escaneo por `line_items` cuando la tabla lookup no devuelve destinatarios.
 
 ## En curso
@@ -125,7 +127,7 @@ Funcional con Plan A aplicado, Email String Editor E1-E5 añadido y R1 React imp
 
 - Ruta real del plugin: `app/public/wp-content/plugins/Woo-Broadcast-Mailer/`.
 - Rama de trabajo del plugin: `devWooBM`.
-- Versión dev actual del plugin: `2.0.1.7`.
+- Versión dev actual del plugin: `2.0.1.8`.
 - Versión pública base: `2.0.1`.
 - Text domain correcto del plugin: `wc-pbm`.
 - Los planes de `_dev/_md/` (`PLAN_MULTI_FUENTE` y `PLAN_MIGRACION`) están implementados en v2.0.0. No re-investigar como pendientes.
