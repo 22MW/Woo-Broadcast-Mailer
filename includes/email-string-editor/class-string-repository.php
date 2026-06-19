@@ -17,6 +17,7 @@ class String_Repository
     const OPTION_NAME = 'pbm_email_string_overrides';
     const LEGACY_OPTION_NAME = 'wc_custom_email_strings';
     const DOMAIN = 'woocommerce';
+    const HIDDEN_MARKER = '__pbm_hidden__';
 
     /**
      * Cached data for current request.

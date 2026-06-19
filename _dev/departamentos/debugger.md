@@ -6,59 +6,59 @@
 
 ## Resumen humano
 
-QA funcional reportó inicialmente que con 3 pedidos de prueba con varios productos, el plugin mostraba `0 emails`. Nuevo bug A4: al tocar “Programar envío”, la preview se marcaba obsoleta sin cambiar destinatarios.
+Diagnósticos activos cerrados: fallback HPOS para destinatarios por producto, A4 preview al programar y visibilidad/aplicación de títulos, headings y subjects en Email String Editor.
 
 ## Descubierto
 
-- WooCommerce/MCP devuelve 3 pedidos recientes en el rango consultado: `655`, `656`, `711`.
-- Los 3 pedidos están en `processing`.
-- Los pedidos tienen `billing_email` populated.
-- El pedido `655` contiene el producto `380` (`IVA - 4`) en `line_items`.
-- El producto `380` existe y está publicado.
-- El flujo del plugin para producto usa `get_recipients_from_orders()`.
-- Si HPOS está activo, `get_recipients_from_orders()` delega directamente en `get_recipients_from_order_lookup()` y retorna ese resultado.
-- `get_recipients_from_order_lookup()` primero obtiene IDs desde `wp_wc_order_product_lookup`. Si esa tabla no devuelve IDs, retorna `0 emails` sin escanear los `line_items` reales del pedido.
+- WooCommerce/MCP devolvió pedidos de prueba `655`, `656`, `711` con emails de facturación.
+- El producto `380` existe y aparece en el pedido `655`.
+- HPOS lookup podía devolver `0 emails` aunque los pedidos tuvieran `line_items` válidos.
+- A4 marcaba preview como obsoleta al activar programación o cambiar fecha/hora aunque no cambiaban destinatarios.
+- El Email String Editor solo escaneaba strings estáticos dentro de funciones de traducción.
+- Los H1 de WooCommerce se imprimen desde `$email_heading` en `email-header.php`, no como string traducible directo.
+- WooCommerce expone filtros dinámicos `woocommerce_email_heading_{id}` y `woocommerce_email_subject_{id}`.
 
 ## Hecho
 
-- Revisado `includes/functions-products.php`.
-- Revisado `includes/ajax-handlers.php`.
-- Consultados pedidos recientes por MCP WooCommerce.
-- Consultados productos `380`, `381`, `382` por MCP WooCommerce.
-- Aplicado fallback HPOS: si `get_recipients_from_order_lookup()` no devuelve destinatarios, se escanean pedidos por `line_items`.
-
-## Hipótesis probable
-
-- La causa más probable es que HPOS esté activo y la tabla `wp_wc_order_product_lookup` esté vacía, incompleta o no sincronizada con los pedidos de prueba.
-- Hipótesis secundaria: filtro WPML del pedido excluye pedidos si `wpml_language` del pedido no coincide con el idioma del producto seleccionado.
+- Aplicado fallback HPOS: si lookup no devuelve destinatarios, se escanean pedidos por `line_items`.
+- A4 corregido: programación y fecha/hora no invalidan preview.
+- Email String Editor ampliado para listar `email_title`, `email_heading` y `email_subject` desde el objeto `WC_Email` asociado a cada plantilla.
+- Añadidos filtros para aplicar overrides a headings y subjects dinámicos de WooCommerce.
+- Añadido marcador interno `__pbm_hidden__` para ocultar strings sin usar espacios ni hacks visuales.
 
 ## Pendiente
 
-- Confirmar si HPOS está activo en el sitio.
-- Confirmar si `wp_wc_order_product_lookup` contiene filas para los pedidos `655`, `656`, `711`.
-- Confirmar idioma del producto y meta `wpml_language` de pedidos si existe WPML activo.
+- QA funcional completo de envíos reales.
+- Confirmar updater en staging.
+- Validar en navegador que el Editor de emails ya encuentra títulos/H1/subjects.
+- Validar con email real que el override de heading/subject se aplica.
+- Validar con email real que `Ocultar este texto` renderiza vacío y se puede revertir.
 
 ## Riesgos o bloqueos
 
-- La consulta directa a la tabla lookup requiere validación de solo lectura en entorno local.
-- No se han ejecutado envíos ni acciones programadas.
+- QA funcional puede crear envíos/logs/acciones programadas.
+- Algunos headings/subjects pueden contener variables formateadas por WooCommerce; si cambia el texto final, el override debe coincidir con el original mostrado.
 
 ## Próximo paso recomendado
 
-- Validar manualmente A4: previsualizar, activar/desactivar programación y cambiar fecha/hora sin que aparezca aviso de preview obsoleta.
-- Validar que cambiar audiencia, manuales, lote o emails por hora sí invalida preview.
+- Abrir `WooCommerce > Editor de emails`, buscar por título/H1 esperado y confirmar que aparece.
+- Guardar un override de heading en entorno controlado y enviar email de prueba.
 
 ## No volver a investigar
 
 - Los pedidos de prueba existen, están en `processing` y tienen emails de facturación.
 - El producto `380` existe y aparece en el pedido `655`.
-- El punto sensible estaba en el flujo HPOS/lookup, no en la ausencia visible de emails de pedido.
-- Fix aplicado en `includes/functions-products.php`.
-- A4: la causa confirmada estaba en `src/admin/App.js`; `buildPreviewSignature()` incluía `scheduleEnabled` y `scheduledDatetime`.
+- El fallo HPOS estaba en lookup sin fallback.
+- El H1 del email WooCommerce viene de `$email_heading`.
+- Para headings/subjects hay que usar datos del objeto `WC_Email` y filtros dinámicos WooCommerce.
 
 ## Evidencia revisada
 
 - `includes/functions-products.php`
 - `includes/ajax-handlers.php`
-- MCP `wc_orders_list`
-- MCP `wc_product_get` para productos `380`, `381`, `382`
+- `src/admin/App.js`
+- `includes/email-string-editor/class-template-scanner.php`
+- `includes/email-string-editor/class-email-string-editor.php`
+- `includes/email-string-editor/class-gettext-filter.php`
+- WooCommerce `templates/emails/email-header.php`
+- WooCommerce `includes/emails/class-wc-email.php`

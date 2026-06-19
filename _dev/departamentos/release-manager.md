@@ -6,57 +6,49 @@
 
 ## Resumen humano
 
-Revisión release/versionado actualizada. El plugin queda preparado para release estable `2.0.2`. Pendiente push a `main`, tag `v2.0.2` y publicación GitHub Release.
+Release `2.0.2` publicada correctamente. El flujo de release queda operativo con ZIP limpio generado por GitHub Actions. Queda pendiente probar updater en staging y QA funcional completo si el plugin va a producción.
 
 ## Descubierto
 
-- Cabecera del plugin está en `2.0.1.8` dev.
-- `readme.txt` está en versión pública base `2.0.1`.
-- `readme.txt` incluye changelog y upgrade notice de `2.0.1`.
-- `CHANGELOG.md` y `README.md` llegan a `2.0.0`, falta `2.0.1`.
-- `package.json` y `package-lock.json` están en `1.1.0`.
-- El updater busca asset `woo-broadcast-mailer.zip` y fallback a ZIP de tag GitHub.
-- El workflow de release usa `rsync --filter=':- .gitignore'` con inclusión explícita de archivos runtime y verificación de ZIP contra `node_modules/`, `_dev/`, `.git/`, `.github/`, `src/`, `package.json` y `package-lock.json`.
-- El workflow no ejecuta `npm ci`, `npm run build`, `php -l`, lint ni validación del ZIP.
-- `node_modules/` fue copiado desde el plugin anterior y `npm run build` funciona con Node local.
+- El workflow inicial podía empaquetar material de desarrollo si se copiaba todo el workspace.
+- El workflow final usa inclusión explícita de runtime y respeta `.gitignore`.
+- GitHub Release `v2.0.2` se creó con asset `woo-broadcast-mailer.zip`.
+- `package.json` y `package-lock.json` no entran en ZIP; su versión `1.1.0` no bloquea release.
 
 ## Hecho
 
-- A7 aplicado: `rsync` excluye `_dev/` y el ZIP de prueba en temporal no incluye archivos prohibidos.
-- Build ejecutado con éxito:
-  - `node v22.11.0`
-  - `npm v10.9.0`
-  - `npm run build`
-- `build/index.js` y `build/index.asset.php` quedan sincronizados con `src/admin/App.js`.
-
-## Hecho
-
-- Preparado checkpoint dev `2.0.1.3` para Email String Editor E1-E3.2 + E2.3.
-- `CHANGELOG.md` actualizado con entrada `2.0.1.3`.
-- `_dev/release-notes.md` actualizado.
-- Commit `1ec86c4` pusheado en `devWooBM`.
-- Preparado checkpoint dev `2.0.1.5` para E4 Email String Editor con QA OK reportado por usuario.
-- Preparado checkpoint dev `2.0.1.7` para A4 post-fix y Plan B 22MW-BACK.
-- Preparado checkpoint dev `2.0.1.8` para ajustes visuales del admin Broadcast principal.
+- Versión pública actualizada a `2.0.2`.
+- `readme.txt` actualizado con `Stable tag: 2.0.2`.
+- `CHANGELOG.md` consolidado en `2.0.2`.
+- `README.md` actualizado post-release.
+- Workflow de release endurecido.
+- ZIP temporal validado como limpio.
+- Tag `v2.0.2` creado.
+- `main` pusheada.
+- Tag `v2.0.2` pusheado.
+- GitHub Release publicada con asset ZIP.
 
 ## Pendiente
 
 - Probar updater en staging.
+- Ejecutar QA funcional completo si se va a producción.
+- Decidir si se conserva o borra `_dev/_md/`.
 
 ## No volver a investigar
 
-- Versión release confirmada: `2.0.2` en cabecera y `readme.txt`.
-- Updater GitHub Releases confirmado.
-- Riesgo original confirmado: workflow no excluía `_dev/`.
-- A7 aplicado: workflow actual excluye `_dev/` y el ZIP de prueba queda limpio.
+- Release `2.0.2` publicada.
+- Asset release: `woo-broadcast-mailer.zip`.
+- ZIP release limpio confirmado.
+- Runtime incluido: `woo-broadcast-mailer.php`, `includes/`, `assets/`, `build/`, `readme.txt`, `LICENSE`, `uninstall.php`.
+- Excluido del ZIP: `_dev/`, `node_modules/`, `src/`, paquetes Node, `.git`, `.github`, caches y locales.
 - Node local disponible en `/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin`.
 
 ## Riesgos o bloqueos
 
-- No generar ZIP/tag/release/deploy sin permiso explícito.
-- El workflow empaqueta lo que exista en `build/`; conviene ejecutar build antes de release.
-- El workflow todavía no valida PHP ni genera ZIP en modo controlado.
+- Updater no probado todavía en staging.
+- QA funcional completo pendiente.
+- Producción requiere validación separada.
 
 ## Próximo paso recomendado
 
-- Si el usuario quiere release: hacer checklist release, generar ZIP de prueba, revisar contenido y solo entonces decidir publicación.
+- Probar updater en staging o preparar paquete para instalación manual controlada.

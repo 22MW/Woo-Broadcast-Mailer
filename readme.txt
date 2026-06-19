@@ -8,22 +8,27 @@ Stable tag: 2.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Sistema de envío masivo para WooCommerce con flujo React, audiencia global combinada, envío instantáneo/programado y logs.
+Sistema de envío masivo para WooCommerce con audiencia global combinada, envío instantáneo/programado, logs y editor de textos de emails.
 
 == Description ==
 
-Woo Broadcast Mailer permite enviar campañas por:
-- Producto Woo
-- Rol de WordPress
-- Lista de Mail Mint (si está disponible)
+Woo Broadcast Mailer permite enviar comunicaciones desde WooCommerce a audiencias segmentadas.
+
+Fuentes disponibles:
+- Compradores de productos WooCommerce
+- Roles de WordPress
+- Listas de Mail Mint, si está disponible
 - Emails manuales
 
 Incluye:
-- Vista previa de destinatarios únicos
-- Deduplicación de audiencia
-- Envío instantáneo y programado
-- Lotes + límite por hora
-- Gestión de envíos y logs con cards
+- Audiencia global combinada con deduplicación
+- Vista previa de destinatarios únicos antes de enviar
+- Envío instantáneo o programado
+- Lotes y límite de emails por hora
+- Gestión de envíos y logs
+- Compatibilidad HPOS
+- Editor de textos de emails WooCommerce por idioma
+- Actualizaciones mediante GitHub Releases
 
 == Installation ==
 
@@ -34,34 +39,28 @@ Incluye:
 == Changelog ==
 
 = 2.0.2 =
-* Consolidated dev hardening from 2.0.1.1 to 2.0.1.9.
-* Safer scheduled state/logs, recipient snapshots, stale preview protection, and customer-name escaping.
-* Email String Editor with React admin, multi-language search/edit, and WooCommerce email override context.
-* HPOS fallback for product recipients and clean release ZIP workflow.
+* Consolidada la serie dev 2.0.1.1 a 2.0.1.9 en una release estable.
+* Mejorados Action Scheduler, estados/logs, snapshots, preview obsoleta, escape de nombre y borrado seguro.
+* Añadido Email String Editor con React, búsqueda multiidioma y aplicación limitada a emails WooCommerce.
+* Añadido fallback HPOS para destinatarios por producto.
+* Ajustado workflow de release para generar ZIP limpio sin archivos internos ni dependencias de desarrollo.
 
 = 2.0.0 =
 * Migración principal del admin a React.
-* Limpieza del bloque legacy de selector/preview/envío en admin.
-* Audiencia global combinada (producto, rol, Mail Mint, manuales) con deduplicación.
-* Selector multi-fuente con búsqueda AJAX y lista global.
+* Audiencia global combinada con producto, rol, Mail Mint y emails manuales.
 * Vista previa React de destinatarios únicos.
 * Flujo React de envío instantáneo y programado.
-* Integración estable de `wp_editor` clásico en panel React.
-* Validaciones backend para audiencia global sin exigir selectores legacy.
-* Gestión de programados/logs en cards React: ordenación, selección por página, borrado masivo.
-* Paginación de logs: 12 cards por página.
-* Badge de estado por color (`pending`, `running`, `completed`, `cancelled`).
-* Total de mensajes por card con fallback por logs en históricos.
-* Unificación visual (tipografía/colores/botones) + logo 22MW en header.
+* Gestión de programados/logs en cards React.
+* Unificación visual con logo 22MW en header.
 
 = 1.1.0 =
-* Flujo unificado de envío (instantáneo/programado) en una sola UI.
+* Flujo unificado de envío instantáneo/programado.
 * Capa extensible de fuentes y primera integración de Mail Mint.
 
 == Upgrade Notice ==
 
 = 2.0.2 =
-Release consolidada con endurecimiento dev, Editor de emails y workflow de ZIP limpio.
+Release estable con endurecimiento técnico, Editor de emails WooCommerce y ZIP de release limpio. Recomendado limpiar caché del navegador tras actualizar el admin.
 
 = 2.0.0 =
 Gran actualización del panel admin y del flujo de audiencias/envío. Recomendado limpiar caché tras actualizar.

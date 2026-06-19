@@ -3,13 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Woo Broadcast Mailer — Plan A + Email String Editor + R1</title>
+  <title>Woo Broadcast Mailer — Release 2.0.2</title>
   <style>
-    :root { --bg:#0f1117; --card:#171b24; --card-soft:#1f2530; --text:#f4f6fb; --muted:#aab3c5; --green:#38d996; --yellow:#ffd166; --red:#ff6b6b; --blue:#7aa2ff; --border:rgba(255,255,255,.1); }
+    :root { --bg:#0f1117; --card:#171b24; --soft:#1f2530; --text:#f4f6fb; --muted:#aab3c5; --green:#38d996; --yellow:#ffd166; --red:#ff6b6b; --blue:#7aa2ff; --border:rgba(255,255,255,.1); }
     * { box-sizing:border-box; }
     body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:radial-gradient(circle at top left,#20283a,var(--bg) 45%); color:var(--text); line-height:1.5; }
-    main { max-width:1240px; margin:0 auto; padding:32px 20px 48px; }
-    header { margin-bottom:24px; }
+    main { max-width:1180px; margin:0 auto; padding:32px 20px 48px; }
     h1 { margin:0 0 8px; font-size:34px; letter-spacing:-.04em; }
     h2 { margin:0 0 14px; font-size:20px; }
     p { margin:0 0 10px; }
@@ -19,107 +18,93 @@
     .muted { color:var(--muted); }
     .grid { display:grid; gap:16px; margin-top:16px; }
     .cols-2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
-    .card { background:linear-gradient(180deg,var(--card),var(--card-soft)); border:1px solid var(--border); border-radius:20px; padding:18px; box-shadow:0 18px 60px rgba(0,0,0,.25); }
-    .hero { display:grid; grid-template-columns:1.2fr .8fr; gap:16px; }
+    .card { background:linear-gradient(180deg,var(--card),var(--soft)); border:1px solid var(--border); border-radius:20px; padding:18px; box-shadow:0 18px 60px rgba(0,0,0,.25); }
+    .ok { border-left:4px solid var(--green); }
+    .risk { border-left:4px solid var(--yellow); }
+    .warn { border-left:4px solid var(--red); }
     .badge { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,.08); color:var(--text); font-size:13px; margin:4px 6px 4px 0; }
     .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
     .green { background:var(--green); } .yellow { background:var(--yellow); } .red { background:var(--red); } .blue { background:var(--blue); }
-    .ok { border-left:4px solid var(--green); } .risk { border-left:4px solid var(--yellow); } .warn { border-left:4px solid var(--red); }
-    .plan { display:grid; gap:12px; }
-    .plan-item { border:1px solid var(--border); background:rgba(255,255,255,.055); border-radius:16px; padding:14px; }
-    .plan-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; margin-bottom:8px; }
-    .code { font-weight:800; font-size:18px; color:#fff; }
-    .state { padding:4px 8px; border-radius:999px; font-size:12px; background:rgba(255,255,255,.09); white-space:nowrap; }
-    .state.done { color:var(--green); }
-    .state.pending { color:var(--yellow); }
-    .state.blocked { color:var(--red); }
-    .small { font-size:13px; color:var(--muted); }
     .checklist { list-style:none; padding:0; }
     .checklist li { display:flex; gap:10px; align-items:flex-start; padding:9px 0; border-bottom:1px solid var(--border); }
     .checklist li:last-child { border-bottom:0; }
     .box { width:18px; height:18px; border-radius:5px; border:1px solid var(--muted); flex:0 0 18px; margin-top:2px; }
-    .box.pending { background:transparent; }
     .box.done { background:var(--green); border-color:var(--green); }
+    .box.pending { background:transparent; }
     footer { margin-top:24px; color:var(--muted); font-size:13px; }
-    @media (max-width:900px) { .hero,.cols-2 { grid-template-columns:1fr; } h1 { font-size:28px; } .plan-head { flex-direction:column; } }
+    @media (max-width:900px) { .cols-2 { grid-template-columns:1fr; } h1 { font-size:28px; } }
   </style>
 </head>
 <body>
   <main>
     <header>
-      <h1>Woo Broadcast Mailer — Plan A + Email String Editor + R1</h1>
-      <p class="muted">Vista interna — bloque técnico mínimo antes de QA/release — 2026-06-19</p>
-      <span class="badge"><span class="dot green"></span> A1-A7 hechos</span>
-      <span class="badge"><span class="dot green"></span> E1-E5 QA OK</span>
-      <span class="badge"><span class="dot green"></span> A4 QA OK</span>
-      <span class="badge"><span class="dot yellow"></span> QA general pendiente</span>
-      <span class="badge"><span class="dot blue"></span> 22MW-BACK en plan</span>
-      <span class="badge"><span class="dot blue"></span> Rama: devWooBM</span>
+      <h1>Woo Broadcast Mailer — Release 2.0.2</h1>
+      <p class="muted">Vista interna post-release — 2026-06-19</p>
+      <span class="badge"><span class="dot green"></span> Release publicada</span>
+      <span class="badge"><span class="dot green"></span> ZIP limpio</span>
+      <span class="badge"><span class="dot green"></span> Plan A hecho</span>
+      <span class="badge"><span class="dot green"></span> Email String Editor hecho</span>
+      <span class="badge"><span class="dot yellow"></span> QA funcional pendiente</span>
+      <span class="badge"><span class="dot blue"></span> Documentación/comercial en preparación</span>
     </header>
 
-    <section class="hero">
-      <div class="card risk">
-        <h2>Resumen humano</h2>
-        <p>El Plan A completo está aplicado: Action Scheduler, estados/logs, snapshot, preview obsoleta, escape de nombre, borrado seguro y exclusión de <code>_dev/</code> en release.</p>
-        <p>Email String Editor E1-E4 está aplicado: admin seguro, búsqueda global multiidioma, edición multiidioma, overrides reales limitados a emails WooCommerce y R1 React implementado.</p>
-        <p>Ahora toca decidir el piloto 22MW-BACK o seguir con QA funcional/admin controlado antes de ZIP/release.</p>
-      </div>
+    <section class="grid cols-2">
       <div class="card ok">
         <h2>Estado actual</h2>
-        <p>A4 compilado con Node local. <code>build/</code> quedó sincronizado con <code>src/admin/App.js</code>. Programar envío ya no invalida preview.</p>
-        <p>Node local: <code>/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin</code>.</p>
+        <p>La release <code>2.0.2</code> está publicada en GitHub Releases con tag <code>v2.0.2</code> y asset <code>woo-broadcast-mailer.zip</code>.</p>
+        <p>El ZIP de release incluye solo archivos runtime y excluye documentación interna, Node, fuentes de desarrollo, cachés y archivos locales.</p>
       </div>
-    </section>
-
-    <section class="grid cols-2">
-      <div class="card">
-        <h2>Plan A detallado</h2>
-        <div class="plan">
-          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A1</span> — Action Scheduler obligatorio + aviso admin</div><span class="state done">Hecho</span></div><p>Comprueba disponibilidad de Action Scheduler, muestra estado en admin y bloquea envío/programación si falta.</p><p class="small">Validado: <code>php -l</code>, <code>git diff --check</code>, aviso visual.</p></div>
-          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A2</span> — Estados/logs reales</div><span class="state done">Hecho</span></div><p>Evita que <code>completed</code> signifique solo lotes programados; se completa al cubrir logs acumulados.</p><p class="small">QA funcional pendiente.</p></div>
-          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A3</span> — Snapshot seguro de destinatarios</div><span class="state done">Hecho</span></div><p>Conserva snapshot hasta completar o eliminar el envío.</p><p class="small">QA programación pendiente.</p></div>
-          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A4</span> — Preview no obsoleto</div><span class="state done">Hecho</span></div><p>Invalida preview y bloquea envío si cambia audiencia/configuración. Programación y fecha/hora no invalidan preview.</p><p class="small">Compilado con <code>npm run build</code>.</p></div>
-          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A5</span> — Escape de <code>{customer_name}</code></div><span class="state done">Hecho</span></div><p>Escapa el nombre del destinatario antes de insertarlo en email HTML y valida email destino.</p><p class="small">Validación técnica: <code>php -l</code> y <code>git diff --check</code>.</p></div>
-          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A6</span> — Borrado por IDs seguro</div><span class="state done">Hecho</span></div><p>Impide que el borrado individual y por IDs elimine envíos <code>pending</code>, <code>running</code> o inexistentes.</p><p class="small">Validación técnica: <code>php -l</code> y <code>git diff --check</code>.</p></div>
-          <div class="plan-item ok"><div class="plan-head"><div><span class="code">A7</span> — ZIP/release sin <code>_dev/</code></div><span class="state done">Hecho</span></div><p>Workflow release excluye <code>_dev/</code>.</p><p class="small">ZIP real pendiente de release.</p></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Checklist QA pendiente</h2>
-        <ul class="checklist">
-          <li><span class="box pending"></span><span>Panel carga sin errores JS.</span></li>
-          <li><span class="box pending"></span><span>Preview audiencia global con deduplicación.</span></li>
-          <li><span class="box pending"></span><span>A4: cambiar audiencia/configuración y confirmar bloqueo; activar programación y cambiar fecha/hora sin invalidar preview.</span></li>
-          <li><span class="box pending"></span><span>A5: email con nombre HTML escapado.</span></li>
-          <li><span class="box pending"></span><span>A2: envío instantáneo y programado con logs reales.</span></li>
-          <li><span class="box pending"></span><span>A6: borrado solo en completed/cancelled.</span></li>
-          <li><span class="box pending"></span><span>ZIP de prueba sin <code>_dev/</code>.</span></li>
+      <div class="card risk">
+        <h2>Pendiente real</h2>
+        <ul>
+          <li>QA funcional completo de envíos reales.</li>
+          <li>Prueba del updater en staging.</li>
+          <li>Decidir si se borra o conserva <code>_dev/_md/</code>.</li>
         </ul>
       </div>
     </section>
 
     <section class="grid cols-2">
       <div class="card">
-        <h2>Plan E — Email String Editor</h2>
+        <h2>Hecho</h2>
         <ul class="checklist">
-          <li><span class="box done"></span><span>E1: módulo base, clases y submenú WooCommerce.</span></li>
-          <li><span class="box done"></span><span>E2: admin MVP con plantilla, buscador y strings.</span></li>
-          <li><span class="box done"></span><span>E2.1: búsqueda global en todas las plantillas permitidas.</span></li>
-          <li><span class="box done"></span><span>E2.2: edición de todos los idiomas desde la misma pantalla.</span></li>
-          <li><span class="box done"></span><span>E2.3: búsqueda por original, traducciones y personalizaciones.</span></li>
-          <li><span class="box done"></span><span>E3: guardado/borrado en <code>pbm_email_string_overrides</code>.</span></li>
-          <li><span class="box done"></span><span>E3.1: guardado multiidioma desde una pantalla única.</span></li>
-          <li><span class="box done"></span><span>E3.2: edición directa desde Cambios guardados.</span></li>
-          <li><span class="box done"></span><span>E4: aplicar overrides reales solo en emails WooCommerce.</span></li>
-          <li><span class="box done"></span><span>E5: QA email real reportado OK.</span></li>
+          <li><span class="box done"></span><span>Panel admin React.</span></li>
+          <li><span class="box done"></span><span>Audiencia global multi-fuente con deduplicación.</span></li>
+          <li><span class="box done"></span><span>Preview de destinatarios únicos.</span></li>
+          <li><span class="box done"></span><span>Envíos instantáneos y programados con Action Scheduler.</span></li>
+          <li><span class="box done"></span><span>Estados/logs reales y snapshot seguro.</span></li>
+          <li><span class="box done"></span><span>Email String Editor con React y overrides seguros en emails WooCommerce.</span></li>
+          <li><span class="box done"></span><span>Fallback HPOS para destinatarios por producto.</span></li>
+          <li><span class="box done"></span><span>Workflow release con ZIP limpio.</span></li>
         </ul>
       </div>
-      <div class="card warn"><h2>Bloqueos</h2><ul><li>QA funcional general requiere permiso porque crea envíos/logs/acciones.</li><li>Release, ZIP, tag, push y deploy requieren permiso explícito.</li><li>No publicar sin ZIP de prueba y checklist release.</li></ul></div>
-      <div class="card"><h2>Próximo paso recomendado</h2><p>Decidir B0/B1: inventario admin 22MW-BACK y piloto visual en Broadcast principal, sin tocar lógica funcional.</p></div>
+      <div class="card">
+        <h2>Siguiente paso recomendado</h2>
+        <ul>
+          <li>Cerrar documentación pública.</li>
+          <li>Preparar resumen comercial de una página.</li>
+          <li>Planificar QA funcional en staging si se va a usar en producción.</li>
+        </ul>
+      </div>
     </section>
 
-    <footer>Vista local estática. No incluir en ZIP, release ni deploy público.</footer>
+    <section class="grid cols-2">
+      <div class="card warn">
+        <h2>No prometer todavía</h2>
+        <ul>
+          <li>Producción sin QA funcional.</li>
+          <li>Entregabilidad garantizada sin SMTP/configuración real.</li>
+          <li>Mail Mint como integración avanzada.</li>
+          <li>WPML como traducción completa del plugin.</li>
+        </ul>
+      </div>
+      <div class="card ok">
+        <h2>Base comercial</h2>
+        <p>Herramienta para enviar comunicaciones segmentadas desde WooCommerce usando compradores, roles, listas Mail Mint o emails manuales, con preview, programación, logs y edición de textos de emails.</p>
+      </div>
+    </section>
+
+    <footer>Vista local interna. No incluir en ZIP, release ni deploy público.</footer>
   </main>
 </body>
 </html>

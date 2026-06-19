@@ -70,7 +70,31 @@ class Email_String_Editor
 
         add_action('woocommerce_email_header', array($this->gettext_filter, 'start_email_context'), 0, 2);
         add_action('woocommerce_email_footer', array($this->gettext_filter, 'end_email_context'), PHP_INT_MAX, 0);
+        add_action('woocommerce_init', array($this, 'register_email_heading_subject_filters'));
         add_filter('gettext', array($this->gettext_filter, 'filter_gettext'), 20, 3);
         add_filter('gettext_with_context', array($this->gettext_filter, 'filter_gettext_with_context'), 20, 4);
+        add_filter('woocommerce_email_footer_text', array($this->gettext_filter, 'filter_dynamic_email_text'), 20, 2);
+    }
+
+    /**
+     * Register filters for dynamic WooCommerce email headings and subjects.
+     *
+     * @return void
+     */
+    public function register_email_heading_subject_filters()
+    {
+        if (! function_exists('WC') || ! WC()->mailer()) {
+            return;
+        }
+
+        foreach ((array) WC()->mailer()->get_emails() as $email) {
+            if (empty($email->id)) {
+                continue;
+            }
+
+            add_filter('woocommerce_email_heading_' . $email->id, array($this->gettext_filter, 'filter_email_heading_or_subject'), 20, 3);
+            add_filter('woocommerce_email_subject_' . $email->id, array($this->gettext_filter, 'filter_email_heading_or_subject'), 20, 3);
+            add_filter('woocommerce_email_additional_content_' . $email->id, array($this->gettext_filter, 'filter_email_additional_content'), 20, 3);
+        }
     }
 }

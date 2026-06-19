@@ -423,6 +423,75 @@
 .pbm-admin .pbm-email-editor-table {
   margin: 20px 0;
 }
+
+.pbm-admin .pbm-email-editor-results {
+  display: grid;
+  gap: 18px;
+  margin: 20px 0;
+}
+
+.pbm-admin .pbm-email-editor-result-card {
+  background: var(--vfwoo-white);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.pbm-admin .pbm-email-editor-result-meta {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(180px, .9fr) minmax(240px, 1.4fr) minmax(120px, .4fr);
+  margin-bottom: 18px;
+}
+
+.pbm-admin .pbm-email-editor-result-meta strong,
+.pbm-admin .pbm-email-editor-result-meta small,
+.pbm-admin .pbm-email-editor-label {
+  display: block;
+}
+
+.pbm-admin .pbm-email-editor-dynamic-label {
+  background: var(--pbm-bg-pill-active);
+  border-radius: 999px;
+  color: var(--pbm-text-accent);
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  text-transform: uppercase;
+}
+
+.pbm-admin .pbm-email-editor-label {
+  color: var(--pbm-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.pbm-admin .pbm-email-editor-language-list {
+  display: grid;
+  gap: 16px;
+}
+
+.pbm-admin .pbm-email-editor-language-list h4 {
+  margin: 0;
+}
+
+.pbm-admin .pbm-email-editor-language-control {
+  border-top: 1px solid rgba(0, 0, 0, .08);
+  padding-top: 14px;
+}
+
+.pbm-admin .pbm-email-editor-language-control textarea {
+  min-height: 120px;
+}
+
+@media (max-width: 960px) {
+  .pbm-admin .pbm-email-editor-result-meta {
+    grid-template-columns: 1fr;
+  }
+}
 .pbm-admin .pbm-pill {
   background: var(--pbm-bg-pill);
   border: none;

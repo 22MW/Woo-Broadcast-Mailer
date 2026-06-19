@@ -1,207 +1,159 @@
-# WOO Broadcast Mailer
+# Woo Broadcast Mailer
 
-Sistema de envío masivo de emails para WooCommerce con flujo unificado: permite envío instantáneo o programado por fuente de destinatarios.
+Plugin WordPress para WooCommerce que permite enviar emails masivos a audiencias segmentadas con vista previa, programación, control por lotes y logs.
 
-## Descripción
+## Estado actual
 
-Woo Broadcast Mailer permite comunicarte con clientes y audiencias segmentadas desde una única pantalla.
-Puedes elegir la fuente de destinatarios, previsualizar emails únicos antes de enviar, configurar lotes, limitar envíos por hora y decidir si el envío se ejecuta ahora o queda programado para una fecha concreta.
-Todo se procesa en segundo plano con Action Scheduler y mantiene logs de ejecución.
+- Versión estable: `2.0.2`
+- Panel admin principal migrado a React.
+- Release ZIP limpio generado por GitHub Releases.
+- QA funcional completo de envíos reales pendiente de ejecutar en entorno controlado.
+
+## Qué permite hacer
+
+Woo Broadcast Mailer permite crear una audiencia desde una o varias fuentes y enviar un email ahora o programarlo para más tarde.
+
+Fuentes disponibles:
+
+- Compradores de productos WooCommerce.
+- Roles de WordPress.
+- Listas de Mail Mint, si está disponible.
+- Emails manuales.
+
+Funciones principales:
+
+- Audiencia global combinada.
+- Deduplicación de emails antes de enviar.
+- Vista previa de destinatarios únicos.
+- Asunto y mensaje personalizados.
+- Variable `{customer_name}` en el mensaje.
+- Envío instantáneo o programado.
+- Tamaño de lote configurable.
+- Límite de emails por hora.
+- Gestión de envíos y logs.
+- Compatibilidad HPOS.
+- Compatibilidad WooCommerce Subscriptions.
+- Filtrado por idioma de pedido cuando WPML está disponible.
+
+## Editor de emails WooCommerce
+
+Desde `WooCommerce > Editor de emails` se pueden localizar y personalizar textos de plantillas de emails WooCommerce.
+
+Incluye:
+
+- Búsqueda por plantilla o búsqueda global.
+- Búsqueda sobre texto original, traducciones y personalizaciones guardadas.
+- Edición por idioma desde la misma pantalla.
+- Listado de cambios guardados.
+- Guardado en `pbm_email_string_overrides`.
+- Compatibilidad de lectura con datos legacy `wc_custom_email_strings`.
+- Aplicación real limitada al contexto de emails WooCommerce.
 
 ## Requisitos
 
-- WordPress 6.5 o superior
-- PHP 8.1 o superior
-- WooCommerce 10.0 o superior
-- Action Scheduler (incluido con WooCommerce)
-- Mail Mint (opcional, solo para fuente "Lista Mail Mint")
-
-## Características
-
-- Flujo único de envío: instantáneo o programado desde el mismo formulario
-- Fuentes de destinatarios:
-- Producto Woo
-- Rol WP
-- Lista Mail Mint (si está disponible)
-- Selector dependiente por fuente
-- Vista previa de destinatarios únicos antes de enviar
-- Personalización de asunto y mensaje (`{customer_name}`)
-- Lotes configurables y límite de emails por hora
-- Gestión de envíos y logs (ejecutar ahora, cancelar, borrar, borrado masivo)
-- Compatible con HPOS
-- Compatible con WooCommerce Subscriptions
-- Integración con Action Scheduler
+- WordPress 6.5 o superior.
+- PHP 8.1 o superior.
+- WooCommerce 10.0 o superior.
+- Action Scheduler, incluido con WooCommerce.
+- Mail Mint opcional para usar la fuente “Lista Mail Mint”.
 
 ## Instalación
 
-1. Sube la carpeta `woo-broadcast-mailer` a `/wp-content/plugins/`
-2. Activa el plugin desde Plugins en WordPress
-3. Las tablas de base de datos se crean automáticamente al activar
+1. Sube la carpeta `woo-broadcast-mailer` a `/wp-content/plugins/`.
+2. Activa el plugin desde Plugins en WordPress.
+3. Las tablas internas se crean automáticamente al activar.
+4. Ve a `WooCommerce > Broadcast Mailer`.
 
-## Uso
+## Uso básico
 
-### Broadcast (instantáneo o programado)
+### Enviar o programar un broadcast
 
-1. Ve a WooCommerce > Broadcast Mailer
-2. En **Fuente**, elige: Producto Woo, Rol WP o Lista Mail Mint
-3. En **Selector**, elige el producto/rol/lista según la fuente
-4. Haz clic en **Vista Previa de Destinatarios**
-5. Completa **Asunto** y **Mensaje**
-6. Ajusta **Tamaño de lote** y **Emails por hora**
-7. Opcional: activa **Programar envío** y define fecha/hora
-8. Haz clic en **Enviar Emails**
+1. Ve a `WooCommerce > Broadcast Mailer`.
+2. En `Fuente`, elige producto, rol, lista Mail Mint o emails manuales.
+3. Añade elementos a la lista global de audiencia.
+4. Revisa el resumen de audiencia.
+5. Haz clic en `Vista Previa de Destinatarios`.
+6. Completa `Asunto` y `Mensaje`.
+7. Ajusta tamaño de lote y emails por hora.
+8. Opcionalmente activa `Programar envío` y define fecha/hora.
+9. Envía.
 
-### Gestión y logs
+### Gestionar envíos y logs
 
-En la sección de gestión puedes:
-- Ver envíos registrados (instantáneos y programados)
-- Ejecutar ahora envíos pendientes
-- Cancelar envíos pendientes
-- Borrar envíos completados/cancelados
-- Consultar logs por envío
+En la sección de envíos puedes:
 
-### Monitoreo técnico
+- Ver envíos instantáneos y programados.
+- Consultar logs por envío.
+- Cancelar envíos pendientes.
+- Borrar envíos completados o cancelados.
+- Usar borrado masivo seguro por estado.
 
-- Los envíos se ejecutan en segundo plano mediante Action Scheduler
-- Puedes monitorizar tareas en WooCommerce > Estado > Acciones programadas
+### Editar textos de emails WooCommerce
 
-## Mail Mint (fase 1)
+1. Ve a `WooCommerce > Editor de emails`.
+2. Elige una plantilla o usa la búsqueda global.
+3. Busca el texto original o una traducción.
+4. Edita el texto por idioma.
+5. Guarda las personalizaciones.
+6. Revisa los cambios guardados en la pestaña correspondiente.
 
-Cuando Mail Mint está activo y con tablas disponibles:
-- Se cargan listas desde `mint_contact_groups` con `type=lists`
-- Se obtienen contactos suscritos desde tablas de relación
-- Se permite vista previa y envío a la lista seleccionada
+## Seguridad y controles
 
-Si Mail Mint no está activo o no hay tablas, la fuente queda deshabilitada y se muestra aviso en admin.
+- Nonces en acciones AJAX/admin.
+- Capability `manage_woocommerce` para el Editor de emails.
+- Sanitización y validación de entradas.
+- Escape de `{customer_name}` antes de insertarlo en emails HTML.
+- Bloqueo de envío si Action Scheduler no está disponible.
+- Borrado limitado a envíos completados o cancelados.
+- ZIP de release sin `_dev/`, `node_modules/`, `src/`, `package.json`, `package-lock.json`, cachés ni archivos locales.
 
-## Idiomas (WPML)
+## Datos internos
 
-El plugin filtra compradores por idioma cuando WPML está activo.
-El idioma se toma del pedido para mantener segmentación por idioma de compra.
-Pedidos sin idioma guardado se incluyen para evitar pérdida de históricos.
+Tablas propias:
 
-## Estructura del Plugin
+- `wp_pbm_scheduled_emails`
+- `wp_pbm_scheduled_logs`
 
-```text
-woo-broadcast-mailer/
-├── woo-broadcast-mailer.php    # Archivo principal, hooks y render admin
-├── assets/
-│   └── css/
-│       └── admin.css           # Estilos del panel de administración
-├── includes/
-│   ├── functions-products.php  # Productos/fuentes y destinatarios
-│   ├── functions-email.php     # Cola, lotes y envío
-│   ├── functions-scheduled.php # Gestión/listado/logs de envíos
-│   ├── ajax-handlers.php       # Endpoints AJAX
-│   └── updater.php             # Actualizaciones por GitHub Releases
-└── README.md
-```
+Opciones relevantes:
 
-## Tablas de Base de Datos
+- `pbm_email_string_overrides`
+- `pbm_scheduled_recipients_{id}` durante ejecución de envíos
 
-### `wp_pbm_scheduled_emails`
+## Actualizaciones
 
-Guarda envíos registrados (instantáneos y programados) y su configuración.
+El plugin usa GitHub Releases para distribuir versiones.
 
-### `wp_pbm_scheduled_logs`
+La release estable `2.0.2` incluye un workflow que genera `woo-broadcast-mailer.zip` limpio solo con archivos runtime.
 
-Guarda logs por ejecución (inicio, fin, enviados, fallidos y errores).
+## Limitaciones conocidas
 
-## Desinstalación
+- QA funcional completo de envíos reales pendiente en entorno controlado.
+- Mail Mint está integrado en fase 1 mediante sus tablas internas.
+- WPML depende de que el idioma esté guardado en el pedido.
+- El updater debe probarse en staging antes de usarlo como canal crítico de producción.
 
-Al desactivar el plugin:
-- Los datos se mantienen
-- Las acciones programadas se pueden limpiar desde Action Scheduler
+## Changelog resumido
 
-Para eliminar completamente:
-1. Desactiva el plugin
-2. Activa borrado de datos al desinstalar mediante:
-- Constante `PBM_DELETE_DATA_ON_UNINSTALL` en `wp-config.php` con valor `true`, o
-- Opción `pbm_delete_data_on_uninstall` con valor truthy
-3. Desinstala el plugin
+### 2.0.2
+
+- Consolidación de checkpoints dev `2.0.1.1` a `2.0.1.9`.
+- Endurecimiento de Action Scheduler, estados/logs, snapshots y preview obsoleta.
+- Escape seguro de `{customer_name}` y borrado seguro de envíos.
+- Fallback HPOS para destinatarios por producto.
+- Email String Editor con React y overrides limitados a emails WooCommerce.
+- Workflow de release limpio.
+
+### 2.0.0
+
+- Migración principal del admin a React.
+- Audiencia global combinada.
+- Vista previa React.
+- Envío instantáneo/programado con logs.
+- Unificación visual del admin.
 
 ## Soporte
 
-Proyecto personalizado. Para cambios o soporte, contacta al autor.
-
-## Changelog
-
-### 2.0.0
-- Migración principal del panel admin a React para flujo operativo completo.
-- Limpieza del bloque legacy de selector/preview/envío en el admin (markup y JS inline removidos).
-- Flujo de audiencia global combinada (producto, rol, Mail Mint y emails manuales) con deduplicación previa al envío.
-- Selector por fuente con modo multi-selección y búsqueda AJAX (3+ caracteres).
-- Lista global de audiencias con añadir/quitar/limpiar y recuentos por origen.
-- Resumen dinámico de audiencia (bruto, únicos y duplicados).
-- Vista previa React de destinatarios únicos usando endpoint AJAX unificado.
-- Flujo de envío React (instantáneo y programado) con validaciones de asunto/mensaje/fecha.
-- Integración estable de `wp_editor` clásico para el campo mensaje dentro del panel React (híbrido controlado).
-- Refuerzo backend para audiencias globales:
-- Si hay `audience_items`/`manual_emails`, no exige selectores legacy (`product_id`, `role`, `mailmint_list_id`).
-- Mantiene validación legacy cuando no existe audiencia global.
-- Gestión de envíos y logs migrada a cards React:
-- Ordenación por fecha/estado/asunto.
-- Selección por página y borrado masivo por IDs.
-- Paginación a 12 elementos por página.
-- Badges de estado por color (`pending`, `running`, `completed`, `cancelled`).
-- Total de mensajes por card con fallback para históricos:
-- Primero desde destinatarios guardados.
-- Si no existen, suma de enviados+fallidos en logs.
-- Ajustes visuales unificados:
-- Tokens de color y tipografía alineados con estilo 22MW.
-- Botonera consistente, sin bordes, con fondo sólido y radio completo.
-- Header con logo enlazado a `https://22mw.online/`.
-
-### 1.1.0
-- Flujo unificado de envío (instantáneo/programado) en una sola UI.
-- Capa extensible de fuentes de destinatarios.
-- Integración Mail Mint fase 1 (listas + suscritos + preview).
-- Vista previa por fuente con resumen y emails únicos.
-- Gestión de envíos/logs con acciones de ejecutar/cancelar/borrar.
-- Validaciones de disponibilidad de Mail Mint y hardening de seguridad.
-- Ajustes visuales del panel admin.
-
-### 1.0.9
-- Filtrado por idioma usando WPML en pedidos.
-
-### 1.0.8.4
-- Filtrar compradores por idioma WPML.
-
-### 1.0.8.3
-- Revertir vista previa sin AJAX.
-
-### 1.0.8.2
-- Vista previa sin AJAX para evitar límites.
-
-### 1.0.8.1
-- Soporte WPML para IDs traducidos y etiqueta de idioma.
-
-### 1.0.8
-- Prueba de actualización automática.
-
-### 1.0.7
-- Release de prueba para asset automático.
-
-### 1.0.6
-- ZIP de asset en release para actualizaciones.
-
-### 1.0.5
-- Descarga del ZIP por tag para actualizaciones.
-
-### 1.0.4
-- Mostrar versión en el título del admin.
-
-### 1.0.3
-- Updater con GitHub Releases.
-
-### 1.0.2
-- Borrado opcional al desinstalar.
-
-### 1.0.1
-- Preparación para publicación pública.
-- Requisitos y licencia alineados.
-- Carga de textdomain añadida.
-- Saltos de línea preservados en emails.
+Proyecto personalizado por 22MW. Para soporte o cambios, contactar con el autor.
 
 ## Licencia
 

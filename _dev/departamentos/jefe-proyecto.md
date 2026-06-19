@@ -6,68 +6,54 @@
 
 ## Resumen humano
 
-Plan A completo aplicado y consolidado. Email String Editor E1-E5 y R1 React están implementados. A4 post-fix tiene QA OK del usuario. 22MW-BACK se evaluó como posible, pero debe entrar por piloto, no como rediseño entero de golpe.
+Release `2.0.2` publicada. El proyecto queda en fase post-release: limpiar memoria, preparar documentación y preparar resumen comercial. No hay que reabrir Plan A, Email String Editor ni migración React salvo bug confirmado.
 
 ## Descubierto
 
-- El usuario necesitaba que los códigos A1-A7 fueran consultables y no solo menciones sueltas.
-- `roadmap.md` y `visual.html` no estaban suficientemente claros para consultar qué contenía A5/A6.
-- A2 requería separar programación de lotes de finalización real por logs.
-- A3 requería conservar snapshot hasta completar/eliminar.
-- A4 requería build para que el cambio React se viera en admin.
-- A7 requería excluir `_dev/` del ZIP/release.
-- Email String Editor debía entrar por fases: módulo propio, admin MVP y guardado/borrado antes de activar `gettext`.
-- 22MW-BACK puede aportar identidad visual al admin, pero el alcance debe separarse en inventario, piloto y extensión.
+- La release `2.0.2` quedó publicada correctamente con ZIP limpio.
+- La memoria `_dev/` arrastraba pendientes ya cerrados de release.
+- Faltaban notas departamentales de Documentador y Comercial.
+- `_dev/_md/` es material heredado útil como histórico, pero no debe seguir mezclado con pendientes actuales.
+- `_dev/.DS_Store` sobra.
 
 ## Hecho
 
-- `roadmap.md` reorganizado con tabla Plan A: código, nombre, estado, prioridad, contenido, archivos probables y validación.
-- `visual.html` reorganizado con tarjetas A1-A7.
-- `estado.md` actualizado con resumen Plan A.
-- A1 queda marcado como hecho.
-- A2 queda marcado como hecho.
-- A3 queda marcado como hecho.
-- A4 queda marcado como hecho y compilado.
-- A5 queda marcado como hecho.
-- A6 queda marcado como hecho.
-- A7 queda marcado como hecho.
-- Entorno Node local preparado para build.
-- `node_modules/` copiado desde el plugin anterior.
-- `npm run build` ejecutado con éxito.
-- Email String Editor E1-E3 implementado.
-- E4 implementado y QA reportado OK.
-- R1 implementado y pusheado en `2.0.1.6`.
-- A4 post-fix aplicado y QA reportado OK por usuario.
-- Plan B 22MW-BACK añadido al roadmap como propuesta por fases.
+- Plan A A1-A7 aplicado.
+- Email String Editor E1-E5 aplicado.
+- R1 React aplicado.
+- QA A4 y Email String Editor reportados OK por usuario.
+- Release `2.0.2` publicada en GitHub Releases.
+- ZIP de release limpio validado.
+- Workflow release endurecido.
+- Memoria post-release en consolidación.
 
 ## Pendiente
 
-- Decidir alcance del piloto 22MW-BACK.
-- QA funcional del Plan A completo.
-- QA admin de Email String Editor E1-E3.
-- E4 Email String Editor.
-- Validación real de ZIP/release.
-- Checklist release antes de publicar.
-- Release, tag, push o deploy siguen bloqueados hasta permiso explícito.
+- QA funcional completo de envíos reales.
+- Probar updater en staging.
+- Cerrar limpieza de `_dev/`.
+- Preparar documentación pública breve.
+- Preparar resumen comercial interno.
+- Decidir destino definitivo de `_dev/_md/`.
 
 ## No volver a investigar
 
-- Plan A significa bloque técnico mínimo antes de QA/release.
-- A1: Action Scheduler obligatorio + aviso admin.
-- A2: Estados/logs reales.
-- A3: Snapshot seguro de destinatarios.
-- A4: Preview no obsoleto.
-- A5: Escape de `{customer_name}`.
-- A6: Borrado por IDs seguro.
-- A7: ZIP/release sin `_dev/`.
-- Node local disponible en `/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin`.
+- Release actual: `2.0.2`.
+- Tag actual: `v2.0.2`.
+- `main` y `devWooBM` están alineadas.
+- ZIP release limpio confirmado.
+- `_dev/_md/` es histórico heredado, no pendiente funcional.
+- Plan A está hecho.
+- Email String Editor está hecho.
+- React admin está hecho.
 
 ## Riesgos o bloqueos
 
-- No ejecutar QA funcional sin permiso porque puede crear envíos, logs o acciones programadas.
-- No preparar release sin validación de ZIP y checklist.
-- No activar cambios 22MW-BACK sin arquitectura previa y piloto aprobado.
+- QA funcional crea envíos/logs/acciones; requiere permiso separado.
+- Producción requiere staging/backup/rollback si se despliega.
+- No borrar `_dev/_md/` sin decisión explícita.
 
 ## Próximo paso recomendado
 
-- Decidir B0/B1: inventario admin 22MW-BACK y piloto en Broadcast principal.
+- Terminar limpieza de memoria y documentación.
+- Después, preparar resumen comercial y decidir QA funcional/staging.

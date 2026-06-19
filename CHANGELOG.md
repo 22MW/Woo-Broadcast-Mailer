@@ -1,103 +1,100 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+Todos los cambios relevantes del proyecto se documentan en este archivo.
 
 ## 2.0.2
-- Consolidated dev hardening from `2.0.1.1` to `2.0.1.9`.
-- Action Scheduler mandatory checks and admin status.
-- Real scheduled state/logs handling and safe recipient snapshots.
-- Stale preview protection for audience/config changes.
-- Escaped customer name and validated recipient email.
-- Safe deletion of scheduled emails.
-- Email String Editor with React admin, multi-language search/edit, and WooCommerce email override context.
-- HPOS fallback for product recipients.
-- Release workflow hardened to create a clean ZIP excluding dev files, `node_modules/`, caches, and local artifacts.
+
+- Consolidada la serie dev `2.0.1.1` a `2.0.1.9` en una release estable.
+- Añadidas comprobaciones obligatorias de Action Scheduler y aviso de estado en admin.
+- Mejorada la gestión real de estados/logs de envíos programados.
+- Conservado el snapshot de destinatarios hasta completar o eliminar el envío.
+- Añadida protección de preview obsoleta cuando cambia audiencia o configuración relevante.
+- Corregida la invalidación de preview al activar programación o cambiar fecha/hora.
+- Escapado seguro de `{customer_name}` y validación de email destino.
+- Borrado seguro de envíos limitado a estados completados o cancelados.
+- Añadido fallback HPOS para destinatarios por producto cuando la tabla lookup no devuelve resultados.
+- Añadido Email String Editor bajo WooCommerce con interfaz React, búsqueda multiidioma, edición por idioma y compatibilidad de lectura legacy.
+- Activada aplicación real de overrides del Email String Editor solo durante render de emails WooCommerce.
+- Ajustada la UI admin: layout de audiencia, acceso al Editor de emails, headers y coherencia visual.
+- Endurecido el workflow de release para generar un ZIP limpio sin `_dev/`, `node_modules/`, `src/`, `package.json`, `package-lock.json`, cachés ni archivos locales.
 
 ## 2.0.0
-- Major admin migration to React for core broadcast workflow.
-- Removed legacy selector/preview/send admin block (legacy markup and inline JS cleanup).
-- Added global combined audience workflow across sources (product, role, Mail Mint, manual emails).
-- Added multi-select dependent selector with AJAX search (3+ chars) and global audience builder.
-- Added global audience summary with gross, unique, and duplicate counts.
-- React preview flow for unique recipients via unified AJAX endpoint.
-- React send flow for instant and scheduled deliveries with client-side validation.
-- Kept classic `wp_editor` integrated inside React panel for stable message editing.
-- Backend validation hardening for global audiences:
-- When `audience_items`/`manual_emails` exists, skip legacy required selector checks.
-- Keep legacy selector checks only for non-global audience requests.
-- Scheduled/logs management upgraded in React cards:
-- Sorting by date/status/subject.
-- Page selection + bulk delete by selected IDs.
-- Pagination set to 12 cards per page.
-- Colored status badges for `pending`, `running`, `completed`, `cancelled`.
-- Added total messages per card with historical fallback:
-- Prefer stored scheduled recipients.
-- Fallback to aggregated sent+failed logs for old records.
-- UI tokens and style alignment with 22MW visual system:
-- Unified button treatment (solid backgrounds, no borders, full radius).
-- Added 22MW brand logo in header linking to `https://22mw.online/`.
+
+- Migración principal del panel admin a React para el flujo operativo completo.
+- Limpieza del bloque legacy de selector/preview/envío en el admin.
+- Flujo de audiencia global combinada: producto, rol, Mail Mint y emails manuales.
+- Selector por fuente con multi-selección y búsqueda AJAX.
+- Lista global de audiencias con recuentos por origen.
+- Resumen dinámico de audiencia: bruto, únicos y duplicados.
+- Vista previa React de destinatarios únicos mediante endpoint AJAX.
+- Flujo React de envío instantáneo y programado.
+- Integración estable del editor clásico `wp_editor` dentro del panel React.
+- Validaciones backend para audiencia global sin exigir selectores legacy.
+- Gestión de envíos y logs en cards React.
+- Ordenación, selección por página, borrado masivo y paginación de logs.
+- Badges de estado para `pending`, `running`, `completed` y `cancelled`.
+- Total de mensajes por card con fallback para históricos.
+- Ajustes visuales alineados con estilo 22MW.
 
 ## 1.1.0
-- Unified broadcast flow for instant and scheduled deliveries in a single form.
-- Added recipient source selector architecture: Woo product, WordPress role, and Mail Mint list.
-- Added dependent selector behavior by source with recipient preview before send.
-- Refactored backend to a single send endpoint that:
-- If scheduling is disabled, queues immediate batches.
-- If scheduling is enabled, stores schedule metadata and queues execution for selected date/time.
-- Implemented extensible recipient source layer:
-- `get_recipients_from_product()`
-- `get_recipients_from_role()`
-- `get_recipients_from_mailmint_list()`
-- Integrated Mail Mint (phase 1):
-- List loading from `mint_contact_groups` (`type=lists`).
-- Subscribed contacts retrieval from relationship tables.
-- Preview support for Mail Mint audience.
-- Added role-based audience preview and normalized source-specific preview summaries.
-- Added compatibility checks for Mail Mint availability, with disabled source and admin warning when unavailable.
-- Preserved and reinforced nonce, capability, sanitization, and guarded execution flows.
-- Kept lower delivery-management block with scheduled records and logs:
-- Pending/completed/cancelled visibility.
-- Execute now, cancel, delete, and bulk delete actions.
-- Improved admin UI consistency and styling polish (without changing send logic):
-- Custom admin stylesheet enqueue for plugin screen.
-- Unified visual treatment for form blocks, preview panel, table, modal, and buttons.
+
+- Flujo unificado de envío instantáneo/programado en una sola pantalla.
+- Capa extensible de fuentes de destinatarios.
+- Integración Mail Mint fase 1.
+- Vista previa por fuente con emails únicos.
+- Gestión básica de envíos y logs.
+- Refuerzo de seguridad y validaciones.
 
 ## 1.0.9
-- Language filtering for recipients using WPML order language.
+
+- Filtrado de destinatarios por idioma de pedido usando WPML.
 
 ## 1.0.8.4
-- Filter recipients by WPML order language.
+
+- Filtro de compradores por idioma WPML.
 
 ## 1.0.8.3
-- Revert preview without AJAX.
+
+- Reversión de vista previa sin AJAX.
 
 ## 1.0.8.2
-- Preview recipients without AJAX to avoid server limits.
+
+- Vista previa sin AJAX para evitar límites del servidor.
 
 ## 1.0.8.1
-- WPML translated IDs and language label in selector.
+
+- Soporte WPML para IDs traducidos y etiqueta de idioma.
 
 ## 1.0.8
-- Test automatic update flow.
+
+- Prueba de flujo de actualización automática.
 
 ## 1.0.7
-- Test release for automatic asset upload.
+
+- Release de prueba para asset automático.
 
 ## 1.0.6
-- Use release asset zip when available to preserve folder name.
+
+- Uso del ZIP de release para conservar el nombre de carpeta.
 
 ## 1.0.5
-- Use GitHub tag ZIP for updates to avoid API download issues.
+
+- Descarga por ZIP de tag GitHub para actualizaciones.
 
 ## 1.0.4
-- Show plugin version in admin title.
+
+- Versión visible en el título del admin.
 
 ## 1.0.3
-- GitHub Releases updater (automatic update checks).
+
+- Updater mediante GitHub Releases.
 
 ## 1.0.2
-- Optional uninstall cleanup (controlled by config/option).
+
+- Limpieza opcional al desinstalar.
 
 ## 1.0.1
-- Public release preparation: requirements aligned and textdomain loading added.
-- Email line breaks preserved with HTML `<br>` conversion on send.
+
+- Preparación de publicación pública.
+- Requisitos, licencia y text domain alineados.
+- Saltos de línea preservados en emails.

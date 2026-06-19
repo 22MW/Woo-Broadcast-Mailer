@@ -106,6 +106,140 @@ class Gettext_Filter
     }
 
     /**
+     * Filter dynamic WooCommerce email headings and subjects.
+     *
+     * @param string $text   Heading or subject text.
+     * @param mixed  $object Related WooCommerce object.
+     * @param mixed  $email  WooCommerce email object.
+     * @return string
+     */
+    public function filter_email_heading_or_subject($text, $object = null, $email = null)
+    {
+        if ('' === $text) {
+            return $text;
+        }
+
+        $language = $this->resolve_email_language($email);
+        $custom = $this->repository->get_custom_text($language, $text);
+
+        if (String_Repository::HIDDEN_MARKER === $custom) {
+            return '';
+        }
+
+        return '' !== $custom ? $custom : $text;
+    }
+
+    /**
+     * Filter dynamic WooCommerce email text options.
+     *
+     * @param string $text  Option value.
+     * @param mixed  $email WooCommerce email object.
+     * @return string
+     */
+    public function filter_dynamic_email_text($text, $email = null)
+    {
+        if ('' === $text) {
+            return $text;
+        }
+
+        $language = $this->resolve_email_language($email);
+        $custom = $this->repository->get_custom_text($language, $text);
+
+        if (String_Repository::HIDDEN_MARKER === $custom) {
+            return '';
+        }
+
+        return '' !== $custom ? $custom : $text;
+    }
+
+    /**
+     * Filter WooCommerce additional email content.
+     *
+     * @param string $content Additional content.
+     * @param mixed  $object  Related object.
+     * @param mixed  $email   WooCommerce email object.
+     * @return string
+     */
+    public function filter_email_additional_content($content, $object = null, $email = null)
+    {
+        if ('' === $content) {
+            return $content;
+        }
+
+        $language = $this->resolve_email_language($email);
+        $custom = $this->repository->get_custom_text($language, $content);
+
+        if (String_Repository::HIDDEN_MARKER === $custom) {
+            return '';
+        }
+
+        if ('' !== $custom) {
+            return $custom;
+        }
+
+        return $this->maybe_override_store_email_content($language, $content);
+    }
+
+    /**
+     * Apply overrides saved against WooCommerce store-email placeholders.
+     *
+     * @param string $language Language code.
+     * @param string $content  Rendered content.
+     * @return string
+     */
+    private function maybe_override_store_email_content($language, $content)
+    {
+        if (false === strpos($content, 'Thanks again! If you need any help with your order, please contact us at ')) {
+            return $content;
+        }
+
+        $store_email = $this->extract_store_email_from_content($content);
+        $originals = array(
+            'Thanks again! If you need any help with your order, please contact us at {store_email}.',
+            'Thanks again! If you need any help with your order, please contact us at %s.',
+        );
+
+        foreach ($originals as $original) {
+            $custom = $this->repository->get_custom_text($language, $original);
+
+            if (String_Repository::HIDDEN_MARKER === $custom) {
+                return '';
+            }
+
+            if ('' === $custom) {
+                continue;
+            }
+
+            if (false !== strpos($custom, '{store_email}')) {
+                return str_replace('{store_email}', $store_email, $custom);
+            }
+
+            if (false !== strpos($custom, '%s')) {
+                return sprintf($custom, $store_email);
+            }
+
+            return $custom;
+        }
+
+        return $content;
+    }
+
+    /**
+     * Extract store email from rendered additional content.
+     *
+     * @param string $content Rendered content.
+     * @return string
+     */
+    private function extract_store_email_from_content($content)
+    {
+        if (preg_match('/at\s+([^\s<>]+@[^\s<>\.]+(?:\.[^\s<>\.]+)+)\.?$/', $content, $matches)) {
+            return sanitize_email((string) $matches[1]);
+        }
+
+        return sanitize_email((string) get_option('woocommerce_email_from_address', get_option('admin_email')));
+    }
+
+    /**
      * Apply override if the current gettext call is safe.
      *
      * @param string $translation Translated text.
@@ -121,6 +255,10 @@ class Gettext_Filter
 
         $language = $this->email_language ?: $this->language_resolver->get_current_language();
         $custom = $this->repository->get_custom_text($language, $text);
+
+        if (String_Repository::HIDDEN_MARKER === $custom) {
+            return '';
+        }
 
         return '' !== $custom ? $custom : $translation;
     }

@@ -1,7 +1,13 @@
-import { Button, Card, CardBody, Notice, SelectControl, Spinner, TextControl, TextareaControl } from '@wordpress/components';
+import { Button, Card, CardBody, CheckboxControl, Notice, SelectControl, Spinner, TextControl, TextareaControl } from '@wordpress/components';
 import { useEffect, useMemo, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { emailEditorRequest } from './api';
+
+const HIDDEN_MARKER = '__pbm_hidden__';
+
+function isHiddenValue(value) {
+  return value === HIDDEN_MARKER;
+}
 
 function buildTemplateOptions(templates) {
   return [
@@ -68,6 +74,10 @@ function EditorTab({ templates, languages, onMessage }) {
     }));
   };
 
+  const updateItemHidden = (index, language, hidden) => {
+    updateItemCustom(index, language, hidden ? HIDDEN_MARKER : '');
+  };
+
   const saveStrings = async () => {
     setSaving(true);
     try {
@@ -100,6 +110,12 @@ function EditorTab({ templates, languages, onMessage }) {
             placeholder={__('Si no eliges plantilla, la búsqueda recorre todas las plantillas permitidas.', 'wc-pbm')}
             value={search}
             onChange={setSearch}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' && !loading) {
+                event.preventDefault();
+                searchStrings();
+              }
+            }}
           />
           <Button variant="secondary" className="pbm-react-source-btn" onClick={searchStrings} disabled={loading}>
             {loading ? __('Buscando...', 'wc-pbm') : __('Buscar / cargar strings', 'wc-pbm')}
@@ -110,40 +126,50 @@ function EditorTab({ templates, languages, onMessage }) {
 
         {items.length > 0 && (
           <>
-            <table className="widefat striped wp-list-table pbm-email-editor-table">
-              <thead>
-                <tr>
-                  <th>{__('Plantilla', 'wc-pbm')}</th>
-                  <th>{__('Original', 'wc-pbm')}</th>
-                  <th>{__('Función', 'wc-pbm')}</th>
-                  <th>{__('Personalización por idioma', 'wc-pbm')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((item, index) => (
-                  <tr key={`${item.templateId}-${item.original}`}>
-                    <td>
-                      <strong>{item.templateLabel}</strong><br />
-                      <span>{item.sourceLabel} · {item.relativePath}</span>
-                    </td>
-                    <td><code>{item.original}</code></td>
-                    <td><code>{item.function}</code></td>
-                    <td>
-                      {languages.map((language) => (
+            <div className="pbm-email-editor-results">
+              {items.map((item, index) => (
+                <section className="pbm-email-editor-result-card" key={`${item.templateId}-${item.original}`}>
+                  <div className="pbm-email-editor-result-meta">
+                    <div>
+                      <span className="pbm-email-editor-label">Plantilla</span>
+                      <strong>{item.templateLabel}</strong>
+                      <small>{item.sourceLabel} · {item.relativePath}</small>
+                      {'dynamic' === item.relativePath ? (
+                        <span className="pbm-email-editor-dynamic-label">Dinámico</span>
+                      ) : null}
+                    </div>
+                    <div>
+                      <span className="pbm-email-editor-label">Original</span>
+                      <code>{item.original}</code>
+                    </div>
+                    <div>
+                      <span className="pbm-email-editor-label">Función</span>
+                      <code>{item.function}</code>
+                    </div>
+                  </div>
+                  <div className="pbm-email-editor-language-list">
+                    <h4>{__('Personalización por idioma', 'wc-pbm')}</h4>
+                    {languages.map((language) => (
+                      <div key={language.code} className="pbm-email-editor-language-control">
                         <TextareaControl
-                          key={language.code}
                           label={`${language.label} (${language.code})`}
-                          value={item.custom?.[language.code] || ''}
+                          value={isHiddenValue(item.custom?.[language.code]) ? '' : item.custom?.[language.code] || ''}
                           placeholder={item.translations?.[language.code] || item.original}
                           help={`${__('Traducción actual:', 'wc-pbm')} ${item.translations?.[language.code] || item.original}`}
+                          disabled={isHiddenValue(item.custom?.[language.code])}
                           onChange={(value) => updateItemCustom(index, language.code, value)}
                         />
-                      ))}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                        <CheckboxControl
+                          label={__('Ocultar este texto', 'wc-pbm')}
+                          checked={isHiddenValue(item.custom?.[language.code])}
+                          onChange={(checked) => updateItemHidden(index, language.code, checked)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
             <p>
               <Button variant="primary" onClick={saveStrings} disabled={saving}>
                 {saving ? __('Guardando...', 'wc-pbm') : __('Guardar personalizaciones', 'wc-pbm')}
@@ -206,6 +232,13 @@ function ChangesTab({ refreshKey, onMessage }) {
     }
   };
 
+  const updateDraftHidden = (key, hidden) => {
+    setDrafts((current) => ({
+      ...current,
+      [key]: hidden ? HIDDEN_MARKER : '',
+    }));
+  };
+
   const deleteChange = async (change) => {
     const key = `${change.language}:${change.original}`;
     setSavingKey(key);
@@ -253,8 +286,14 @@ function ChangesTab({ refreshKey, onMessage }) {
               <td><code>{change.original}</code></td>
               <td>
                 <TextareaControl
-                  value={drafts[key] || ''}
+                  value={isHiddenValue(drafts[key]) ? '' : drafts[key] || ''}
+                  disabled={isHiddenValue(drafts[key])}
                   onChange={(value) => setDrafts((current) => ({ ...current, [key]: value }))}
+                />
+                <CheckboxControl
+                  label={__('Oculto', 'wc-pbm')}
+                  checked={isHiddenValue(drafts[key])}
+                  onChange={(checked) => updateDraftHidden(key, checked)}
                 />
               </td>
               <td>{change.template || '-'}</td>

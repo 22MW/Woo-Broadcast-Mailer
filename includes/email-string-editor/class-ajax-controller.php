@@ -120,15 +120,26 @@ class Ajax_Controller
             $original = isset($item['original']) ? sanitize_text_field((string) $item['original']) : '';
             $custom = isset($item['custom']) && is_array($item['custom']) ? $item['custom'] : array();
 
-            if ('' === $original || ! $this->scanner->get_template($template_id)) {
+            if ('' === $original) {
+                continue;
+            }
+
+            $template = '' !== $template_id ? $this->scanner->get_template($template_id) : null;
+
+            if ($template && $this->is_dynamic_template($template)) {
+                $this->save_dynamic_strings($template_id, $original, $custom, $languages, $grouped);
+                continue;
+            }
+
+            if (! $template || empty($template['file'])) {
                 continue;
             }
 
             foreach ($custom as $language => $value) {
-                $language = sanitize_text_field((string) $language);
                 if (! isset($languages[$language])) {
                     continue;
                 }
+
                 $grouped[$language][$template_id][$original] = sanitize_text_field((string) $value);
             }
         }
@@ -140,6 +151,41 @@ class Ajax_Controller
         }
 
         wp_send_json_success(array('message' => __('Cambios guardados.', 'wc-pbm')));
+    }
+
+    /**
+     * Check if template is dynamic (virtual WooCommerce option source).
+     *
+     * @param array $template Template data.
+     * @return bool
+     */
+    private function is_dynamic_template($template)
+    {
+        return ! empty($template['source']) && 'dynamic' === $template['source'];
+    }
+
+    /**
+     * Save custom values for dynamic templates.
+     *
+     * @param string $template_id Template ID.
+     * @param string $original Original text.
+     * @param array $custom Custom texts by language.
+     * @param array $languages Available languages.
+     * @param array $grouped Grouped output.
+     * @return void
+     */
+    private function save_dynamic_strings($template_id, $original, $custom, $languages, &$grouped)
+    {
+        $original = sanitize_text_field((string) $original);
+
+        foreach ($custom as $lang => $value) {
+            $lang = sanitize_text_field((string) $lang);
+            if (! isset($languages[$lang])) {
+                continue;
+            }
+
+            $grouped[$lang][$template_id][$original] = sanitize_text_field((string) $value);
+        }
     }
 
     /**
