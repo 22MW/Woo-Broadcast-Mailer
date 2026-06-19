@@ -16,13 +16,13 @@ Revisión release/versionado actualizada. El plugin queda preparado para checkpo
 - `CHANGELOG.md` y `README.md` llegan a `2.0.0`, falta `2.0.1`.
 - `package.json` y `package-lock.json` están en `1.1.0`.
 - El updater busca asset `woo-broadcast-mailer.zip` y fallback a ZIP de tag GitHub.
-- El workflow de release excluye `.git`, `.github`, `.DS_Store`, `LOCAL_*`, `_md` y ahora también `_dev/`.
+- El workflow de release usa `rsync --filter=':- .gitignore'` con inclusión explícita de archivos runtime y verificación de ZIP contra `node_modules/`, `_dev/`, `.git/`, `.github/`, `src/`, `package.json` y `package-lock.json`.
 - El workflow no ejecuta `npm ci`, `npm run build`, `php -l`, lint ni validación del ZIP.
 - `node_modules/` fue copiado desde el plugin anterior y `npm run build` funciona con Node local.
 
 ## Hecho
 
-- A7 aplicado: `rsync` excluye `_dev/` del ZIP/release.
+- A7 aplicado: `rsync` excluye `_dev/` y el ZIP de prueba en temporal no incluye archivos prohibidos.
 - Build ejecutado con éxito:
   - `node v22.11.0`
   - `npm v10.9.0`
@@ -43,7 +43,7 @@ Revisión release/versionado actualizada. El plugin queda preparado para checkpo
 
 - Generar ZIP de prueba sin publicar.
 - Revisar que ZIP excluya `_dev/`, `.kilo/` si existiera, `.git/`, `.github/`, secretos, logs y backups.
-- Decidir si `src/`, `package.json` y `package-lock.json` entran en ZIP distribuible.
+- `src/`, `package.json` y `package-lock.json` quedan fuera del ZIP distribuible; solo entra `build/`.
 - Añadir entrada `2.0.1` en `CHANGELOG.md` y decidir actualización de `README.md`.
 - Decidir versión de `package.json`/`package-lock.json`.
 - Consolidar checkpoints dev `2.0.1.1` a `2.0.1.8` en versión pública estable antes de release.

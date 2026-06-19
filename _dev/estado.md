@@ -96,7 +96,7 @@ Funcional con Plan A aplicado, Email String Editor E1-E5 añadido y R1 React imp
 
 - `CHANGELOG.md` y `README.md` no reflejan todavía la entrada `2.0.1`, aunque `readme.txt` y cabecera sí están en `2.0.1`.
 - `package.json` y `package-lock.json` mantienen versión `1.1.0`; pendiente decidir si es versión interna del build o si debe sincronizarse.
-- El workflow release todavía no ejecuta build ni validaciones; ahora excluye `_dev/` pero puede empaquetar lo que ya exista en `build/`.
+- El workflow release empaqueta solo archivos runtime con `rsync --filter=':- .gitignore'` e incluye verificación contra `node_modules/`, `_dev/`, `.git/`, `.github/`, `src/`, `package.json` y `package-lock.json`. ZIP de prueba en temporal: OK.
 - `ScheduledLogsPanel.js` usa `dangerouslySetInnerHTML` para logs generados por AJAX.
 
 ### Baja prioridad / mantenimiento

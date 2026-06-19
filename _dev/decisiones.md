@@ -24,6 +24,7 @@
 - **node_modules local**: se copió `node_modules/` desde el plugin anterior `/Users/22mw/Local Sites/test/app/public/wp-content/plugins/woo-broadcast-mailer/node_modules/`.
 - **QA A4 post-fix**: usuario reportó QA OK para el ajuste que evita invalidar preview al activar programación o cambiar fecha/hora.
 - **22MW-BACK**: posible en Woo Broadcast Mailer, pero se decide tratarlo como mejora admin por fases; no aplicar al plugin entero de golpe sin piloto.
+- **Release ZIP mínimo**: el ZIP de release incluye solo archivos runtime del plugin (`woo-broadcast-mailer.php`, `includes/`, `assets/`, `build/`, `readme.txt`, `LICENSE`, `uninstall.php`) y excluye `node_modules/`, `_dev/`, `.git/`, `.github/`, `src/`, `package.json` y `package-lock.json`.
 
 ## Decisiones operativas derivadas de la auditoría
 

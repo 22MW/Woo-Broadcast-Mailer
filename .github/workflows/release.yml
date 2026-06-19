@@ -18,9 +18,37 @@ jobs:
       - name: Build release zip
         run: |
           mkdir -p dist/woo-broadcast-mailer
-          rsync -a --exclude='.git' --exclude='.github' --exclude='.DS_Store' --exclude='LOCAL_*' --exclude='_dev' --exclude='_md' ./ dist/woo-broadcast-mailer/
+          rsync -a --filter=':- .gitignore' \
+            --include='woo-broadcast-mailer.php' \
+            --include='includes/***' \
+            --include='assets/***' \
+            --include='build/***' \
+            --include='languages/***' \
+            --include='readme.txt' \
+            --include='LICENSE' \
+            --include='uninstall.php' \
+            --exclude='node_modules/' \
+            --exclude='_dev/' \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='src/' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='dist/' \
+            --exclude='*' \
+            ./ dist/woo-broadcast-mailer/
           cd dist
           zip -r woo-broadcast-mailer.zip woo-broadcast-mailer
+
+      - name: Verify release zip
+        run: |
+          test ! -d dist/woo-broadcast-mailer/node_modules
+          test ! -d dist/woo-broadcast-mailer/_dev
+          test ! -d dist/woo-broadcast-mailer/.git
+          test ! -d dist/woo-broadcast-mailer/.github
+          test ! -d dist/woo-broadcast-mailer/src
+          test ! -f dist/woo-broadcast-mailer/package.json
+          test ! -f dist/woo-broadcast-mailer/package-lock.json
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
