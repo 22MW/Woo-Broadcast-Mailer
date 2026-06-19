@@ -1,11 +1,13 @@
 # Release notes internas
 
-## 2.0.1.9 — Dev checkpoint — 2026-06-19
+## 2.0.2 — Release — 2026-06-19
 
-- Ajustado el campo Buscar del Email String Editor para que muestre como placeholder: "Si no eliges plantilla, la búsqueda recorre todas las plantillas permitidas."
-- El select de Email / plantilla mantiene "Todas las plantillas al buscar".
-- Eliminada la ayuda duplicada debajo del campo Buscar.
-- Build React actualizado.
+- Consolidados los checkpoints dev `2.0.1.1` a `2.0.1.9` en una release estable.
+- Endurecimiento de Action Scheduler, estados/logs reales, snapshots y preview obsoleta.
+- Email String Editor con React admin, búsqueda multiidioma, edición por idioma y aplicación limitada a emails WooCommerce.
+- Fallback HPOS para destinatarios por producto.
+- Workflow de release ajustado para generar ZIP limpio sin `_dev/`, `node_modules/`, `src/`, `package.json`, `package-lock.json`, cachés ni archivos locales.
+- ZIP de prueba en temporal validado como limpio.
 
 ## 2.0.1.8 — Dev checkpoint — 2026-06-19
 

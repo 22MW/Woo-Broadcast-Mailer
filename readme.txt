@@ -4,7 +4,7 @@ Tags: woocommerce, email, broadcast, scheduler, mailmint
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,9 +33,11 @@ Incluye:
 
 == Changelog ==
 
-= 2.0.1 =
-* Añadido `readme.txt` en formato WordPress para mostrar changelog en el modal de actualización.
-* Ajustes de documentación para compatibilidad con flujo de updates.
+= 2.0.2 =
+* Consolidated dev hardening from 2.0.1.1 to 2.0.1.9.
+* Safer scheduled state/logs, recipient snapshots, stale preview protection, and customer-name escaping.
+* Email String Editor with React admin, multi-language search/edit, and WooCommerce email override context.
+* HPOS fallback for product recipients and clean release ZIP workflow.
 
 = 2.0.0 =
 * Migración principal del admin a React.
@@ -58,8 +60,8 @@ Incluye:
 
 == Upgrade Notice ==
 
-= 2.0.1 =
-Actualización de metadatos/readme para mostrar correctamente notas de versión en el actualizador.
+= 2.0.2 =
+Release consolidada con endurecimiento dev, Editor de emails y workflow de ZIP limpio.
 
 = 2.0.0 =
 Gran actualización del panel admin y del flujo de audiencias/envío. Recomendado limpiar caché tras actualizar.

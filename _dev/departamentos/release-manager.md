@@ -6,7 +6,7 @@
 
 ## Resumen humano
 
-Revisión release/versionado actualizada. El plugin queda preparado para checkpoint dev `2.0.1.8` con ajustes visuales del admin Broadcast principal. Pendiente generar y revisar ZIP real antes de cualquier publicación.
+Revisión release/versionado actualizada. El plugin queda preparado para release estable `2.0.2`. Pendiente push a `main`, tag `v2.0.2` y publicación GitHub Release.
 
 ## Descubierto
 
@@ -41,21 +41,14 @@ Revisión release/versionado actualizada. El plugin queda preparado para checkpo
 
 ## Pendiente
 
-- Generar ZIP de prueba sin publicar.
-- Revisar que ZIP excluya `_dev/`, `.kilo/` si existiera, `.git/`, `.github/`, secretos, logs y backups.
-- `src/`, `package.json` y `package-lock.json` quedan fuera del ZIP distribuible; solo entra `build/`.
-- Añadir entrada `2.0.1` en `CHANGELOG.md` y decidir actualización de `README.md`.
-- Decidir versión de `package.json`/`package-lock.json`.
-- Consolidar checkpoints dev `2.0.1.1` a `2.0.1.8` en versión pública estable antes de release.
 - Probar updater en staging.
 
 ## No volver a investigar
 
-- Versión dev confirmada: `2.0.1.8` en cabecera.
-- Versión pública base confirmada: `2.0.1` en `readme.txt`.
+- Versión release confirmada: `2.0.2` en cabecera y `readme.txt`.
 - Updater GitHub Releases confirmado.
 - Riesgo original confirmado: workflow no excluía `_dev/`.
-- A7 aplicado: workflow actual excluye `_dev/`.
+- A7 aplicado: workflow actual excluye `_dev/` y el ZIP de prueba queda limpio.
 - Node local disponible en `/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin`.
 
 ## Riesgos o bloqueos

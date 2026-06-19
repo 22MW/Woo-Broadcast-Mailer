@@ -2,60 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2.0.1.9
-- Updated Email String Editor search UI: placeholder clarifies global template search, and the template select keeps "Todas las plantillas al buscar".
-- Removed duplicate helper text below the search field.
-- Updated React build assets.
-
-## 2.0.1.8
-- Adjusted broadcast admin layout for audience source, manual emails, global audience list, preview result, and header shortcut.
-- Added direct header link to Email String Editor.
-- Updated React build assets.
-
-## 2.0.1.7
-- Fixed stale preview detection so scheduling and scheduled datetime changes do not invalidate recipient preview.
-- Kept stale preview protection for audience, manual emails, batch size, and emails per hour.
-- Added internal 22MW-BACK admin visual plan.
-
-## 2.0.1.6
-- Migrated Email String Editor admin UI to React.
-- Added AJAX controller for templates, search, save, update, delete, and saved changes.
-- Kept existing storage and E4 email override behavior unchanged.
-- Updated admin build assets.
-
-## 2.0.1.5
-- Added safe Email String Editor override application for WooCommerce emails.
-- Limited gettext overrides to WooCommerce email rendering context and `woocommerce` text domain.
-- Resolved email language from order `wpml_language` with locale fallback.
-- Confirmed E4 QA as OK.
-
-## 2.0.1.4
-- Added HPOS fallback for product recipients when WooCommerce order lookup returns no results.
-- Product recipient counts now scan order line items if the HPOS lookup path is empty.
-- Preserved existing email deduplication and WPML language filtering.
-
-## 2.0.1.3
-- Added Email String Editor admin module under WooCommerce.
-- Added global template string search across allowed WooCommerce email templates.
-- Added multi-language editing from the same screen.
-- Added multi-language search across original strings, WooCommerce translations, and saved customizations.
-- Added direct editing from the saved changes screen.
-- Stored overrides in `pbm_email_string_overrides` with read compatibility for `wc_custom_email_strings`.
-- Kept real email override application disabled pending safe WooCommerce email context hook.
-
-## 2.0.1.2
-- Completed Plan A hardening before QA/release.
-- Kept scheduled deliveries in `running` until batch logs cover expected recipients.
-- Preserved scheduled recipient snapshots until completion or deletion.
-- Added stale-preview protection in React admin and rebuilt assets.
-- Escaped `{customer_name}` in HTML emails and validated recipient email before send.
-- Restricted scheduled deletion by ID to completed or cancelled records.
-- Excluded `_dev/` from release ZIP workflow.
-
-## 2.0.1.1
-- Added Action Scheduler availability checks and admin status notice.
-- Blocked send/schedule actions when Action Scheduler is unavailable.
-- Added internal `_dev/` Plan A memory and Email String Editor planning notes.
+## 2.0.2
+- Consolidated dev hardening from `2.0.1.1` to `2.0.1.9`.
+- Action Scheduler mandatory checks and admin status.
+- Real scheduled state/logs handling and safe recipient snapshots.
+- Stale preview protection for audience/config changes.
+- Escaped customer name and validated recipient email.
+- Safe deletion of scheduled emails.
+- Email String Editor with React admin, multi-language search/edit, and WooCommerce email override context.
+- HPOS fallback for product recipients.
+- Release workflow hardened to create a clean ZIP excluding dev files, `node_modules/`, caches, and local artifacts.
 
 ## 2.0.0
 - Major admin migration to React for core broadcast workflow.

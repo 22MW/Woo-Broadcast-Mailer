@@ -6,11 +6,11 @@
 
 ## Resumen humano
 
-Plugin funcional en v2.0.1.8 dev. Migración a React completada. Flujo multi-fuente con audiencia global implementado. Action Scheduler integrado. Updater activo vía GitHub Releases. El Plan A completo está aplicado. Email String Editor E1-E4 está implementado: admin seguro y aplicación `gettext` limitada al contexto de emails WooCommerce.
+Plugin funcional en v2.0.2 release. Migración a React completada. Flujo multi-fuente con audiencia global implementado. Action Scheduler integrado. Updater activo vía GitHub Releases. El Plan A completo está aplicado. Email String Editor E1-E5 está implementado: admin seguro y aplicación `gettext` limitada al contexto de emails WooCommerce.
 
 ## Estado general
 
-Funcional con Plan A aplicado, Email String Editor E1-E5 añadido y R1 React implementado. A4 post-fix validado por usuario. Pendiente decidir alcance 22MW-BACK, QA funcional general, documentación de release y validación ZIP antes de publicar.
+Funcional con Plan A aplicado, Email String Editor E1-E5 añadido y R1 React implementado. Release `2.0.2` preparada. Pendiente QA funcional general de producción y publicación vía GitHub Release tras push de tag.
 
 ## Hecho
 
@@ -124,7 +124,7 @@ Funcional con Plan A aplicado, Email String Editor E1-E5 añadido y R1 React imp
 - Que WPML esté activo y guarde idioma de pedidos como espera el plugin.
 - Que los logs representen estado final real de entrega.
 - Que el updater descargue correctamente la release actual.
-- Que el ZIP final excluya `_dev/` y archivos internos.
+- ZIP de prueba validado como limpio: no incluye `_dev/`, `node_modules/`, `.git/`, `.github/`, `src/`, `package.json`, `package-lock.json`, `dist/`, `.DS_Store`, logs ni locales.
 - Email String Editor E4 QA OK: aplica overrides solo en emails WooCommerce según reporte del usuario.
 - Que el fallback HPOS devuelve emails para producto `380` con los pedidos `655`, `656`, `711`.
 
@@ -132,8 +132,8 @@ Funcional con Plan A aplicado, Email String Editor E1-E5 añadido y R1 React imp
 
 - Ruta real del plugin: `app/public/wp-content/plugins/Woo-Broadcast-Mailer/`.
 - Rama de trabajo del plugin: `devWooBM`.
-- Versión dev actual del plugin: `2.0.1.8`.
-- Versión pública base: `2.0.1`.
+- Versión release actual del plugin: `2.0.2`.
+- Versión pública base: `2.0.2`.
 - Text domain correcto del plugin: `wc-pbm`.
 - Los planes de `_dev/_md/` (`PLAN_MULTI_FUENTE` y `PLAN_MIGRACION`) están implementados en v2.0.0. No re-investigar como pendientes.
 - React admin está implementado.
