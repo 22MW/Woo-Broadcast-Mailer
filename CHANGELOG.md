@@ -2,6 +2,13 @@
 
 Todos los cambios relevantes del proyecto se documentan en este archivo.
 
+## 2.1.0
+
+- Añadida documentación comercial interna con landing visual para posicionar Woo Broadcast Mailer con más claridad.
+- El mensaje comercial separa el plugin en dos bloques: broadcast puntual y editor de strings de emails WooCommerce.
+- Aclarado el posicionamiento: no es un plugin de newsletter, sino una capa operativa para envíos puntuales y control de textos.
+- Incluidos casos de uso reales para compradores, listas externas, emails manuales y comunicación operativa.
+
 ## 2.0.3
 
 - Consolidada la versión dev `2.0.2.1` como release estable.

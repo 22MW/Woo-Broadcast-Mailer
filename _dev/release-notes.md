@@ -1,5 +1,12 @@
 # Release notes internas
 
+## 2.1.0 — Release en preparación — 2026-06-21
+
+- Consolidada la documentación comercial interna de Woo Broadcast Mailer.
+- Incluye nueva landing visual en `_dev/comercial/`.
+- Aclara el posicionamiento: broadcast puntual + editor de strings, sin venderlo como plugin de newsletter.
+- Validaciones previstas: `php -l`, `npm run build`, `git diff --check`, tag `v2.1.0` y GitHub Release con ZIP limpio.
+
 ## 2.0.3 — Release en preparación — 2026-06-20
 
 - Consolidada `2.0.2.1` como release estable `2.0.3`.

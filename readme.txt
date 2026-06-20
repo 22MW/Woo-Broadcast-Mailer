@@ -4,7 +4,7 @@ Tags: woocommerce, email, broadcast, scheduler, mailmint
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 2.0.3
+Stable tag: 2.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,11 @@ Incluye:
 
 == Changelog ==
 
+= 2.1.0 =
+* Añadida documentación comercial interna con landing visual y mensaje más claro.
+* Separado el valor del plugin en dos bloques: broadcast puntual y editor de strings de emails WooCommerce.
+* Aclarado el posicionamiento: no sustituye plugins de newsletter, sino que ayuda con envíos puntuales y control de textos.
+
 = 2.0.3 =
 * Mejorado el Email String Editor para localizar strings en plantillas block y clases de email de WooCommerce.
 * Añadido soporte para overrides de contenido adicional de emails, incluyendo textos con {store_email} y %s.
@@ -65,6 +70,9 @@ Incluye:
 * Capa extensible de fuentes y primera integración de Mail Mint.
 
 == Upgrade Notice ==
+
+= 2.1.0 =
+Release con consolidación comercial y posicionamiento más claro para presentación interna y distribución controlada.
 
 = 2.0.3 =
 Mejora estable del Editor de emails WooCommerce. Recomendado si personalizas textos de emails block o contenido adicional.

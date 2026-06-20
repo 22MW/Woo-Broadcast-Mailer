@@ -17,6 +17,11 @@ Woo Broadcast Mailer puede posicionarse como una herramienta para tiendas WooCom
 
 ## Hecho
 
+- Creada landing comercial interna en `_dev/comercial/woo-broadcast-mailer-landing.html`.
+- Copiada base visual 22MW y CSS específico en `_dev/comercial/22mw-base.css` y `_dev/comercial/woo-broadcast-mailer-landing.css`.
+- Mensaje comercial separado en dos bloques: broadcast puntual y editor de strings de emails WooCommerce.
+- Posicionamiento aclarado: no vender como plugin de newsletter, sino como capa operativa para comunicaciones puntuales y control de textos.
+
 ### Propuesta de valor
 
 Envía emails segmentados desde WooCommerce a compradores, roles, listas Mail Mint o emails manuales, con vista previa, deduplicación, programación, logs y edición de textos de emails WooCommerce.
@@ -67,4 +72,6 @@ Broadcast Mailer convierte WooCommerce en un centro de comunicación segmentada:
 
 ## Próximo paso recomendado
 
-- Preparar resumen comercial de una página con: titular, problema, solución, funcionalidades, beneficios, límites y llamada a demo.
+- Sustituir placeholders por pantallazos reales del panel de broadcast y del editor de strings.
+- Revisar titulares y CTA final con tono comercial definitivo.
+- Si se va a usar fuera de entorno interno, crear una versión pública sin referencias a `_dev/`.
