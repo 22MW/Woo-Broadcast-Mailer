@@ -824,6 +824,7 @@ function ajax_send_broadcast()
     }
 
     $delivery_id = (int) $wpdb->insert_id;
+    add_option('pbm_scheduled_recipients_' . $delivery_id, $recipients, '', false);
     add_option('pbm_delivery_meta_' . $delivery_id, array(
         'type'     => 'instant',
         'source'   => $source,
