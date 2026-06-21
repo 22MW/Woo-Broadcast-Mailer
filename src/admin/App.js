@@ -166,6 +166,7 @@ export default function App() {
   const [batchSize, setBatchSize] = useState('30');
   const [emailsPerHour, setEmailsPerHour] = useState('200');
   const [scheduleEnabled, setScheduleEnabled] = useState(false);
+  const [plainBody, setPlainBody] = useState(false);
   const [scheduledDatetime, setScheduledDatetime] = useState('');
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewData, setPreviewData] = useState(null);
@@ -767,6 +768,7 @@ export default function App() {
     params.append('batch_size', String(parseInt(batchSize || '30', 10) || 30));
     params.append('emails_per_hour', String(parseInt(emailsPerHour || '200', 10) || 200));
     params.append('schedule_enabled', scheduleEnabled ? '1' : '0');
+    params.append('plain_body', plainBody ? '1' : '0');
     params.append('scheduled_datetime', scheduledDatetime);
     params.append('nonce', nonce);
 
@@ -866,6 +868,11 @@ export default function App() {
             {`${deliveryEstimate.unique} ${__('únicos', 'wc-pbm')} · ${deliveryEstimate.batches} ${__('lotes', 'wc-pbm')} · ${deliveryEstimate.intervalMinutes} ${__('min entre lotes', 'wc-pbm')} · ${formatEstimatedDuration(deliveryEstimate.totalWindowMinutes)}`}
           </div>
           <div className="pbm-react-send-actions">
+            <CheckboxControl
+              label={__('Enviar HTML sin plantilla global', 'wc-pbm')}
+              checked={plainBody}
+              onChange={setPlainBody}
+            />
             <Button variant="primary" onClick={sendBroadcast} disabled={sending || listItems.length === 0 || isPreviewStale}>
               {sending ? __('Programando envíos...', 'wc-pbm') : __('Enviar Emails', 'wc-pbm')}
             </Button>

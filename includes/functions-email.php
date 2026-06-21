@@ -19,13 +19,13 @@ defined('ABSPATH') || exit;
  * @param int    $scheduled_id ID del envío programado (opcional, 0 para envíos manuales).
  * @return void
  */
-function process_email_batch($batch, $subject, $message, $scheduled_id = 0)
+function process_email_batch($batch, $subject, $message, $scheduled_id = 0, $plain_body = false)
 {
     $sent = 0;
     $failed = 0;
 
     foreach ($batch as $recipient) {
-        if (send_single_email($recipient, $subject, $message)) {
+        if (send_single_email($recipient, $subject, $message, $plain_body)) {
             $sent++;
         } else {
             $failed++;
@@ -47,18 +47,29 @@ function process_email_batch($batch, $subject, $message, $scheduled_id = 0)
  * @param string $message   Mensaje (puede contener {customer_name}).
  * @return bool True si se envió correctamente.
  */
-function send_single_email($recipient, $subject, $message)
+function send_single_email($recipient, $subject, $message, $plain_body = false)
 {
     $to = sanitize_email($recipient['email'] ?? '');
     if (! is_email($to)) {
         return false;
     }
 
-    $name    = esc_html(trim((string) ($recipient['name'] ?? '')));
-    $body    = str_replace('{customer_name}', $name, $message);
-    $body    = nl2br($body);
+    $name = esc_html(trim((string) ($recipient['name'] ?? '')));
+    $body = str_replace('{customer_name}', $name, $message);
+    $body = $plain_body ? wp_kses_post($body) : nl2br($body);
     $headers = array('Content-Type: text/html; charset=UTF-8');
-    return wp_mail($to, $subject, $body, $headers);
+
+    if ($plain_body) {
+        add_filter('haet_mail_use_template', '__return_false', 9999);
+    }
+
+    $sent = wp_mail($to, $subject, $body, $headers);
+
+    if ($plain_body) {
+        remove_filter('haet_mail_use_template', '__return_false', 9999);
+    }
+
+    return $sent;
 }
 
 /**
@@ -72,7 +83,7 @@ function send_single_email($recipient, $subject, $message)
  * @param int    $scheduled_id     ID del envío programado.
  * @return int Número de lotes programados.
  */
-function schedule_email_batches($recipients, $subject, $message, $batch_size, $emails_per_hour, $scheduled_id)
+function schedule_email_batches($recipients, $subject, $message, $batch_size, $emails_per_hour, $scheduled_id, $plain_body = false)
 {
     if (! is_action_scheduler_available()) {
         return 0;
@@ -89,7 +100,7 @@ function schedule_email_batches($recipients, $subject, $message, $batch_size, $e
         as_schedule_single_action(
             $run_at,
             'pbm_process_email_batch',
-            array($batch, $subject, $message, $scheduled_id),
+            array($batch, $subject, $message, $scheduled_id, $plain_body),
             'product-broadcast-mailer'
         );
         $scheduled_count++;

@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes del proyecto se documentan en este archivo.
 
+## 2.1.1
+
+- Añadida gestión de Broadcast Lists para guardar, reutilizar, renombrar y actualizar listas de destinatarios.
+- Añadida exclusión temporal de emails desde la vista previa antes de enviar.
+- Ocultadas fuentes no disponibles o sin datos, incluyendo Mail Mint y Broadcast Lists vacías.
+- Corregido el cierre de envíos instantáneos para que pasen de En ejecución a Completado al finalizar los lotes.
+- Añadida opción para enviar HTML sin plantilla global, evitando el wrapper de WP HTML Mail cuando se marque.
+- Movido el checkbox de HTML sin plantilla global justo antes del botón Enviar Emails.
+
 ## 2.1.0
 
 - Añadida documentación comercial interna con landing visual para posicionar Woo Broadcast Mailer con más claridad.

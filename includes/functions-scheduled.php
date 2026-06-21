@@ -397,6 +397,8 @@ function execute_scheduled_email($scheduled_id)
 
     try {
         $users = get_scheduled_recipients_snapshot($scheduled_id);
+        $delivery_meta = get_delivery_meta($scheduled_id);
+        $plain_body = ! empty($delivery_meta['plain_body']);
 
         if (empty($users)) {
             // Compatibilidad: envíos antiguos por rol.
@@ -414,7 +416,8 @@ function execute_scheduled_email($scheduled_id)
             $scheduled->message,
             (int) $scheduled->batch_size,
             (int) $scheduled->emails_per_hour,
-            $scheduled_id
+            $scheduled_id,
+            $plain_body
         );
 
         if ($scheduled_count < 1) {

@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Woo Broadcast Mailer
  * Description: Sistema de envío masivo de emails: envía a compradores de productos específicos o programa envíos por rol de usuario. Compatible con HPOS y Action Scheduler.
- * Version: 2.1.0
+ * Version: 2.1.1
  * Author: 22MW · The Capricho Studio
  * Author URI: https://22mw.online
  * License: GPLv2 or later
@@ -199,7 +199,7 @@ function init()
     add_action('wp_ajax_pbm_save_broadcast_list', __NAMESPACE__ . '\\ajax_save_broadcast_list');
     add_action('wp_ajax_pbm_update_broadcast_list', __NAMESPACE__ . '\\ajax_update_broadcast_list');
     add_action('wp_ajax_pbm_delete_broadcast_list', __NAMESPACE__ . '\\ajax_delete_broadcast_list');
-    add_action('pbm_process_email_batch', __NAMESPACE__ . '\\process_email_batch', 10, 4);
+    add_action('pbm_process_email_batch', __NAMESPACE__ . '\\process_email_batch', 10, 5);
 
     // Registrar hooks AJAX para envíos programados
     add_action('wp_ajax_pbm_create_scheduled_email', __NAMESPACE__ . '\\ajax_create_scheduled_email');

@@ -682,6 +682,7 @@ function ajax_send_broadcast()
     $emails_per_hour = absint($_POST['emails_per_hour'] ?? 200);
     $excluded_emails = get_json_array_from_post('excluded_emails');
     $schedule_enabled = ! empty($_POST['schedule_enabled']) && '1' === sanitize_text_field(wp_unslash($_POST['schedule_enabled']));
+    $plain_body = ! empty($_POST['plain_body']) && '1' === sanitize_text_field(wp_unslash($_POST['plain_body']));
     $scheduled_datetime = sanitize_text_field($_POST['scheduled_datetime'] ?? '');
 
     if (! $subject || ! $message) {
@@ -788,6 +789,7 @@ function ajax_send_broadcast()
             'source'   => $source,
             'audience' => $audience_label,
             'global'   => $global_meta,
+            'plain_body' => $plain_body,
         ), '', false);
 
         as_schedule_single_action(
@@ -830,9 +832,10 @@ function ajax_send_broadcast()
         'source'   => $source,
         'audience' => $audience_label,
         'global'   => $global_meta,
+        'plain_body' => $plain_body,
     ), '', false);
 
-    $scheduled_count = schedule_email_batches($recipients, $subject, $message, $batch_size, $emails_per_hour, $delivery_id);
+    $scheduled_count = schedule_email_batches($recipients, $subject, $message, $batch_size, $emails_per_hour, $delivery_id, $plain_body);
     if ($scheduled_count < 1) {
         update_scheduled_email_status($delivery_id, 'cancelled');
         wp_send_json_error(array('message' => get_action_scheduler_unavailable_message()));
