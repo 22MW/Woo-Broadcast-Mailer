@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes del proyecto se documentan en este archivo.
 
+## 2.1.2
+
+- Añadidas plantillas de mensaje para guardar, cargar y borrar solo el body del email.
+- Añadidos bloques rápidos para insertar imagen, botón, bloque destacado y separador en el editor.
+- Añadida selección de imagen desde la biblioteca de medios de WordPress.
+- Añadidos selectores de color para botones, bloques destacados y separadores.
+- Añadida configuración de altura y margen para separadores.
+- Reorganizada la UI de plantillas debajo del botón Enviar Emails.
+
 ## 2.1.1
 
 - Añadida gestión de Broadcast Lists para guardar, reutilizar, renombrar y actualizar listas de destinatarios.

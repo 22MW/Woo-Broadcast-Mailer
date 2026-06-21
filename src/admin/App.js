@@ -55,6 +55,26 @@ function getClassicEditorMessage() {
   return textarea ? String(textarea.value || '') : '';
 }
 
+function setClassicEditorMessage(content) {
+  if (typeof window.tinyMCE !== 'undefined' && window.tinyMCE.get('pbm_message')) {
+    window.tinyMCE.get('pbm_message').setContent(content || '');
+  }
+
+  const textarea = document.getElementById('pbm_message');
+  if (textarea) {
+    textarea.value = content || '';
+  }
+}
+
+function insertIntoClassicEditor(html) {
+  if (typeof window.tinyMCE !== 'undefined' && window.tinyMCE.get('pbm_message')) {
+    window.tinyMCE.get('pbm_message').execCommand('mceInsertContent', false, html);
+    return;
+  }
+
+  setClassicEditorMessage(`${getClassicEditorMessage()}${html}`);
+}
+
 function formatEstimatedDuration(totalMinutes) {
   const minutes = Math.max(0, Math.round(totalMinutes));
   const hours = Math.floor(minutes / 60);
@@ -177,6 +197,13 @@ export default function App() {
   const [broadcastListDrafts, setBroadcastListDrafts] = useState({});
   const [broadcastListMessage, setBroadcastListMessage] = useState(null);
   const [newBroadcastListName, setNewBroadcastListName] = useState('');
+  const [messageTemplates, setMessageTemplates] = useState([]);
+  const [newMessageTemplateName, setNewMessageTemplateName] = useState('');
+  const [imageBlock, setImageBlock] = useState({ url: '', width: '100', align: 'center' });
+  const [buttonBlock, setButtonBlock] = useState({ text: '', url: '', background: '#111827', color: '#ffffff' });
+  const [highlightBlock, setHighlightBlock] = useState({ background: '#f8fafc', border: '#d1d5db', padding: '20' });
+  const [separatorBlock, setSeparatorBlock] = useState({ color: '#d1d5db', height: '1', margin: '24' });
+  const [activeQuickBlock, setActiveQuickBlock] = useState('');
 
   const [searchTerm, setSearchTerm] = useState('');
   const [topItemsBySource, setTopItemsBySource] = useState({ product: [], role: [], mailmint: [], broadcast_list: [] });
@@ -226,6 +253,21 @@ export default function App() {
 
   useEffect(() => {
     loadBroadcastLists();
+  }, []);
+
+  const loadMessageTemplates = async () => {
+    const nonceField = document.getElementById('pbm_nonce');
+    const nonce = nonceField ? nonceField.value : '';
+    const params = new URLSearchParams();
+    params.append('action', 'pbm_list_message_templates');
+    params.append('nonce', nonce);
+    const data = await postAjax(params);
+    const items = data?.success && Array.isArray(data.data?.items) ? data.data.items : [];
+    setMessageTemplates(items);
+  };
+
+  useEffect(() => {
+    loadMessageTemplates();
   }, []);
 
   useEffect(() => {
@@ -720,6 +762,104 @@ export default function App() {
     );
   };
 
+  const saveCurrentMessageTemplate = async () => {
+    const content = getClassicEditorMessage();
+    if (!content.trim()) {
+      setMessage({ type: 'warning', text: __('No hay contenido de mensaje para guardar.', 'wc-pbm') });
+      return;
+    }
+
+    const nonceField = document.getElementById('pbm_nonce');
+    const nonce = nonceField ? nonceField.value : '';
+    const params = new URLSearchParams();
+    params.append('action', 'pbm_save_message_template');
+    params.append('name', newMessageTemplateName);
+    params.append('content', content);
+    params.append('nonce', nonce);
+    const data = await postAjax(params);
+
+    if (!data?.success) {
+      setMessage({ type: 'error', text: data?.data?.message || __('No se pudo guardar la plantilla.', 'wc-pbm') });
+      return;
+    }
+
+    setNewMessageTemplateName('');
+    await loadMessageTemplates();
+    setMessage({ type: 'success', text: data.data?.message || __('Plantilla guardada.', 'wc-pbm') });
+  };
+
+  const loadMessageTemplate = (template) => {
+    setClassicEditorMessage(template.content || '');
+    setMessage({ type: 'success', text: __('Plantilla cargada en el mensaje.', 'wc-pbm') });
+  };
+
+  const deleteMessageTemplate = async (template) => {
+    if (!window.confirm(__('¿Borrar esta plantilla?', 'wc-pbm'))) {
+      return;
+    }
+
+    const nonceField = document.getElementById('pbm_nonce');
+    const nonce = nonceField ? nonceField.value : '';
+    const params = new URLSearchParams();
+    params.append('action', 'pbm_delete_message_template');
+    params.append('id', template.id);
+    params.append('nonce', nonce);
+    const data = await postAjax(params);
+
+    if (!data?.success) {
+      setMessage({ type: 'error', text: data?.data?.message || __('No se pudo borrar la plantilla.', 'wc-pbm') });
+      return;
+    }
+
+    await loadMessageTemplates();
+    setMessage({ type: 'success', text: data.data?.message || __('Plantilla eliminada.', 'wc-pbm') });
+  };
+
+  const insertImageBlock = () => {
+    if (!imageBlock.url.trim()) {
+      return;
+    }
+    insertIntoClassicEditor(`<p style="text-align:${imageBlock.align};"><img src="${imageBlock.url.trim()}" alt="" style="max-width:100%;width:${parseInt(imageBlock.width || '100', 10) || 100}%;height:auto;" /></p>`);
+    setActiveQuickBlock('');
+  };
+
+  const chooseImageFromMediaLibrary = () => {
+    if (!window.wp || !window.wp.media) {
+      return;
+    }
+
+    const frame = window.wp.media({
+      title: __('Seleccionar imagen', 'wc-pbm'),
+      button: { text: __('Usar imagen', 'wc-pbm') },
+      multiple: false,
+    });
+
+    frame.on('select', () => {
+      const attachment = frame.state().get('selection').first().toJSON();
+      setImageBlock((prev) => ({ ...prev, url: attachment.url || '' }));
+    });
+
+    frame.open();
+  };
+
+  const insertButtonBlock = () => {
+    if (!buttonBlock.text.trim() || !buttonBlock.url.trim()) {
+      return;
+    }
+    insertIntoClassicEditor(`<p style="text-align:center;"><a href="${buttonBlock.url.trim()}" style="display:inline-block;background:${buttonBlock.background};color:${buttonBlock.color};padding:12px 22px;border-radius:6px;text-decoration:none;font-weight:600;">${buttonBlock.text.trim()}</a></p>`);
+    setActiveQuickBlock('');
+  };
+
+  const insertHighlightBlock = () => {
+    insertIntoClassicEditor(`<div style="background:${highlightBlock.background};border:1px solid ${highlightBlock.border};padding:${parseInt(highlightBlock.padding || '20', 10) || 20}px;border-radius:8px;"><p>${__('Escribe aquí el contenido destacado.', 'wc-pbm')}</p></div>`);
+    setActiveQuickBlock('');
+  };
+
+  const insertSeparatorBlock = () => {
+    insertIntoClassicEditor(`<hr style="border:0;background:${separatorBlock.color};height:${parseInt(separatorBlock.height || '1', 10) || 1}px;margin:${parseInt(separatorBlock.margin || '24', 10) || 24}px 0;" />`);
+    setActiveQuickBlock('');
+  };
+
   const broadcastListSettingsNode = document.getElementById('pbm-broadcast-list-settings');
 
   const sendBroadcast = async () => {
@@ -851,6 +991,49 @@ export default function App() {
             <label htmlFor="pbm_message">{__('Mensaje', 'wc-pbm')}</label>
             <div ref={messageHostRef} />
           </div>
+          <div className="pbm-message-template-box">
+            <h3>{__('Añadir bloques', 'wc-pbm')}</h3>
+            <div className="pbm-broadcast-list-actions">
+              <Button variant={activeQuickBlock === 'image' ? 'primary' : 'secondary'} onClick={() => setActiveQuickBlock(activeQuickBlock === 'image' ? '' : 'image')}>{__('Imagen', 'wc-pbm')}</Button>
+              <Button variant={activeQuickBlock === 'button' ? 'primary' : 'secondary'} onClick={() => setActiveQuickBlock(activeQuickBlock === 'button' ? '' : 'button')}>{__('Botón', 'wc-pbm')}</Button>
+              <Button variant={activeQuickBlock === 'highlight' ? 'primary' : 'secondary'} onClick={() => setActiveQuickBlock(activeQuickBlock === 'highlight' ? '' : 'highlight')}>{__('Bloque', 'wc-pbm')}</Button>
+              <Button variant={activeQuickBlock === 'separator' ? 'primary' : 'secondary'} onClick={() => setActiveQuickBlock(activeQuickBlock === 'separator' ? '' : 'separator')}>{__('Separador', 'wc-pbm')}</Button>
+            </div>
+            {activeQuickBlock === 'image' && (
+              <div className="pbm-react-send-grid">
+                <TextControl label={__('URL imagen', 'wc-pbm')} value={imageBlock.url} onChange={(url) => setImageBlock((prev) => ({ ...prev, url }))} />
+                <TextControl label={__('Ancho imagen %', 'wc-pbm')} type="number" min="10" max="100" value={imageBlock.width} onChange={(width) => setImageBlock((prev) => ({ ...prev, width }))} />
+                <TextControl label={__('Alineación', 'wc-pbm')} value={imageBlock.align} onChange={(align) => setImageBlock((prev) => ({ ...prev, align }))} />
+                <Button variant="secondary" onClick={chooseImageFromMediaLibrary}>{__('Elegir imagen', 'wc-pbm')}</Button>
+                <Button variant="primary" onClick={insertImageBlock}>{__('Insertar', 'wc-pbm')}</Button>
+              </div>
+            )}
+            {activeQuickBlock === 'button' && (
+              <div className="pbm-react-send-grid">
+                <TextControl label={__('Texto botón', 'wc-pbm')} value={buttonBlock.text} onChange={(text) => setButtonBlock((prev) => ({ ...prev, text }))} />
+                <TextControl label={__('URL botón', 'wc-pbm')} value={buttonBlock.url} onChange={(url) => setButtonBlock((prev) => ({ ...prev, url }))} />
+                <TextControl label={__('Color fondo', 'wc-pbm')} type="color" value={buttonBlock.background} onChange={(background) => setButtonBlock((prev) => ({ ...prev, background }))} />
+                <TextControl label={__('Color texto', 'wc-pbm')} type="color" value={buttonBlock.color} onChange={(color) => setButtonBlock((prev) => ({ ...prev, color }))} />
+                <Button variant="primary" onClick={insertButtonBlock}>{__('Insertar', 'wc-pbm')}</Button>
+              </div>
+            )}
+            {activeQuickBlock === 'highlight' && (
+              <div className="pbm-react-send-grid">
+                <TextControl label={__('Fondo', 'wc-pbm')} type="color" value={highlightBlock.background} onChange={(background) => setHighlightBlock((prev) => ({ ...prev, background }))} />
+                <TextControl label={__('Borde', 'wc-pbm')} type="color" value={highlightBlock.border} onChange={(border) => setHighlightBlock((prev) => ({ ...prev, border }))} />
+                <TextControl label={__('Padding', 'wc-pbm')} type="number" min="0" max="80" value={highlightBlock.padding} onChange={(padding) => setHighlightBlock((prev) => ({ ...prev, padding }))} />
+                <Button variant="primary" onClick={insertHighlightBlock}>{__('Insertar', 'wc-pbm')}</Button>
+              </div>
+            )}
+            {activeQuickBlock === 'separator' && (
+              <div className="pbm-react-send-grid">
+                <TextControl label={__('Color', 'wc-pbm')} type="color" value={separatorBlock.color} onChange={(color) => setSeparatorBlock((prev) => ({ ...prev, color }))} />
+                <TextControl label={__('Altura', 'wc-pbm')} type="number" min="1" max="20" value={separatorBlock.height} onChange={(height) => setSeparatorBlock((prev) => ({ ...prev, height }))} />
+                <TextControl label={__('Margen', 'wc-pbm')} type="number" min="0" max="80" value={separatorBlock.margin} onChange={(margin) => setSeparatorBlock((prev) => ({ ...prev, margin }))} />
+                <Button variant="primary" onClick={insertSeparatorBlock}>{__('Insertar', 'wc-pbm')}</Button>
+              </div>
+            )}
+          </div>
           <div className="pbm-react-send-grid">
             <TextControl label={__('Tamaño de lote', 'wc-pbm')} type="number" min={10} max={100} value={batchSize} onChange={setBatchSize} />
             <TextControl label={__('Emails por hora', 'wc-pbm')} type="number" min={10} max={1000} value={emailsPerHour} onChange={setEmailsPerHour} />
@@ -876,6 +1059,24 @@ export default function App() {
             <Button variant="primary" onClick={sendBroadcast} disabled={sending || listItems.length === 0 || isPreviewStale}>
               {sending ? __('Programando envíos...', 'wc-pbm') : __('Enviar Emails', 'wc-pbm')}
             </Button>
+          </div>
+          <div className="pbm-message-template-box">
+            <h3>{__('Plantillas', 'wc-pbm')}</h3>
+            <div className="pbm-broadcast-list-save">
+              <TextControl hideLabelFromVision label={__('Nombre de plantilla', 'wc-pbm')} value={newMessageTemplateName} onChange={setNewMessageTemplateName} placeholder={__('Nombre de plantilla', 'wc-pbm')} />
+              <Button variant="secondary" onClick={saveCurrentMessageTemplate}>{__('Guardar body como plantilla', 'wc-pbm')}</Button>
+            </div>
+            {messageTemplates.length > 0 && (
+              <div className="pbm-message-template-list">
+                {messageTemplates.map((template) => (
+                  <div className="pbm-message-template-item" key={template.id}>
+                    <strong>{template.name}</strong>
+                    <Button variant="secondary" onClick={() => loadMessageTemplate(template)}>{__('Cargar', 'wc-pbm')}</Button>
+                    <Button variant="link" isDestructive onClick={() => deleteMessageTemplate(template)}>{__('Borrar', 'wc-pbm')}</Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         <ScheduledLogsPanel />

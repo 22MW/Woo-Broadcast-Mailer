@@ -582,6 +582,88 @@ function ajax_delete_broadcast_list()
 }
 
 /**
+ * AJAX: lista plantillas de mensaje.
+ *
+ * @return void
+ */
+function ajax_list_message_templates()
+{
+    check_ajax_referer('pbm_broadcast_action', 'nonce');
+
+    if (! current_user_can('manage_woocommerce')) {
+        wp_send_json_error(array('message' => __('Permisos insuficientes', 'wc-pbm')));
+    }
+
+    wp_send_json_success(array('items' => array_values(get_message_templates())));
+}
+
+/**
+ * AJAX: guarda plantilla de mensaje.
+ *
+ * @return void
+ */
+function ajax_save_message_template()
+{
+    check_ajax_referer('pbm_broadcast_action', 'nonce');
+
+    if (! current_user_can('manage_woocommerce')) {
+        wp_send_json_error(array('message' => __('Permisos insuficientes', 'wc-pbm')));
+    }
+
+    $name = sanitize_text_field(wp_unslash($_POST['name'] ?? ''));
+    $content = wp_kses_post(wp_unslash($_POST['content'] ?? ''));
+
+    if ('' === trim(wp_strip_all_tags($content))) {
+        wp_send_json_error(array('message' => __('La plantilla no tiene contenido', 'wc-pbm')));
+    }
+
+    $templates = get_message_templates();
+    $id = 'message-template-' . gmdate('Ymd-His');
+    $name = '' !== $name ? $name : $id;
+
+    $templates[$id] = array(
+        'id' => $id,
+        'name' => $name,
+        'content' => $content,
+        'created_at' => current_time('mysql', true),
+        'updated_at' => current_time('mysql', true),
+    );
+
+    save_message_templates($templates);
+
+    wp_send_json_success(array(
+        'item' => $templates[$id],
+        'message' => __('Plantilla guardada', 'wc-pbm'),
+    ));
+}
+
+/**
+ * AJAX: borra plantilla de mensaje.
+ *
+ * @return void
+ */
+function ajax_delete_message_template()
+{
+    check_ajax_referer('pbm_broadcast_action', 'nonce');
+
+    if (! current_user_can('manage_woocommerce')) {
+        wp_send_json_error(array('message' => __('Permisos insuficientes', 'wc-pbm')));
+    }
+
+    $id = sanitize_text_field(wp_unslash($_POST['id'] ?? ''));
+    $templates = get_message_templates();
+
+    if ('' === $id || empty($templates[$id])) {
+        wp_send_json_error(array('message' => __('Plantilla no encontrada', 'wc-pbm')));
+    }
+
+    unset($templates[$id]);
+    save_message_templates($templates);
+
+    wp_send_json_success(array('message' => __('Plantilla eliminada', 'wc-pbm')));
+}
+
+/**
  * Busca productos para selector.
  *
  * @param string $query Texto de búsqueda.

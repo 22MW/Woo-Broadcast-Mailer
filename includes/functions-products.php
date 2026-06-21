@@ -577,6 +577,28 @@ function save_broadcast_lists($lists)
 }
 
 /**
+ * Obtiene plantillas de mensaje guardadas.
+ *
+ * @return array
+ */
+function get_message_templates()
+{
+    $templates = get_option('pbm_message_templates', array());
+    return is_array($templates) ? $templates : array();
+}
+
+/**
+ * Guarda plantillas de mensaje.
+ *
+ * @param array $templates Plantillas.
+ * @return void
+ */
+function save_message_templates($templates)
+{
+    update_option('pbm_message_templates', is_array($templates) ? $templates : array(), false);
+}
+
+/**
  * Obtiene una lista broadcast por ID.
  *
  * @param string $list_id ID de lista.
