@@ -18,6 +18,7 @@ Release `2.0.2` publicada. El proyecto queda en fase post-release: limpiar memor
 
 ## Hecho
 
+- Plan BL aplicado: exclusión temporal desde preview, Broadcast List como fuente y gestión básica de listas.
 - Plan A A1-A7 aplicado.
 - Email String Editor E1-E5 aplicado.
 - R1 React aplicado.
@@ -29,6 +30,7 @@ Release `2.0.2` publicada. El proyecto queda en fase post-release: limpiar memor
 
 ## Pendiente
 
+- QA funcional de Broadcast Lists: guardar lista, usarla como fuente, excluir email temporalmente y enviar/programar.
 - QA funcional completo de envíos reales.
 - Probar updater en staging.
 - Cerrar limpieza de `_dev/`.

@@ -1,5 +1,5 @@
 import { Button, Card, CardBody, CheckboxControl, TextControl } from '@wordpress/components';
-import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
+import { createPortal, useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import SourceSelector from './components/SourceSelector';
 import DependentSelector from './components/DependentSelector';
@@ -82,6 +82,10 @@ function buildPreviewSignature({ globalAudience, manualEmails, batchSize, emails
   });
 }
 
+function uniqueEmails(emails) {
+  return Array.from(new Set((emails || []).map((email) => String(email).trim().toLowerCase()).filter(isValidEmail)));
+}
+
 async function postAjax(params) {
   const response = await fetch(window.ajaxurl, {
     method: 'POST',
@@ -105,6 +109,7 @@ async function fetchRecipientCount(source, selectorValue, nonce) {
   params.append('product_id', source === 'product' ? selectorValue : '');
   params.append('role', source === 'role' ? selectorValue : '');
   params.append('mailmint_list_id', source === 'mailmint' ? selectorValue : '');
+  params.append('broadcast_list_id', source === 'broadcast_list' ? selectorValue : '');
   params.append('nonce', nonce || '');
 
   const data = await postAjax(params);
@@ -165,21 +170,77 @@ export default function App() {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewData, setPreviewData] = useState(null);
   const [previewSignature, setPreviewSignature] = useState('');
+  const [excludedPreviewEmails, setExcludedPreviewEmails] = useState([]);
   const [sending, setSending] = useState(false);
+  const [broadcastLists, setBroadcastLists] = useState([]);
+  const [broadcastListDrafts, setBroadcastListDrafts] = useState({});
+  const [broadcastListMessage, setBroadcastListMessage] = useState(null);
+  const [newBroadcastListName, setNewBroadcastListName] = useState('');
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [topItemsBySource, setTopItemsBySource] = useState({ product: [], role: [], mailmint: [] });
+  const [topItemsBySource, setTopItemsBySource] = useState({ product: [], role: [], mailmint: [], broadcast_list: [] });
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedBySource, setSelectedBySource] = useState({ product: [], role: [], mailmint: [] });
-  const [labelsBySource, setLabelsBySource] = useState({ product: {}, role: {}, mailmint: {} });
+  const [selectedBySource, setSelectedBySource] = useState({ product: [], role: [], mailmint: [], broadcast_list: [] });
+  const [labelsBySource, setLabelsBySource] = useState({ product: {}, role: {}, mailmint: {}, broadcast_list: {} });
 
-  const sourceOptions = useMemo(() => mapOptionsFromSelect('pbm_recipient_source'), []);
+  const rawSourceOptions = useMemo(() => mapOptionsFromSelect('pbm_recipient_source'), []);
+  const sourceOptions = useMemo(() => rawSourceOptions.filter((item) => {
+    if (!item.disabled) {
+      return true;
+    }
+
+    return item.value === 'broadcast_list' && broadcastLists.length > 0;
+  }), [rawSourceOptions, broadcastLists]);
+
+  useEffect(() => {
+    if (sourceOptions.length > 0 && !sourceOptions.some((item) => item.value === source)) {
+      setSource(sourceOptions[0].value);
+    }
+  }, [source, sourceOptions]);
 
   useEffect(() => {
     syncSelectValue('pbm_recipient_source', source);
     setSearchTerm('');
     setSearchResults([]);
   }, [source]);
+
+  const loadBroadcastLists = async () => {
+    const nonceField = document.getElementById('pbm_nonce');
+    const nonce = nonceField ? nonceField.value : '';
+    const params = new URLSearchParams();
+    params.append('action', 'pbm_list_broadcast_lists');
+    params.append('nonce', nonce);
+    const data = await postAjax(params);
+    const items = data?.success && Array.isArray(data.data?.items) ? data.data.items : [];
+    setBroadcastLists(items);
+    setLabelsBySource((prev) => ({
+      ...prev,
+      broadcast_list: items.reduce((acc, item) => ({ ...acc, [item.id]: `${item.name} (${(item.emails || []).length})` }), {}),
+    }));
+    setTopItemsBySource((prev) => ({
+      ...prev,
+      broadcast_list: items.map((item) => ({ value: item.id, label: `${item.name} (${(item.emails || []).length})` })),
+    }));
+  };
+
+  useEffect(() => {
+    loadBroadcastLists();
+  }, []);
+
+  useEffect(() => {
+    setBroadcastListDrafts((current) => {
+      const next = { ...current };
+      broadcastLists.forEach((list) => {
+        if (!next[list.id]) {
+          next[list.id] = {
+            name: list.name || '',
+            emailsText: (list.emails || []).join('\n'),
+          };
+        }
+      });
+      return next;
+    });
+  }, [broadcastLists]);
 
   useEffect(() => {
     const nonceField = document.getElementById('pbm_nonce');
@@ -287,7 +348,14 @@ export default function App() {
         continue;
       }
 
-      const label = labelsBySource[source]?.[selectorValue] || selectorValue;
+      let label = labelsBySource[source]?.[selectorValue] || '';
+      if (!label && source === 'broadcast_list') {
+        const list = broadcastLists.find((item) => item.id === selectorValue);
+        if (list) {
+          label = `${list.name} (${(list.emails || []).length})`;
+        }
+      }
+      label = label || selectorValue;
       const count = typeof countByKey[key] === 'number'
         ? countByKey[key]
         : await fetchRecipientCount(source, selectorValue, nonce);
@@ -465,6 +533,12 @@ export default function App() {
   }, [globalAudience, manualEmails]);
 
   useEffect(() => {
+    setExcludedPreviewEmails([]);
+    setPreviewData(null);
+    setPreviewSignature('');
+  }, [currentPreviewSignature]);
+
+  useEffect(() => {
     const host = messageHostRef.current;
     const row = document.getElementById('pbm-message-row-legacy');
     if (!host || !row) {
@@ -501,6 +575,7 @@ export default function App() {
     params.append('mailmint_list_id', '');
     params.append('audience_items', JSON.stringify(globalAudience.map((item) => ({ source: item.source, selectorValue: item.selectorValue }))));
     params.append('manual_emails', JSON.stringify(manualEmails));
+    params.append('excluded_emails', JSON.stringify(excludedPreviewEmails));
     params.append('nonce', nonce);
 
     const data = await postAjax(params);
@@ -514,6 +589,137 @@ export default function App() {
     setPreviewData(data.data);
     setPreviewSignature(signature);
   };
+
+  const removePreviewEmail = (email) => {
+    const normalized = String(email || '').toLowerCase();
+    setExcludedPreviewEmails((prev) => uniqueEmails([...prev, normalized]));
+    setPreviewData((prev) => {
+      if (!prev || !Array.isArray(prev.emails)) {
+        return prev;
+      }
+      const emails = prev.emails.filter((item) => String(item).toLowerCase() !== normalized);
+      return { ...prev, emails, total: emails.length };
+    });
+  };
+
+  const saveCurrentPreviewAsBroadcastList = async () => {
+    const emails = uniqueEmails(previewData?.emails || []);
+    if (emails.length === 0) {
+      setMessage({ type: 'warning', text: __('No hay emails en la vista previa para guardar.', 'wc-pbm') });
+      return;
+    }
+    const nonceField = document.getElementById('pbm_nonce');
+    const nonce = nonceField ? nonceField.value : '';
+    const params = new URLSearchParams();
+    params.append('action', 'pbm_save_broadcast_list');
+    params.append('name', newBroadcastListName);
+    params.append('emails', JSON.stringify(emails));
+    params.append('nonce', nonce);
+    const data = await postAjax(params);
+    if (!data?.success) {
+      setMessage({ type: 'error', text: data?.data?.message || __('No se pudo guardar la lista.', 'wc-pbm') });
+      return;
+    }
+    setNewBroadcastListName('');
+    await loadBroadcastLists();
+    setMessage({ type: 'success', text: data.data?.message || __('Broadcast List guardada.', 'wc-pbm') });
+  };
+
+  const updateBroadcastList = async (list, nextEmails = null, nextName = null) => {
+    const nonceField = document.getElementById('pbm_nonce');
+    const nonce = nonceField ? nonceField.value : '';
+    const params = new URLSearchParams();
+    params.append('action', 'pbm_update_broadcast_list');
+    params.append('id', list.id);
+    params.append('name', nextName ?? list.name);
+    params.append('emails', JSON.stringify(nextEmails ?? list.emails ?? []));
+    params.append('nonce', nonce);
+    const data = await postAjax(params);
+    if (!data?.success) {
+      setMessage({ type: 'error', text: data?.data?.message || __('No se pudo actualizar la lista.', 'wc-pbm') });
+      return;
+    }
+    await loadBroadcastLists();
+    setBroadcastListMessage({ type: 'success', text: data.data?.message || __('Broadcast List actualizada.', 'wc-pbm') });
+  };
+
+  const deleteBroadcastList = async (list) => {
+    if (!window.confirm(__('¿Borrar esta Broadcast List?', 'wc-pbm'))) {
+      return;
+    }
+    const nonceField = document.getElementById('pbm_nonce');
+    const nonce = nonceField ? nonceField.value : '';
+    const params = new URLSearchParams();
+    params.append('action', 'pbm_delete_broadcast_list');
+    params.append('id', list.id);
+    params.append('nonce', nonce);
+    const data = await postAjax(params);
+    if (!data?.success) {
+      setMessage({ type: 'error', text: data?.data?.message || __('No se pudo borrar la lista.', 'wc-pbm') });
+      return;
+    }
+    await loadBroadcastLists();
+    setBroadcastListMessage({ type: 'success', text: data.data?.message || __('Broadcast List eliminada.', 'wc-pbm') });
+  };
+
+  const updateBroadcastListDraft = (id, field, value) => {
+    setBroadcastListDrafts((current) => ({
+      ...current,
+      [id]: {
+        ...(current[id] || {}),
+        [field]: value,
+      },
+    }));
+  };
+
+  const removeEmailFromBroadcastListDraft = (list, email) => {
+    const draft = broadcastListDrafts[list.id] || { emailsText: (list.emails || []).join('\n') };
+    const emails = parseEmails(draft.emailsText).filter((item) => item !== email);
+    updateBroadcastListDraft(list.id, 'emailsText', emails.join('\n'));
+  };
+
+  const renderBroadcastListSettings = () => {
+    if (broadcastLists.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="pbm-broadcast-list-manager">
+        <h3>{__('Broadcast Lists guardadas', 'wc-pbm')}</h3>
+        <p className="description">{__('Gestiona listas guardadas: cambia nombre, borra emails y pulsa Actualizar lista para guardar.', 'wc-pbm')}</p>
+        {broadcastListMessage && (
+          <div className={`pbm-react-notice pbm-react-notice-${broadcastListMessage.type || 'success'}`}>{broadcastListMessage.text}</div>
+        )}
+        {broadcastLists.map((list) => {
+          const draft = broadcastListDrafts[list.id] || {
+            name: list.name || '',
+            emailsText: (list.emails || []).join('\n'),
+          };
+          const draftEmails = parseEmails(draft.emailsText);
+          return (
+            <div className="pbm-broadcast-list-card" key={list.id}>
+              <TextControl label={__('Nombre', 'wc-pbm')} value={draft.name || ''} onChange={(value) => updateBroadcastListDraft(list.id, 'name', value)} />
+              <p>{draftEmails.length} {__('emails', 'wc-pbm')}</p>
+              <div className="pbm-broadcast-list-emails">
+                {draftEmails.map((email) => (
+                  <span className="pbm-preview-email-chip" key={email}>
+                    {email}
+                    <button type="button" onClick={() => removeEmailFromBroadcastListDraft(list, email)}>×</button>
+                  </span>
+                ))}
+              </div>
+              <div className="pbm-broadcast-list-actions">
+                <Button variant="secondary" onClick={() => updateBroadcastList(list, draftEmails, draft.name || list.name)}>{__('Actualizar lista', 'wc-pbm')}</Button>
+                <Button variant="link" isDestructive onClick={() => deleteBroadcastList(list)}>{__('Borrar lista', 'wc-pbm')}</Button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const broadcastListSettingsNode = document.getElementById('pbm-broadcast-list-settings');
 
   const sendBroadcast = async () => {
     if (listItems.length === 0) {
@@ -555,6 +761,7 @@ export default function App() {
     params.append('mailmint_list_id', '');
     params.append('audience_items', JSON.stringify(globalAudience.map((item) => ({ source: item.source, selectorValue: item.selectorValue }))));
     params.append('manual_emails', JSON.stringify(manualEmails));
+    params.append('excluded_emails', JSON.stringify(excludedPreviewEmails));
     params.append('subject', subject);
     params.append('message', messageContent);
     params.append('batch_size', String(parseInt(batchSize || '30', 10) || 30));
@@ -623,7 +830,18 @@ export default function App() {
             <div className="pbm-react-preview-box">
               <p><strong>{__('Total de destinatarios únicos:', 'wc-pbm')}</strong> {previewData.total || 0}</p>
               <p><strong>{__('Fuente:', 'wc-pbm')}</strong> {__('Lista global combinada', 'wc-pbm')}</p>
-              <div className="pbm-react-preview-emails">{(previewData.emails || []).join(', ')}</div>
+              <div className="pbm-react-preview-emails">
+                {(previewData.emails || []).map((email) => (
+                  <span className="pbm-preview-email-chip" key={email}>
+                    {email}
+                    <button type="button" onClick={() => removePreviewEmail(email)} aria-label={__('Quitar email de este envío', 'wc-pbm')}>×</button>
+                  </span>
+                ))}
+              </div>
+              <div className="pbm-broadcast-list-save">
+                <TextControl label={__('Nombre para Broadcast List', 'wc-pbm')} value={newBroadcastListName} onChange={setNewBroadcastListName} placeholder={__('Opcional: si queda vacío se usa fecha/hora', 'wc-pbm')} />
+                <Button variant="secondary" onClick={saveCurrentPreviewAsBroadcastList}>{__('Guardar como Broadcast List', 'wc-pbm')}</Button>
+              </div>
             </div>
           )}
           <TextControl label={__('Asunto', 'wc-pbm')} value={subject} onChange={setSubject} />
@@ -654,6 +872,7 @@ export default function App() {
           </div>
         </div>
         <ScheduledLogsPanel />
+        {broadcastListSettingsNode ? createPortal(renderBroadcastListSettings(), broadcastListSettingsNode) : null}
       </CardBody>
     </Card>
   );

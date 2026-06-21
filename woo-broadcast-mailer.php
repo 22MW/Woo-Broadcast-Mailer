@@ -195,6 +195,10 @@ function init()
     add_action('wp_ajax_pbm_resolve_audience_item', __NAMESPACE__ . '\\ajax_resolve_audience_item');
     add_action('wp_ajax_pbm_search_selectors', __NAMESPACE__ . '\\ajax_search_selectors');
     add_action('wp_ajax_pbm_send_broadcast', __NAMESPACE__ . '\\ajax_send_broadcast');
+    add_action('wp_ajax_pbm_list_broadcast_lists', __NAMESPACE__ . '\\ajax_list_broadcast_lists');
+    add_action('wp_ajax_pbm_save_broadcast_list', __NAMESPACE__ . '\\ajax_save_broadcast_list');
+    add_action('wp_ajax_pbm_update_broadcast_list', __NAMESPACE__ . '\\ajax_update_broadcast_list');
+    add_action('wp_ajax_pbm_delete_broadcast_list', __NAMESPACE__ . '\\ajax_delete_broadcast_list');
     add_action('pbm_process_email_batch', __NAMESPACE__ . '\\process_email_batch', 10, 4);
 
     // Registrar hooks AJAX para envíos programados
@@ -388,6 +392,7 @@ function render_admin_page()
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <?php wp_nonce_field('pbm_save_settings', 'pbm_settings_nonce'); ?>
                 <input type="hidden" name="action" value="pbm_save_settings">
+                <div id="pbm-broadcast-list-settings"></div>
                 <label>
                     <input type="checkbox" name="pbm_delete_data_on_uninstall" value="1" <?php checked((bool) get_option('pbm_delete_data_on_uninstall', false)); ?>>
                     <?php esc_html_e('Borrar datos al desinstalar', 'wc-pbm'); ?>

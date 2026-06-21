@@ -78,6 +78,7 @@ function resolve_global_recipients($audience_items, $manual_emails)
             'product_id'       => 0,
             'role'             => '',
             'mailmint_list_id' => 0,
+            'broadcast_list_id' => '',
         );
 
         if ('product' === $source) {
@@ -93,6 +94,11 @@ function resolve_global_recipients($audience_items, $manual_emails)
         } elseif ('mailmint' === $source) {
             $args['mailmint_list_id'] = absint($selector_value);
             if (! $args['mailmint_list_id']) {
+                continue;
+            }
+        } elseif ('broadcast_list' === $source) {
+            $args['broadcast_list_id'] = $selector_value;
+            if (! $args['broadcast_list_id']) {
                 continue;
             }
         } else {
@@ -121,6 +127,29 @@ function resolve_global_recipients($audience_items, $manual_emails)
 }
 
 /**
+ * Excluye emails de un array de destinatarios.
+ *
+ * @param array $recipients Destinatarios.
+ * @param array $excluded_emails Emails a excluir.
+ * @return array
+ */
+function exclude_recipients_from_list($recipients, $excluded_emails)
+{
+    $excluded = array_fill_keys(normalize_email_list($excluded_emails), true);
+    if (empty($excluded)) {
+        return $recipients;
+    }
+
+    foreach (array_keys((array) $recipients) as $email) {
+        if (isset($excluded[strtolower((string) $email)])) {
+            unset($recipients[$email]);
+        }
+    }
+
+    return $recipients;
+}
+
+/**
  * Construye metadatos resumidos de audiencia global.
  *
  * @param array $audience_items Items seleccionados.
@@ -133,6 +162,7 @@ function build_global_audience_meta($audience_items, $manual_emails)
         'product' => 0,
         'role'    => 0,
         'mailmint' => 0,
+        'broadcast_list' => 0,
         'manual'  => 0,
     );
 
@@ -173,6 +203,7 @@ function ajax_preview_recipients()
         $product_id = absint($_POST['product_id'] ?? 0);
         $role = sanitize_text_field($_POST['role'] ?? '');
         $mailmint_list_id = absint($_POST['mailmint_list_id'] ?? 0);
+        $excluded_emails = get_json_array_from_post('excluded_emails');
 
         if (! isset($available_sources[$source])) {
             wp_send_json_error(array('message' => __('Fuente inválida', 'wc-pbm')));
@@ -209,6 +240,8 @@ function ajax_preview_recipients()
                 'mailmint_list_id' => $mailmint_list_id,
             ));
         }
+
+        $recipients = exclude_recipients_from_list($recipients, $excluded_emails);
 
         // Extraer solo los emails para la lista separada por comas
         $emails = array_keys($recipients);
@@ -253,6 +286,7 @@ function ajax_count_recipients()
     $product_id = absint($_POST['product_id'] ?? 0);
     $role = sanitize_text_field($_POST['role'] ?? '');
     $mailmint_list_id = absint($_POST['mailmint_list_id'] ?? 0);
+    $broadcast_list_id = sanitize_text_field($_POST['broadcast_list_id'] ?? '');
 
     if (! isset($available_sources[$source])) {
         wp_send_json_error(array('message' => __('Fuente inválida', 'wc-pbm')));
@@ -274,10 +308,15 @@ function ajax_count_recipients()
         wp_send_json_success(array('total' => 0));
     }
 
+    if ('broadcast_list' === $source && ! $broadcast_list_id) {
+        wp_send_json_success(array('total' => 0));
+    }
+
     $recipients = get_recipients_by_source($source, array(
         'product_id'       => $product_id,
         'role'             => $role,
         'mailmint_list_id' => $mailmint_list_id,
+        'broadcast_list_id' => $broadcast_list_id,
     ));
 
     wp_send_json_success(array(
@@ -314,6 +353,7 @@ function ajax_resolve_audience_item()
         'product_id'       => 0,
         'role'             => '',
         'mailmint_list_id' => 0,
+        'broadcast_list_id' => '',
     );
 
     if ('product' === $source) {
@@ -329,6 +369,11 @@ function ajax_resolve_audience_item()
     } elseif ('mailmint' === $source) {
         $args['mailmint_list_id'] = absint($selector_value);
         if (! $args['mailmint_list_id']) {
+            wp_send_json_success(array('total' => 0, 'emails' => array()));
+        }
+    } elseif ('broadcast_list' === $source) {
+        $args['broadcast_list_id'] = $selector_value;
+        if (! $args['broadcast_list_id']) {
             wp_send_json_success(array('total' => 0, 'emails' => array()));
         }
     }
@@ -375,9 +420,165 @@ function ajax_search_selectors()
         $items = search_role_selectors($query);
     } elseif ('mailmint' === $source) {
         $items = search_mailmint_selectors($query);
+    } elseif ('broadcast_list' === $source) {
+        $items = search_broadcast_list_selectors($query);
     }
 
     wp_send_json_success(array('items' => $items));
+}
+
+/**
+ * Busca Broadcast Lists para selector.
+ *
+ * @param string $query Texto de búsqueda.
+ * @return array
+ */
+function search_broadcast_list_selectors($query)
+{
+    $lists = get_broadcast_lists();
+    $items = array();
+
+    foreach ($lists as $list) {
+        if (! is_array($list)) {
+            continue;
+        }
+
+        $id = (string) ($list['id'] ?? '');
+        $name = (string) ($list['name'] ?? $id);
+        $count = is_array($list['emails'] ?? null) ? count($list['emails']) : 0;
+        $label = sprintf('%s (%d)', $name, $count);
+
+        if ('' !== $query && false === strpos(strtolower($label . ' ' . $id), strtolower($query))) {
+            continue;
+        }
+
+        $items[] = array(
+            'value' => $id,
+            'label' => $label,
+        );
+    }
+
+    return array_slice($items, 0, '' === $query ? 10 : 8);
+}
+
+/**
+ * AJAX: lista Broadcast Lists guardadas.
+ *
+ * @return void
+ */
+function ajax_list_broadcast_lists()
+{
+    check_ajax_referer('pbm_broadcast_action', 'nonce');
+
+    if (! current_user_can('manage_woocommerce')) {
+        wp_send_json_error(array('message' => __('Permisos insuficientes', 'wc-pbm')));
+    }
+
+    wp_send_json_success(array('items' => array_values(get_broadcast_lists())));
+}
+
+/**
+ * AJAX: guarda una Broadcast List.
+ *
+ * @return void
+ */
+function ajax_save_broadcast_list()
+{
+    check_ajax_referer('pbm_broadcast_action', 'nonce');
+
+    if (! current_user_can('manage_woocommerce')) {
+        wp_send_json_error(array('message' => __('Permisos insuficientes', 'wc-pbm')));
+    }
+
+    $name = sanitize_text_field(wp_unslash($_POST['name'] ?? ''));
+    $emails = normalize_email_list(get_json_array_from_post('emails'));
+
+    if (empty($emails)) {
+        wp_send_json_error(array('message' => __('No hay emails válidos para guardar', 'wc-pbm')));
+    }
+
+    $lists = get_broadcast_lists();
+    $id = 'broadcast-list-' . gmdate('Ymd-His');
+    $name = '' !== $name ? $name : $id;
+
+    $lists[$id] = array(
+        'id' => $id,
+        'name' => $name,
+        'emails' => $emails,
+        'created_at' => current_time('mysql', true),
+        'updated_at' => current_time('mysql', true),
+    );
+
+    save_broadcast_lists($lists);
+
+    wp_send_json_success(array(
+        'item' => $lists[$id],
+        'message' => __('Broadcast List guardada', 'wc-pbm'),
+    ));
+}
+
+/**
+ * AJAX: actualiza una Broadcast List.
+ *
+ * @return void
+ */
+function ajax_update_broadcast_list()
+{
+    check_ajax_referer('pbm_broadcast_action', 'nonce');
+
+    if (! current_user_can('manage_woocommerce')) {
+        wp_send_json_error(array('message' => __('Permisos insuficientes', 'wc-pbm')));
+    }
+
+    $id = sanitize_text_field(wp_unslash($_POST['id'] ?? ''));
+    $name = sanitize_text_field(wp_unslash($_POST['name'] ?? ''));
+    $emails = normalize_email_list(get_json_array_from_post('emails'));
+    $lists = get_broadcast_lists();
+
+    if ('' === $id || empty($lists[$id])) {
+        wp_send_json_error(array('message' => __('Broadcast List no encontrada', 'wc-pbm')));
+    }
+
+    if (empty($emails)) {
+        wp_send_json_error(array('message' => __('La lista debe contener al menos un email válido', 'wc-pbm')));
+    }
+
+    $lists[$id]['name'] = '' !== $name ? $name : (string) ($lists[$id]['name'] ?? $id);
+    $lists[$id]['emails'] = $emails;
+    $lists[$id]['updated_at'] = current_time('mysql', true);
+
+    save_broadcast_lists($lists);
+
+    wp_send_json_success(array(
+        'item' => $lists[$id],
+        'message' => __('Broadcast List actualizada', 'wc-pbm'),
+    ));
+}
+
+/**
+ * AJAX: borra una Broadcast List.
+ *
+ * @return void
+ */
+function ajax_delete_broadcast_list()
+{
+    check_ajax_referer('pbm_broadcast_action', 'nonce');
+
+    if (! current_user_can('manage_woocommerce')) {
+        wp_send_json_error(array('message' => __('Permisos insuficientes', 'wc-pbm')));
+    }
+
+    $id = sanitize_text_field(wp_unslash($_POST['id'] ?? ''));
+    $lists = get_broadcast_lists();
+
+    if ('' === $id || empty($lists[$id])) {
+        wp_send_json_error(array('message' => __('Broadcast List no encontrada', 'wc-pbm')));
+    }
+
+    unset($lists[$id]);
+    save_broadcast_lists($lists);
+
+    wp_send_json_success(array('message' => __('Broadcast List eliminada', 'wc-pbm')));
 }
 
 /**
@@ -479,6 +680,7 @@ function ajax_send_broadcast()
     $message    = wp_kses_post($_POST['message'] ?? '');
     $batch_size = absint($_POST['batch_size'] ?? 30);
     $emails_per_hour = absint($_POST['emails_per_hour'] ?? 200);
+    $excluded_emails = get_json_array_from_post('excluded_emails');
     $schedule_enabled = ! empty($_POST['schedule_enabled']) && '1' === sanitize_text_field(wp_unslash($_POST['schedule_enabled']));
     $scheduled_datetime = sanitize_text_field($_POST['scheduled_datetime'] ?? '');
 
@@ -536,6 +738,12 @@ function ajax_send_broadcast()
 
     if (empty($recipients)) {
         wp_send_json_error(array('message' => __('No se encontraron destinatarios', 'wc-pbm')));
+    }
+
+    $recipients = exclude_recipients_from_list($recipients, $excluded_emails);
+
+    if (empty($recipients)) {
+        wp_send_json_error(array('message' => __('No quedan destinatarios después de las exclusiones temporales', 'wc-pbm')));
     }
 
     if ($schedule_enabled) {

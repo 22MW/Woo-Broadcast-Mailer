@@ -43,6 +43,8 @@ function render_product_selector()
 function get_recipient_sources()
 {
     $mailmint_available = is_mailmint_available();
+    $mailmint_lists = $mailmint_available ? get_mailmint_lists_for_selector() : array();
+    $broadcast_lists = get_broadcast_lists();
 
     $sources = array(
         'product' => array(
@@ -55,7 +57,11 @@ function get_recipient_sources()
         ),
         'mailmint' => array(
             'label' => __('Lista Mail Mint', 'wc-pbm'),
-            'enabled' => $mailmint_available,
+            'enabled' => $mailmint_available && ! empty($mailmint_lists),
+        ),
+        'broadcast_list' => array(
+            'label' => __('Broadcast List', 'wc-pbm'),
+            'enabled' => ! empty($broadcast_lists),
         ),
     );
 
@@ -523,7 +529,7 @@ function get_users_by_role($role)
 /**
  * Resuelve destinatarios según la fuente seleccionada.
  *
- * @param string $source Fuente (product|role|mailmint).
+ * @param string $source Fuente (product|role|mailmint|broadcast_list).
  * @param array  $args   Parámetros de la fuente.
  * @return array
  */
@@ -541,7 +547,74 @@ function get_recipients_by_source($source, $args = array())
         return get_recipients_from_mailmint_list(absint($args['mailmint_list_id'] ?? 0));
     }
 
+    if ('broadcast_list' === $source) {
+        return get_recipients_from_broadcast_list(sanitize_text_field($args['broadcast_list_id'] ?? ''));
+    }
+
     return array();
+}
+
+/**
+ * Obtiene listas broadcast guardadas.
+ *
+ * @return array
+ */
+function get_broadcast_lists()
+{
+    $lists = get_option('pbm_broadcast_lists', array());
+    return is_array($lists) ? $lists : array();
+}
+
+/**
+ * Guarda todas las listas broadcast.
+ *
+ * @param array $lists Listas.
+ * @return void
+ */
+function save_broadcast_lists($lists)
+{
+    update_option('pbm_broadcast_lists', is_array($lists) ? $lists : array(), false);
+}
+
+/**
+ * Obtiene una lista broadcast por ID.
+ *
+ * @param string $list_id ID de lista.
+ * @return array|null
+ */
+function get_broadcast_list($list_id)
+{
+    $lists = get_broadcast_lists();
+    return isset($lists[$list_id]) && is_array($lists[$list_id]) ? $lists[$list_id] : null;
+}
+
+/**
+ * Resuelve destinatarios desde una Broadcast List.
+ *
+ * @param string $list_id ID de lista.
+ * @return array
+ */
+function get_recipients_from_broadcast_list($list_id)
+{
+    $list = get_broadcast_list($list_id);
+    if (! $list || empty($list['emails']) || ! is_array($list['emails'])) {
+        return array();
+    }
+
+    $recipients = array();
+    foreach ($list['emails'] as $email) {
+        $email = strtolower(trim((string) $email));
+        if (! is_email($email)) {
+            continue;
+        }
+
+        $recipients[$email] = array(
+            'name'  => '',
+            'email' => $email,
+        );
+    }
+
+    return $recipients;
 }
 
 /**

@@ -50,6 +50,15 @@
 - Validar búsqueda y override real de headings/subjects en email controlado.
 - Validar checkbox `Ocultar este texto` en email controlado.
 
+## Plan BL — Broadcast Lists
+
+| Código | Nombre | Estado | Prioridad | Qué contiene | Archivos/áreas | Validación |
+|---|---|---|---|---|---|---|
+| BL1 | Exclusión temporal en preview | Hecho | Alta | Permite quitar emails individualmente desde la vista previa solo para el envío actual. | `src/admin/App.js`, `includes/ajax-handlers.php`, `build/` | `php -l`, build OK; QA funcional pendiente |
+| BL2 | Broadcast List como fuente | Hecho | Alta | Guarda una audiencia previa como lista reutilizable y permite usarla como fuente. | `includes/functions-products.php`, `includes/ajax-handlers.php`, `src/admin/App.js`, `woo-broadcast-mailer.php` | `php -l`, build OK; QA funcional pendiente |
+| BL3 | Gestión básica de listas | Hecho | Media | Renombrar, borrar emails y borrar lista completa dentro del bloque Ajustes, antes de “Borrar datos al desinstalar”, con botón explícito “Actualizar lista”. | `src/admin/App.js`, `woo-broadcast-mailer.php`, `includes/ajax-handlers.php` | Build OK; QA funcional pendiente |
+| BL4 | Fuentes visibles solo si disponibles | Hecho | Media | Oculta fuentes no disponibles o sin datos, como Mail Mint sin listas/plugin y Broadcast List sin listas guardadas. | `includes/functions-products.php`, `src/admin/App.js`, `build/` | `php -l`, build OK |
+
 ## Recomendado
 
 - Preparar documentación pública breve.

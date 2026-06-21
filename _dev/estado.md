@@ -42,6 +42,8 @@ Release `2.0.2` publicada en GitHub Releases con ZIP limpio. Queda pendiente QA 
 - Resultados del Email String Editor pasan a bloques verticales para que la personalización por idioma tenga ancho suficiente.
 - R1 React del Editor de emails implementado.
 - Release ZIP excluye `_dev/`, `node_modules/`, `.git/`, `.github/`, `src/`, `package.json`, `package-lock.json`, `dist/`, cachés y archivos locales.
+- Broadcast Lists implementado: guardar audiencia previa como lista reutilizable, usarla como fuente, renombrar, borrar emails y borrar listas.
+- Vista previa permite excluir emails individualmente de forma temporal para el envío actual.
 
 ## En curso
 
@@ -81,6 +83,7 @@ Release `2.0.2` publicada en GitHub Releases con ZIP limpio. Queda pendiente QA 
 
 ## Pendiente de validar
 
+- Broadcast Lists: guardar, renombrar, borrar emails/lista, usar como fuente y enviar con exclusión temporal.
 - Envío instantáneo real con logs.
 - Envío programado real con ejecución por Action Scheduler.
 - Borrado seguro con registros `completed`, `cancelled`, `pending` y `running`.
