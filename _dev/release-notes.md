@@ -1,28 +1,35 @@
 # Release notes internas
 
-## 2.3.0 — Release en preparación — 2026-06-28
+## 2.4.0 — Release en preparación — 2026-06-28
+
+- Añadidos shortcodes de broadcast: `{customer_name}`, `{first_name}`, `{last_name}`, `{email}`, `{current_date}`.
+- `{customer_name}` usa nombre del destinatario y busca usuario por email como fallback.
+- TinyMCE ampliado con selector de fuente, tamaño, color de texto y color de fondo.
+- Corregida toolbar TinyMCE para evitar selector de color duplicado/separado.
+- Añadidos estilos inline para `h1` y `h2` en emails.
+- Validaciones previstas: `npm run build`, `php -l`, `git diff --check`, commit, push `devWooBM`, tag `v2.4.0` y GitHub Release con ZIP limpio.
+
+## 2.3.0 — Release publicada — 2026-06-28
 
 - Mejora de conservación visual del HTML en broadcasts.
 - Limpieza de saltos automáticos entre bloques y listas.
 - Conversión de espacios manuales del editor en espaciadores inline seguros.
 - Estado `failed` para fallos de logs y borrado de envíos atascados sin acciones pendientes.
 - Plantillas de mensaje con asunto + body.
-- Validaciones previstas: `npm run build`, `php -l`, `git diff --check`, tag `v2.3.0` y GitHub Release con ZIP limpio.
+- Tag publicado: `v2.3.0`.
 
-## 2.1.0 — Release en preparación — 2026-06-21
+## 2.1.0 — Release publicada — 2026-06-21
 
 - Consolidada la documentación comercial interna de Woo Broadcast Mailer.
 - Incluye nueva landing visual en `_dev/comercial/`.
 - Aclara el posicionamiento: broadcast puntual + editor de strings, sin venderlo como plugin de newsletter.
-- Validaciones previstas: `php -l`, `npm run build`, `git diff --check`, tag `v2.1.0` y GitHub Release con ZIP limpio.
 
-## 2.0.3 — Release en preparación — 2026-06-20
+## 2.0.3 — Release publicada — 2026-06-20
 
 - Consolidada `2.0.2.1` como release estable `2.0.3`.
 - Incluye mejoras del Email String Editor para plantillas block, clases de email y contenido adicional WooCommerce.
 - Incluye fix de aplicación real para textos con `{store_email}` y `%s`.
 - Incluye corrección del filtro de footer dinámico WooCommerce.
-- Validaciones previstas: `php -l`, `npm run build`, `git diff --check`, tag `v2.0.3` y GitHub Release con ZIP limpio.
 
 ## 2.0.2 — Release publicada — 2026-06-19
 
@@ -36,24 +43,10 @@
 - UI admin ajustada: layout de audiencia, acceso al Editor de emails y coherencia visual.
 - Workflow de release genera ZIP limpio solo con runtime.
 - ZIP excluye `_dev/`, `node_modules/`, `src/`, paquetes Node, `.git`, `.github`, cachés y archivos locales.
-- Validaciones ejecutadas: `npm run build`, `php -l`, `git diff --check`, ZIP temporal limpio y GitHub Release confirmada por API.
 
 ## Pendiente post-release
 
 - QA funcional completo de envíos reales en staging/local.
 - Prueba del updater en staging.
-- Documentación pública breve.
-- Resumen comercial interno.
+- Confirmar GitHub Release `v2.4.0` tras pushear tag.
 - Decidir conservación o borrado de `_dev/_md/`.
-
-## Histórico dev consolidado
-
-- `2.0.1.1`: Action Scheduler obligatorio, escape de nombre y borrado seguro.
-- `2.0.1.2`: estados/logs reales, snapshot seguro, preview obsoleta y exclusión `_dev`.
-- `2.0.1.3`: Email String Editor base, búsqueda global, multiidioma y guardado.
-- `2.0.1.4`: fallback HPOS producto.
-- `2.0.1.5`: aplicación real de overrides en emails WooCommerce.
-- `2.0.1.6`: Editor de emails migrado a React.
-- `2.0.1.7`: programación no invalida preview.
-- `2.0.1.8`: ajustes visuales admin y enlace al Editor de emails.
-- `2.0.1.9`: placeholder/búsqueda del Editor de emails y ZIP workflow limpio.

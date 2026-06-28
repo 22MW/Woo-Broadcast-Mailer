@@ -2,53 +2,48 @@
 
 ## Última actualización
 
-2026-06-19
+2026-06-28
 
 ## Resumen humano
 
-Release `2.0.2` publicada correctamente. El flujo de release queda operativo con ZIP limpio generado por GitHub Actions. Queda pendiente probar updater en staging y QA funcional completo si el plugin va a producción.
+Release `2.4.0` en preparación sobre `devWooBM`. La release anterior publicada es `2.3.0`. Este ciclo es pequeño y concentra mejoras del editor TinyMCE y shortcodes de broadcast.
 
 ## Descubierto
 
-- El workflow inicial podía empaquetar material de desarrollo si se copiaba todo el workspace.
-- El workflow final usa inclusión explícita de runtime y respeta `.gitignore`.
-- GitHub Release `v2.0.2` se creó con asset `woo-broadcast-mailer.zip`.
-- `package.json` y `package-lock.json` no entran en ZIP; su versión `1.1.0` no bloquea release.
+- `v2.3.0` ya fue tageada y pusheada.
+- Quedan cambios pendientes en `includes/functions-email.php` y `woo-broadcast-mailer.php` antes de consolidar `2.4.0`.
+- El workflow de release existente empaqueta solo runtime y excluye `_dev/`.
 
 ## Hecho
 
-- Versión pública actualizada a `2.0.2`.
-- `readme.txt` actualizado con `Stable tag: 2.0.2`.
-- `CHANGELOG.md` consolidado en `2.0.2`.
-- `README.md` actualizado post-release.
-- Workflow de release endurecido.
-- ZIP temporal validado como limpio.
-- Tag `v2.0.2` creado.
-- `main` pusheada.
-- Tag `v2.0.2` pusheado.
-- GitHub Release publicada con asset ZIP.
+- Memoria `_dev/` actualizada para release `2.4.0`.
+- `estado.md`, `roadmap.md`, `decisiones.md`, `release-notes.md`, notas departamentales y `visual.html` preparados.
+- Release notes internas de `2.4.0` creadas.
 
 ## Pendiente
 
-- Probar updater en staging.
-- Ejecutar QA funcional completo si se va a producción.
-- Decidir si se conserva o borra `_dev/_md/`.
+- Actualizar versión pública a `2.4.0`.
+- Actualizar `CHANGELOG.md`, `readme.txt` y `README.md`.
+- Ejecutar build si aplica.
+- Ejecutar `php -l` en PHP tocados.
+- Ejecutar `git diff --check`.
+- Commit `release(wcbm): 2.4.0`.
+- Push `devWooBM`.
+- Crear y pushear tag `v2.4.0`.
+- Confirmar GitHub Actions/GitHub Release si la herramienta está disponible.
 
 ## No volver a investigar
 
-- Release `2.0.2` publicada.
-- Asset release: `woo-broadcast-mailer.zip`.
-- ZIP release limpio confirmado.
-- Runtime incluido: `woo-broadcast-mailer.php`, `includes/`, `assets/`, `build/`, `readme.txt`, `LICENSE`, `uninstall.php`.
-- Excluido del ZIP: `_dev/`, `node_modules/`, `src/`, paquetes Node, `.git`, `.github`, caches y locales.
-- Node local disponible en `/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin`.
+- Runtime release: `woo-broadcast-mailer.php`, `includes/`, `assets/`, `build/`, `readme.txt`, `LICENSE`, `uninstall.php`.
+- Excluir siempre: `_dev/`, `node_modules/`, `src/`, `.git`, `.github`, paquetes Node, cachés y locales.
+- Node local: `/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin`.
 
 ## Riesgos o bloqueos
 
-- Updater no probado todavía en staging.
 - QA funcional completo pendiente.
-- Producción requiere validación separada.
+- Updater pendiente de probar en staging.
+- GitHub Release depende del workflow al pushear tag.
 
 ## Próximo paso recomendado
 
-- Probar updater en staging o preparar paquete para instalación manual controlada.
+- Ejecutar validaciones, commit, push y tag `v2.4.0`.

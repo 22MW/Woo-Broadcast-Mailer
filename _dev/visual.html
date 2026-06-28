@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Woo Broadcast Mailer — Release 2.0.2</title>
+  <title>Woo Broadcast Mailer — Release 2.4.0</title>
   <style>
     :root { --bg:#0f1117; --card:#171b24; --soft:#1f2530; --text:#f4f6fb; --muted:#aab3c5; --green:#38d996; --yellow:#ffd166; --red:#ff6b6b; --blue:#7aa2ff; --border:rgba(255,255,255,.1); }
     * { box-sizing:border-box; }
@@ -38,52 +38,51 @@
 <body>
   <main>
     <header>
-      <h1>Woo Broadcast Mailer — Release 2.0.2</h1>
-      <p class="muted">Vista interna post-release — 2026-06-19</p>
-      <span class="badge"><span class="dot green"></span> Release publicada</span>
-      <span class="badge"><span class="dot green"></span> ZIP limpio</span>
-      <span class="badge"><span class="dot green"></span> Plan A hecho</span>
-      <span class="badge"><span class="dot green"></span> Email String Editor hecho</span>
+      <h1>Woo Broadcast Mailer — Release 2.4.0</h1>
+      <p class="muted">Vista interna pre-release — 2026-06-28</p>
+      <span class="badge"><span class="dot yellow"></span> Release 2.4.0 en preparación</span>
+      <span class="badge"><span class="dot green"></span> Release 2.3.0 publicada</span>
+      <span class="badge"><span class="dot green"></span> ZIP limpio por workflow</span>
+      <span class="badge"><span class="dot blue"></span> TinyMCE mejorado</span>
+      <span class="badge"><span class="dot blue"></span> Shortcodes añadidos</span>
       <span class="badge"><span class="dot yellow"></span> QA funcional pendiente</span>
-      <span class="badge"><span class="dot blue"></span> Documentación/comercial en preparación</span>
     </header>
 
     <section class="grid cols-2">
       <div class="card ok">
         <h2>Estado actual</h2>
-        <p>La release <code>2.0.2</code> está publicada en GitHub Releases con tag <code>v2.0.2</code> y asset <code>woo-broadcast-mailer.zip</code>.</p>
-        <p>El ZIP de release incluye solo archivos runtime y excluye documentación interna, Node, fuentes de desarrollo, cachés y archivos locales.</p>
+        <p>La release <code>2.4.0</code> consolida shortcodes de destinatario y mejoras del editor TinyMCE.</p>
+        <p>La release previa <code>2.3.0</code> ya consolidó HTML email, estado fallido y plantillas asunto + body.</p>
       </div>
       <div class="card risk">
         <h2>Pendiente real</h2>
         <ul>
+          <li>Validación final técnica.</li>
+          <li>Commit, push y tag <code>v2.4.0</code>.</li>
+          <li>Confirmar GitHub Release/ZIP.</li>
           <li>QA funcional completo de envíos reales.</li>
-          <li>Prueba del updater en staging.</li>
-          <li>Decidir si se borra o conserva <code>_dev/_md/</code>.</li>
         </ul>
       </div>
     </section>
 
     <section class="grid cols-2">
       <div class="card">
-        <h2>Hecho</h2>
+        <h2>Hecho en este ciclo</h2>
         <ul class="checklist">
-          <li><span class="box done"></span><span>Panel admin React.</span></li>
-          <li><span class="box done"></span><span>Audiencia global multi-fuente con deduplicación.</span></li>
-          <li><span class="box done"></span><span>Preview de destinatarios únicos.</span></li>
-          <li><span class="box done"></span><span>Envíos instantáneos y programados con Action Scheduler.</span></li>
-          <li><span class="box done"></span><span>Estados/logs reales y snapshot seguro.</span></li>
-          <li><span class="box done"></span><span>Email String Editor con React y overrides seguros en emails WooCommerce.</span></li>
-          <li><span class="box done"></span><span>Fallback HPOS para destinatarios por producto.</span></li>
-          <li><span class="box done"></span><span>Workflow release con ZIP limpio.</span></li>
+          <li><span class="box done"></span><span>Shortcodes: <code>{customer_name}</code>, <code>{first_name}</code>, <code>{last_name}</code>, <code>{email}</code>, <code>{current_date}</code>.</span></li>
+          <li><span class="box done"></span><span>Fallback por email para buscar usuario WordPress.</span></li>
+          <li><span class="box done"></span><span>TinyMCE con fuente, tamaño, color de texto y color de fondo.</span></li>
+          <li><span class="box done"></span><span>Toolbar secundaria vaciada para evitar selector duplicado.</span></li>
+          <li><span class="box done"></span><span>Estilos inline para <code>h1</code> y <code>h2</code>.</span></li>
         </ul>
       </div>
       <div class="card">
-        <h2>Siguiente paso recomendado</h2>
-        <ul>
-          <li>Cerrar documentación pública.</li>
-          <li>Preparar resumen comercial de una página.</li>
-          <li>Planificar QA funcional en staging si se va a usar en producción.</li>
+        <h2>QA pendiente</h2>
+        <ul class="checklist">
+          <li><span class="box pending"></span><span>Probar shortcodes con usuario existente.</span></li>
+          <li><span class="box pending"></span><span>Probar email manual sin usuario asociado.</span></li>
+          <li><span class="box pending"></span><span>Probar color/tamaño/fuente en cliente de email.</span></li>
+          <li><span class="box pending"></span><span>Confirmar que no hay toolbar duplicada tras limpiar caché.</span></li>
         </ul>
       </div>
     </section>
@@ -94,13 +93,13 @@
         <ul>
           <li>Producción sin QA funcional.</li>
           <li>Entregabilidad garantizada sin SMTP/configuración real.</li>
-          <li>Mail Mint como integración avanzada.</li>
-          <li>WPML como traducción completa del plugin.</li>
+          <li>Compatibilidad visual idéntica en todos los clientes de email.</li>
+          <li>Baja automática hasta tener sistema real de exclusión.</li>
         </ul>
       </div>
       <div class="card ok">
-        <h2>Base comercial</h2>
-        <p>Herramienta para enviar comunicaciones segmentadas desde WooCommerce usando compradores, roles, listas Mail Mint o emails manuales, con preview, programación, logs y edición de textos de emails.</p>
+        <h2>Siguiente paso</h2>
+        <p>Completar release <code>2.4.0</code> con validaciones, commit, push y tag.</p>
       </div>
     </section>
 

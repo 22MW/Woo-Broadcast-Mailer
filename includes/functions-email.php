@@ -54,8 +54,8 @@ function send_single_email($recipient, $subject, $message, $plain_body = false)
         return false;
     }
 
-    $name = esc_html(trim((string) ($recipient['name'] ?? '')));
-    $body = str_replace('{customer_name}', $name, $message);
+    $placeholders = get_broadcast_email_placeholders($recipient, $to);
+    $body = strtr($message, $placeholders);
     $body = prepare_broadcast_email_body($body, $plain_body);
     $body = normalize_broadcast_email_spacing($body);
     $headers = array('Content-Type: text/html; charset=UTF-8');
@@ -74,9 +74,44 @@ function send_single_email($recipient, $subject, $message, $plain_body = false)
 }
 
 /**
- * Añade estilos inline mínimos para conservar espaciado en clientes de email.
+ * Obtiene placeholders personalizados para el email.
  *
- * @param string $body HTML del mensaje.
+ * @param array  $recipient Datos del destinatario.
+ * @param string $email     Email destino.
+ * @return array
+ */
+function get_broadcast_email_placeholders($recipient, $email)
+{
+    $first_name = '';
+    $last_name = '';
+    $display_name = trim((string) ($recipient['name'] ?? ''));
+    $user = get_user_by('email', $email);
+
+    if ($user instanceof \WP_User) {
+        $first_name = (string) get_user_meta($user->ID, 'first_name', true);
+        $last_name = (string) get_user_meta($user->ID, 'last_name', true);
+        $display_name = '' !== trim($display_name) ? $display_name : (string) $user->display_name;
+    }
+
+    $customer_name = trim($display_name);
+    if ('' === $customer_name) {
+        $customer_name = trim($first_name . ' ' . $last_name);
+    }
+
+    return array(
+        '{customer_name}' => esc_html($customer_name),
+        '{first_name}'    => esc_html($first_name),
+        '{last_name}'     => esc_html($last_name),
+        '{email}'         => esc_html($email),
+        '{current_date}'  => esc_html(wp_date(get_option('date_format'))),
+    );
+}
+
+/**
+ * Prepara el cuerpo del email antes del envío.
+ *
+ * @param string $body       Cuerpo del mensaje.
+ * @param bool   $plain_body Si debe omitir plantilla global.
  * @return string
  */
 function prepare_broadcast_email_body($body, $plain_body)
@@ -151,6 +186,8 @@ function normalize_broadcast_email_spacing($body)
 
     $styles = array(
         'p'   => 'margin:0 0 5px;line-height:1.6;',
+        'h1'  => 'margin:32px 0 16px;line-height:1.2;',
+        'h2'  => 'margin:30px 0 15px;line-height:1.25;',
         'h3'  => 'margin:28px 0 14px;line-height:1.3;',
         'h4'  => 'margin:24px 0 12px;line-height:1.35;',
         'ol'  => 'margin:0 0 22px 24px;padding-left:20px;',

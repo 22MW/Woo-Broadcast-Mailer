@@ -4,11 +4,11 @@ Tags: woocommerce, email, broadcast, scheduler, mailmint
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 2.3.0
+Stable tag: 2.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Emailing sencillo para WooCommerce: envía avisos puntuales a compradores, productos, listas disponibles en WordPress, Broadcast Lists o emails manuales. Incluye plantillas de asunto y body, bloques rápidos, programación, logs y editor de textos de emails WooCommerce.
+Emailing sencillo para WooCommerce: envía avisos puntuales a compradores, productos, listas disponibles en WordPress, Broadcast Lists o emails manuales. Incluye shortcodes, plantillas de asunto y body, bloques rápidos, programación, logs y editor de textos de emails WooCommerce.
 
 == Description ==
 
@@ -28,6 +28,7 @@ Incluye:
 - Exclusión temporal de destinatarios desde la vista previa
 - Broadcast Lists reutilizables
 - Plantillas de mensaje que guardan asunto y body
+- Shortcodes: `{customer_name}`, `{first_name}`, `{last_name}`, `{email}` y `{current_date}`
 - Bloques rápidos: imagen, botón, bloque destacado y separador
 - Opción para enviar HTML sin plantilla global de WP HTML Mail
 - Envío instantáneo o programado
@@ -44,6 +45,13 @@ Incluye:
 3. Ve a WooCommerce > Broadcast Mailer.
 
 == Changelog ==
+
+= 2.4.0 =
+* Añadidos shortcodes de broadcast para nombre, apellidos, email y fecha actual.
+* Mejorado el fallback de `{customer_name}` buscando usuario por email cuando falta nombre.
+* Añadidos controles TinyMCE de fuente, tamaño, color de texto y color de fondo.
+* Corregida la toolbar para evitar selector de color duplicado.
+* Añadidos estilos inline para H1 y H2 en emails HTML.
 
 = 2.3.0 =
 * Mejorado el tratamiento de HTML de broadcast para conservar mejor el espaciado visual.
@@ -103,6 +111,9 @@ Incluye:
 * Capa extensible de fuentes y primera integración de Mail Mint.
 
 == Upgrade Notice ==
+
+= 2.4.0 =
+Mejora del editor de mensajes con shortcodes, fuentes, tamaños y colores.
 
 = 2.3.0 =
 Mejora estable de HTML en broadcasts, plantillas de asunto + body y gestión de envíos atascados.

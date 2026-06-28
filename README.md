@@ -4,7 +4,7 @@ Plugin WordPress para WooCommerce que permite enviar avisos puntuales a audienci
 
 ## Estado actual
 
-- Versión estable: `2.3.0`
+- Versión estable: `2.4.0`
 - Panel admin principal en React.
 - Release ZIP limpio generado por GitHub Releases.
 - QA funcional completo de envíos reales pendiente de ejecutar en entorno controlado.
@@ -37,11 +37,13 @@ Funciones principales:
 - Exclusión temporal de destinatarios desde la vista previa.
 - Broadcast Lists reutilizables.
 - Plantillas de mensaje que guardan asunto y body.
+- Shortcodes: `{customer_name}`, `{first_name}`, `{last_name}`, `{email}` y `{current_date}`.
+- Controles de editor para fuente, tamaño, color de texto y color de fondo.
 - Bloques rápidos para insertar imagen, botón, bloque destacado y separador.
 - Selección de imagen desde la biblioteca de medios de WordPress.
 - Opción para enviar HTML sin plantilla global de WP HTML Mail.
 - Asunto y mensaje personalizados.
-- Variable `{customer_name}` en el mensaje.
+- Shortcodes de destinatario y fecha en el mensaje.
 - Envío instantáneo o programado.
 - Tamaño de lote configurable.
 - Límite de emails por hora.
@@ -152,7 +154,7 @@ Opciones relevantes:
 
 El plugin usa GitHub Releases para distribuir versiones.
 
-La release estable `2.3.0` consolida mejoras de HTML en broadcasts, estado fallido para envíos atascados y plantillas de asunto + body.
+La release estable `2.4.0` consolida shortcodes de destinatario, mejoras TinyMCE de fuente/tamaño/color y ajustes de render HTML para H1/H2.
 
 ## Limitaciones conocidas
 
@@ -164,6 +166,14 @@ La release estable `2.3.0` consolida mejoras de HTML en broadcasts, estado falli
 - El updater debe probarse en staging antes de usarlo como canal crítico de producción.
 
 ## Changelog resumido
+
+### 2.4.0
+
+- Shortcodes: `{customer_name}`, `{first_name}`, `{last_name}`, `{email}` y `{current_date}`.
+- Fallback de `{customer_name}` por usuario asociado al email.
+- TinyMCE con fuente, tamaño, color de texto y color de fondo.
+- Toolbar corregida para evitar color duplicado.
+- Estilos inline para H1/H2 en emails HTML.
 
 ### 2.3.0
 

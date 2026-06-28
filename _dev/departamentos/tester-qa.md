@@ -2,45 +2,42 @@
 
 ## Última actualización
 
-2026-06-18
+2026-06-28
 
 ## Resumen humano
 
-Revisión QA inicial realizada en modo completo y solo lectura. Posteriormente, el usuario reportó QA OK para el bugfix HPOS y para E4 del Email String Editor.
+QA funcional completo sigue pendiente. Para el ciclo `2.4.0` solo se han ejecutado validaciones técnicas previstas; queda pendiente validar en navegador y con envío real los shortcodes y controles TinyMCE.
 
 ## Descubierto
 
-- Flujos principales a probar: acceso admin, producto, rol, Mail Mint, emails manuales, audiencia global combinada, preview, envío instantáneo, envío programado, logs y borrado.
-- QA requiere entorno local/staging con WooCommerce, Action Scheduler verificable y email catcher.
-- Riesgos QA principales: éxito sin Action Scheduler real, estado `completed` prematuro, preview obsoleto si cambia audiencia y borrado por IDs sin restricción de estado.
+- Flujos QA nuevos del ciclo `2.4.0`: shortcodes de destinatario, TinyMCE con fuente/tamaño/color, toolbar sin duplicado y render de H1/H2 en email.
+- QA real puede crear envíos, logs o acciones programadas.
 
 ## Hecho
 
-- Checklist QA priorizado definido sin ejecutar acciones.
-- No se crearon pedidos, envíos, logs, usuarios ni acciones programadas desde esta sesión.
-- Usuario reportó QA OK del bugfix HPOS con producto/pedidos de prueba.
-- Usuario reportó QA OK de E4: aplicación de overrides en emails WooCommerce.
+- QA funcional no ejecutado todavía.
+- Validación técnica prevista: `php -l`, build si aplica y `git diff --check`.
 
 ## Pendiente
 
-- Ejecutar QA funcional completo con permiso explícito en entorno controlado antes de release estable.
-- Confirmar build React contra `src/`.
-- Validar Mail Mint disponible/no disponible.
-- Validar WPML activo/inactivo y pedidos con/sin idioma.
-- Validar usuario sin permisos WooCommerce.
+- Validar `{customer_name}` con destinatario que tenga nombre en la fuente.
+- Validar `{customer_name}`, `{first_name}`, `{last_name}` con usuario WordPress existente por email.
+- Validar `{email}` y `{current_date}`.
+- Validar editor TinyMCE en navegador: fuente, tamaño, color de texto y color de fondo.
+- Validar que no aparece selector de color duplicado/separado tras limpiar caché.
+- Validar email recibido con H1/H2, color, fondo y tamaño.
 
 ## No volver a investigar
 
-- QA de bugfix HPOS y E4 fue reportado como OK por el usuario.
-- Action Scheduler, preview, envío instantáneo, envío programado, logs y borrado son el núcleo de QA.
-- Email catcher recomendado para pruebas de envío: MailHog, Mailpit o similar.
+- QA funcional completo requiere permiso porque puede crear envíos/logs/acciones.
+- Email catcher recomendado: Mailpit/MailHog o SMTP controlado.
 
 ## Riesgos o bloqueos
 
-- QA funcional está bloqueado hasta permiso porque puede crear envíos, logs o acciones programadas.
-- Producción no es entorno recomendado para estas pruebas.
-- No se puede confirmar entrega real sin revisar `wp_mail()`/SMTP/email catcher.
+- Clientes de email pueden modificar fuentes/colores.
+- Caché del navegador puede mostrar toolbar antigua.
+- Sin usuario asociado al email, first/last name pueden quedar vacíos.
 
 ## Próximo paso recomendado
 
-- Ejecutar checklist P0 en local/staging: Action Scheduler, preview audiencia global, envío instantáneo, logs, programación futura y permisos AJAX.
+- Después de release, ejecutar prueba controlada con un email manual y un usuario WordPress existente.

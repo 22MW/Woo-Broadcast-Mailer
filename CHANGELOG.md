@@ -2,6 +2,14 @@
 
 Todos los cambios relevantes del proyecto se documentan en este archivo.
 
+## 2.4.0
+
+- Añadidos shortcodes de broadcast: `{customer_name}`, `{first_name}`, `{last_name}`, `{email}` y `{current_date}`.
+- `{customer_name}` ahora intenta resolver datos del usuario por email cuando la fuente no trae nombre.
+- Añadidos selectores TinyMCE de fuente, tamaño, color de texto y color de fondo.
+- Corregida la toolbar del editor para evitar selector de color duplicado/separado.
+- Añadidos estilos inline para `h1` y `h2` en emails HTML.
+
 ## 2.3.0
 
 - Mejorado el tratamiento de HTML de broadcast para conservar mejor el espaciado visual en clientes de email.

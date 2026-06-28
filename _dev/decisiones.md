@@ -2,26 +2,25 @@
 
 ## Última actualización
 
-2026-06-19
+2026-06-28
 
 ## Decisiones confirmadas
 
-- **Release actual**: `2.0.2` publicada en GitHub Releases.
-- **Ramas alineadas**: `main` y `devWooBM` apuntan al commit `dd51840` tras release `2.0.2`.
-- **ZIP release mínimo**: el ZIP incluye solo runtime: `woo-broadcast-mailer.php`, `includes/`, `assets/`, `build/`, `readme.txt`, `LICENSE`, `uninstall.php`.
+- **Release actual publicada**: `2.3.0` con tag `v2.3.0`.
+- **Release en preparación**: `2.4.0` para shortcodes de destinatario y mejoras TinyMCE.
+- **Rama de trabajo**: `devWooBM`.
+- **Canal de distribución**: GitHub Releases con ZIP generado por workflow.
+- **ZIP release mínimo**: incluye solo runtime: `woo-broadcast-mailer.php`, `includes/`, `assets/`, `build/`, `readme.txt`, `LICENSE`, `uninstall.php`.
 - **ZIP release excluye**: `_dev/`, `_md/`, `.git/`, `.github/`, `node_modules/`, `src/`, `package.json`, `package-lock.json`, `dist/`, cachés, logs y archivos locales.
 - **React para admin**: panel principal y Editor de emails usan React con `@wordpress/components`, `@wordpress/element` y `@wordpress/i18n`.
+- **Editor de mensaje**: se mantiene `wp_editor`/TinyMCE nativo; no se añade editor Node nuevo.
+- **TinyMCE**: se permiten fuente, tamaño, color de texto y color de fondo; formatos P/H1/H2/H3/H4 ya existen.
+- **Shortcodes de broadcast aprobados**: `{customer_name}`, `{first_name}`, `{last_name}`, `{email}`, `{current_date}`.
+- **`{unsubscribe_note}` descartado por ahora**: no se añade hasta tener sistema real de baja/exclusión permanente.
+- **Plantillas de mensaje**: guardan asunto y body; no guardan destinatarios, programación ni configuración de envío.
 - **Action Scheduler**: obligatorio para envío instantáneo y programado.
-- **Arquitectura multi-fuente**: audiencia global acumulada con deduplicación server-side.
-- **GitHub Releases**: canal de distribución y actualizaciones del plugin.
-- **HPOS compatible**: compatibilidad declarada y fallback de destinatarios por producto implementado.
+- **Estados de envío**: `failed` existe para fallos de logs; se pueden borrar `failed` y `running` sin acciones pendientes.
 - **Text domain correcto**: `wc-pbm`.
-- **Tablas propias**: `wp_pbm_scheduled_emails` y `wp_pbm_scheduled_logs`.
-- **Email String Editor**: módulo propio bajo WooCommerce, no copia directa del plugin heredado.
-- **Email String Editor E4**: overrides limitados por contexto de emails WooCommerce y dominio `woocommerce`.
-- **QA reportado OK por usuario**: A4 post-fix y Email String Editor E1-E5.
-- **22MW-BACK**: queda como posible mejora visual por fases; no aplicar al plugin entero de golpe.
-- **`package.json`/`package-lock.json`**: mantienen versión interna `1.1.0`; no entran en ZIP release y no bloquean `2.0.2`.
 - **`_dev/_md/`**: queda como histórico heredado; no borrar sin permiso explícito.
 
 ## Decisiones operativas
@@ -35,16 +34,16 @@
 
 ## Pendientes de decisión
 
-- Borrar o conservar definitivamente `_dev/_md/`.
 - Ejecutar QA funcional completo antes de usar en producción.
 - Probar updater en staging.
-- Definir si 22MW-BACK empieza por Broadcast principal o Editor de emails.
+- Borrar o conservar definitivamente `_dev/_md/`.
 - Definir si el plugin se venderá como herramienta interna, producto privado o plugin público.
+- Definir si se implementará sistema real de baja/exclusión permanente.
 
 ## No reabrir sin motivo
 
+- El editor de mensaje seguirá usando TinyMCE nativo.
 - La migración React está completada.
 - El flujo multi-fuente está implementado.
 - El text domain correcto es `wc-pbm`.
-- El ZIP de release `2.0.2` ya está limpio.
-- La release `2.0.2` ya está publicada.
+- El ZIP de release debe seguir excluyendo `_dev/` y archivos de desarrollo.

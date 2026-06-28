@@ -2,165 +2,52 @@
 
 ## Última actualización
 
-2026-06-19
+2026-06-28
 
 ## Resumen humano
 
-Plan A completo aplicado: A1-A7. Email String Editor E1-E4 implementado y R1 aplicado: la interfaz admin del editor de emails migró a React, manteniendo E4, el submenú WooCommerce, la capability `manage_woocommerce`, la opción `pbm_email_string_overrides` y compatibilidad legacy de lectura.
+Ciclo 2.4.0 preparado con cambios mínimos sobre el editor de mensaje y shortcodes de broadcast. No se añadió editor Node nuevo; se extendió TinyMCE nativo y se mantuvo el flujo existente de envío.
 
 ## Descubierto
 
-- Action Scheduler está presente en el entorno local por MCP WooCommerce.
-- El código anterior comprobaba `function_exists('as_schedule_single_action')`, pero podía devolver éxito aunque no se programara acción.
-- `send_single_email()` insertaba `{customer_name}` sin escape contextual.
-- El borrado individual y por IDs dependía de la visibilidad del frontend, pero el backend no verificaba estado antes de borrar.
-- El estado `completed` se marcaba justo después de programar lotes, no al finalizar ejecución real.
-- El snapshot `pbm_scheduled_recipients_{id}` se borraba al leerlo, antes de confirmar que los lotes se programaron/ejecutaron.
-- La preview podía quedar obsoleta si cambiaba audiencia/configuración antes de enviar.
-- Bug A4 detectado: activar/desactivar programación o cambiar fecha/hora marcaba preview como obsoleta aunque no cambiaba destinatarios.
-- El workflow release no excluía `_dev/`.
-- Email String Editor debía integrarse como módulo propio, no copiando el plugin heredado tal cual.
+- `{customer_name}` dependía de `$recipient['name']`; en emails manuales o listas sin nombre podía quedar vacío.
+- El email destino permite buscar un usuario WordPress con `get_user_by('email', $email)` para completar nombre/apellidos.
+- TinyMCE ya incluye formatos P/H1/H2/H3/H4; no hacía falta tocar esa parte.
+- La toolbar podía mostrar controles de color duplicados si se combinaba configuración custom con toolbar secundaria por defecto.
 
 ## Hecho
 
-### A1
-
-- Añadidos helpers:
-  - `is_action_scheduler_available()`
-  - `get_action_scheduler_status_message()`
-  - `get_action_scheduler_unavailable_message()`
-- Añadido estado visible de Action Scheduler en el admin del plugin.
-- `schedule_email_batches()` devuelve `0` si Action Scheduler no está disponible y ya no intenta programar parcialmente dentro del bucle.
-- `ajax_send_broadcast()` bloquea antes de crear envíos si Action Scheduler no está disponible.
-- Envío programado e instantáneo usan la comprobación centralizada.
-- `ajax_create_scheduled_email()`, `ajax_cancel_scheduled_email()` y `ajax_run_scheduled_now()` bloquean si Action Scheduler no está disponible.
-
-### A2
-
-- El envío instantáneo ya no cambia a `completed` tras programar lotes.
-- El envío programado ya no cambia a `completed` tras programar lotes.
-- Añadidos helpers:
-  - `get_expected_messages_count()`
-  - `maybe_complete_scheduled_email()`
-- `process_email_batch()` llama a `maybe_complete_scheduled_email()` después de crear cada log.
-- Si un envío programado no consigue programar lotes, se registra error y pasa a `cancelled`.
-
-### A3
-
-- `get_scheduled_recipients_snapshot()` ya no borra la opción al leerla.
-- El snapshot se conserva durante ejecución.
-- `maybe_complete_scheduled_email()` borra `pbm_scheduled_recipients_{id}` al completar.
-- `delete_scheduled_email_with_logs()` borra snapshot al eliminar.
-- `bulk_delete_scheduled_by_status()` borra snapshot al borrar completados/cancelados.
-
-### A4
-
-- Añadida firma de preview en `src/admin/App.js`.
-- La firma cubre audiencia global, emails manuales, lote y emails por hora.
-- La programación y fecha/hora ya no forman parte de la firma porque no cambian destinatarios.
-- Si cambia la audiencia/configuración tras previsualizar, se muestra aviso.
-- El botón de envío queda bloqueado si la preview está obsoleta.
-- Se compiló `build/` con Node local.
-
-### A5
-
-- `send_single_email()` valida el email destino con `sanitize_email()` e `is_email()`.
-- `{customer_name}` se sustituye con nombre escapado mediante `esc_html()`.
-
-### A6
-
-- Añadido `can_delete_scheduled_email()`.
-- `delete_scheduled_email_with_logs()` ya no borra si el envío no está en `completed` o `cancelled`.
-- `ajax_delete_scheduled_email()` bloquea borrado individual de envíos no borrables.
-- `ajax_bulk_delete_scheduled_ids()` bloquea el lote completo si incluye algún ID no borrable o inexistente.
-
-### A7
-
-- `.github/workflows/release.yml` excluye `_dev/` del ZIP/release.
-
-### Email String Editor E1-E3.2 + E2.3
-
-- Añadido cargador `includes/email-string-editor.php`.
-- Añadidas clases base bajo `includes/email-string-editor/`.
-- Módulo inicializado desde `woo-broadcast-mailer.php`.
-- Añadido submenú `WooCommerce > Editor de emails`.
-- Añadido selector de idioma, selector de plantilla, buscador y listado de strings.
-- Añadida búsqueda global en todas las plantillas permitidas cuando no se elige plantilla.
-- Añadida búsqueda multiidioma comparando original, traducciones WooCommerce y personalizaciones guardadas.
-- Añadida edición de todos los idiomas disponibles dentro de cada string/email.
-- Añadido guardado/borrado en `pbm_email_string_overrides`.
-- Añadido guardado multiidioma desde la misma pantalla.
-- Añadida edición directa desde la pestaña Cambios guardados.
-- Añadida lectura compatible de `wc_custom_email_strings`.
-- E4 activado con filtro `gettext`/`gettext_with_context` limitado al contexto de emails WooCommerce.
-- La aplicación real usa `woocommerce_email_header` para activar contexto y `woocommerce_email_footer` para desactivarlo.
-- El idioma se resuelve desde `wpml_language` del pedido si existe, con fallback a locale actual.
-
-### Bugfix destinatarios producto HPOS
-
-- Aplicado fallback en `get_recipients_from_orders()`.
-- Si HPOS está activo pero `get_recipients_from_order_lookup()` no devuelve destinatarios, ahora se escanean pedidos por `line_items`.
-- Mantiene la deduplicación por email y el filtro de idioma existente.
-
-### R1 React Email String Editor
-
-- Creado controlador AJAX `Ajax_Controller` para bootstrap, búsqueda, guardado por lote, listado, edición y borrado de overrides.
-- `Email_String_Editor` registra los nuevos hooks `wp_ajax_pbm_email_editor_*`.
-- `Admin_Page` renderiza el contenedor React `#pbm-email-string-editor-app` y localiza `pbmEmailEditor` con nonce `pbm_email_editor_action`.
-- `src/admin/index.js` monta tanto el admin principal como el editor React si existe su contenedor.
-- Añadida UI React mínima con tabs Editor / Cambios guardados, filtros, tabla editable por idioma, guardado por lote, edición inline y borrado.
-- Build React actualizado en `build/` con Node local.
-
-### Ajuste visual audiencia
-
-- `Fuente`, selector dependiente y botón de añadir quedan agrupados junto a `Emails manuales` en una grid de dos columnas en desktop.
-- `Lista global de audiencias` se movió debajo de `Emails manuales` dentro de la columna derecha.
-- `Vista Previa de Destinatarios` se movió debajo de la lista global dentro de la misma columna derecha.
-- El resultado de la vista previa se movió encima de `Asunto`, manteniendo el botón de preview en la columna derecha.
-- Eliminado `box-shadow` de `.components-card__body` dentro del admin del plugin.
-- Añadido botón `Editor de emails` en el header del Broadcast principal, a la izquierda del logo 22MW.
-- Editor de emails recibe header visual equivalente: título, versión, enlace a Broadcast y logo 22MW.
-- Editor de emails reutiliza clases visuales existentes del Broadcast para filtros, tablas, tabs y wrapper React.
-- Tabs del Editor de emails reemplazados por botones visuales tipo fuente y la descripción se movió al mismo bloque.
-- Placeholder del campo Buscar del Email String Editor actualizado por el texto: "Si no eliges plantilla, la búsqueda recorre todas las plantillas permitidas.".
-- Select de Email / plantilla del Email String Editor mantiene el texto: "Todas las plantillas al buscar.".
-- En móvil la grid vuelve a una columna.
-- No se tocó lógica de audiencia, preview, envío ni AJAX.
+- Añadida función `get_broadcast_email_placeholders()`.
+- Añadidos shortcodes:
+  - `{customer_name}`
+  - `{first_name}`
+  - `{last_name}`
+  - `{email}`
+  - `{current_date}`
+- `{customer_name}` usa nombre recibido y, si falta, intenta resolver usuario por email.
+- `{first_name}` y `{last_name}` salen de meta de usuario cuando existe usuario con ese email.
+- `{current_date}` usa `wp_date(get_option('date_format'))`.
+- TinyMCE ampliado con fuente, tamaño, color de texto y color de fondo.
+- Toolbar secundaria (`toolbar2`) vaciada para evitar control de color separado/duplicado.
+- Añadidos estilos inline para `h1` y `h2` en emails.
 
 ## Pendiente
 
-- QA funcional real del aviso admin y rutas AJAX.
-- QA de A2 con envío instantáneo, envío programado, ejecución de lotes y logs acumulados.
-- QA de A4: preview, cambio de audiencia/configuración y bloqueo de envío.
-- QA específico A4: confirmar que activar/desactivar programación y cambiar fecha/hora no invalidan preview.
-- Prueba específica con caracteres HTML en nombre de destinatario.
-- QA de borrado con registros `completed`, `cancelled`, `pending` y `running`.
-- Validar ZIP/release real antes de publicar.
-- QA admin de Email String Editor React R1: bootstrap, búsqueda, guardado por lote, edición inline y borrado.
-- QA visual del ajuste de audiencia en desktop y móvil.
-- Validar QA funcional del bugfix HPOS con producto `380` y pedidos `655`, `656`, `711`.
-- QA de E4 en email WooCommerce controlado: confirmar que aplica override y no afecta admin/frontend.
+- QA real de shortcodes con usuario existente y email manual.
+- QA visual de TinyMCE en navegador tras limpiar caché si hace falta.
+- QA email real con tamaños/fuentes/colores.
 
 ## No volver a investigar
 
-- A1 implementado: Action Scheduler obligatorio y aviso admin.
-- A2 implementado: `completed` queda ligado a logs acumulados.
-- A3 implementado: snapshot se conserva hasta completar/eliminar.
-- A4 implementado y compilado: preview obsoleta bloquea envío; programación y fecha/hora no invalidan preview.
-- A5 implementado: escape de `{customer_name}` y validación de email destino.
-- A6 implementado: borrado por ID limitado a `completed` y `cancelled`.
-- A7 implementado: workflow release excluye `_dev/`.
-- Email String Editor E1-E4 implementado; `gettext` queda limitado por contexto de email WooCommerce.
-- R1 implementado sin tocar funcionalmente E4 ni cambiar el modelo de datos.
-- No se ejecutaron envíos ni acciones programadas durante estas implementaciones.
-- Node local disponible en `/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin`.
-- `node_modules/` se copió desde el plugin anterior.
+- No se añadirá editor Node para esta necesidad; TinyMCE nativo cubre el alcance actual.
+- Formatos P/H1/H2/H3/H4 ya existen en TinyMCE.
+- `{unsubscribe_note}` queda fuera hasta tener sistema real de baja/exclusión.
 
 ## Riesgos o bloqueos
 
-- QA funcional puede crear envíos/logs/acciones; requiere permiso separado.
-- Si Action Scheduler existe parcialmente con funciones disponibles pero falla al programar internamente, eso requerirá validación funcional posterior.
+- Los datos de nombre/apellidos solo existen si el email pertenece a usuario WordPress con metas completadas o si la fuente trae nombre.
+- La visualización final de fuentes/colores depende del cliente de email.
 
 ## Próximo paso recomendado
 
-- Ejecutar QA funcional controlado del Plan A completo.
+- Cerrar release `2.4.0` y validar en email real cuando el usuario autorice QA funcional.

@@ -2,60 +2,46 @@
 
 ## Última actualización
 
-2026-06-19
+2026-06-28
 
 ## Resumen humano
 
-Release `2.0.2` publicada. El proyecto queda en fase post-release: limpiar memoria, preparar documentación y preparar resumen comercial. No hay que reabrir Plan A, Email String Editor ni migración React salvo bug confirmado.
+Se corrige el flujo operativo: antes de cerrar release `2.4.0` se actualiza la memoria `_dev/` y se separan estado, roadmap, decisiones, desarrollo, QA pendiente y release. El plugin sigue en `devWooBM` y la release objetivo es `2.4.0`.
 
 ## Descubierto
 
-- La release `2.0.2` quedó publicada correctamente con ZIP limpio.
-- La memoria `_dev/` arrastraba pendientes ya cerrados de release.
-- Faltaban notas departamentales de Documentador y Comercial.
-- `_dev/_md/` es material heredado útil como histórico, pero no debe seguir mezclado con pendientes actuales.
-- `_dev/.DS_Store` sobra.
+- La memoria principal seguía desactualizada con referencias a `2.0.2` aunque ya existía release `2.3.0`.
+- Los cambios pendientes actuales son de desarrollo menor: shortcodes y TinyMCE.
+- No hay QA funcional completo ejecutado para estos cambios.
 
 ## Hecho
 
-- Plan BL aplicado: exclusión temporal desde preview, Broadcast List como fuente y gestión básica de listas.
-- Plan A A1-A7 aplicado.
-- Email String Editor E1-E5 aplicado.
-- R1 React aplicado.
-- QA A4 y Email String Editor reportados OK por usuario.
-- Release `2.0.2` publicada en GitHub Releases.
-- ZIP de release limpio validado.
-- Workflow release endurecido.
-- Memoria post-release en consolidación.
+- Clasificada la tarea como release + Git + memoria `_dev`.
+- Revisado estado Git y rama.
+- Actualizados `_dev/estado.md`, `_dev/roadmap.md`, `_dev/decisiones.md`, `_dev/release-notes.md`.
+- Actualizadas notas de Desarrollador, Release Manager, Tester QA y Jefe de Proyecto.
+- Actualizado `visual.html` para reflejar release `2.4.0` en preparación.
 
 ## Pendiente
 
-- QA funcional de Broadcast Lists: guardar lista, usarla como fuente, excluir email temporalmente y enviar/programar.
-- QA funcional completo de envíos reales.
-- Probar updater en staging.
-- Cerrar limpieza de `_dev/`.
-- Preparar documentación pública breve.
-- Preparar resumen comercial interno.
-- Decidir destino definitivo de `_dev/_md/`.
+- Ejecutar validaciones finales.
+- Actualizar versión/changelog/readme.
+- Commit, push y tag `v2.4.0`.
+- Confirmar GitHub Release/ZIP.
 
 ## No volver a investigar
 
-- Release actual: `2.0.2`.
-- Tag actual: `v2.0.2`.
-- `main` y `devWooBM` están alineadas.
-- ZIP release limpio confirmado.
-- `_dev/_md/` es histórico heredado, no pendiente funcional.
-- Plan A está hecho.
-- Email String Editor está hecho.
-- React admin está hecho.
+- Plugin objetivo: Woo Broadcast Mailer.
+- Ruta: `app/public/wp-content/plugins/Woo-Broadcast-Mailer/`.
+- Rama: `devWooBM`.
+- Release objetivo: `2.4.0`.
+- `_dev/` no entra en ZIP/release.
 
 ## Riesgos o bloqueos
 
-- QA funcional crea envíos/logs/acciones; requiere permiso separado.
+- QA real de envío crea acciones/logs; queda pendiente.
 - Producción requiere staging/backup/rollback si se despliega.
-- No borrar `_dev/_md/` sin decisión explícita.
 
 ## Próximo paso recomendado
 
-- Terminar limpieza de memoria y documentación.
-- Después, preparar resumen comercial y decidir QA funcional/staging.
+- Completar release `2.4.0` con validación, commit, push y tag.
