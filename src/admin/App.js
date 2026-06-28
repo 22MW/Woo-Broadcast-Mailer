@@ -774,6 +774,7 @@ export default function App() {
     const params = new URLSearchParams();
     params.append('action', 'pbm_save_message_template');
     params.append('name', newMessageTemplateName);
+    params.append('subject', subject);
     params.append('content', content);
     params.append('nonce', nonce);
     const data = await postAjax(params);
@@ -789,8 +790,9 @@ export default function App() {
   };
 
   const loadMessageTemplate = (template) => {
+    setSubject(template.subject || '');
     setClassicEditorMessage(template.content || '');
-    setMessage({ type: 'success', text: __('Plantilla cargada en el mensaje.', 'wc-pbm') });
+    setMessage({ type: 'success', text: __('Plantilla cargada en el asunto y mensaje.', 'wc-pbm') });
   };
 
   const deleteMessageTemplate = async (template) => {
@@ -1064,13 +1066,14 @@ export default function App() {
             <h3>{__('Plantillas', 'wc-pbm')}</h3>
             <div className="pbm-broadcast-list-save">
               <TextControl hideLabelFromVision label={__('Nombre de plantilla', 'wc-pbm')} value={newMessageTemplateName} onChange={setNewMessageTemplateName} placeholder={__('Nombre de plantilla', 'wc-pbm')} />
-              <Button variant="secondary" onClick={saveCurrentMessageTemplate}>{__('Guardar body como plantilla', 'wc-pbm')}</Button>
+              <Button variant="secondary" onClick={saveCurrentMessageTemplate}>{__('Guardar asunto y body', 'wc-pbm')}</Button>
             </div>
             {messageTemplates.length > 0 && (
               <div className="pbm-message-template-list">
                 {messageTemplates.map((template) => (
                   <div className="pbm-message-template-item" key={template.id}>
                     <strong>{template.name}</strong>
+                    {template.subject && <small>{template.subject}</small>}
                     <Button variant="secondary" onClick={() => loadMessageTemplate(template)}>{__('Cargar', 'wc-pbm')}</Button>
                     <Button variant="link" isDestructive onClick={() => deleteMessageTemplate(template)}>{__('Borrar', 'wc-pbm')}</Button>
                   </div>

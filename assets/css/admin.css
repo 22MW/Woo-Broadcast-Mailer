@@ -445,6 +445,8 @@
 .pbm-message-template-list {
   display: flex;
   gap: 20px;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 .pbm-message-template-item {
   background: #fff;
@@ -454,6 +456,14 @@
   display: flex;
   gap: 10px;
   align-items: center;
+}
+.pbm-message-template-item small {
+  color: var(--pbm-text-muted);
+  display: block;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .pbm-message-template-box {
   background: var(--pbm-bg-soft);

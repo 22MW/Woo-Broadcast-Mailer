@@ -1,5 +1,14 @@
 # Release notes internas
 
+## 2.3.0 — Release en preparación — 2026-06-28
+
+- Mejora de conservación visual del HTML en broadcasts.
+- Limpieza de saltos automáticos entre bloques y listas.
+- Conversión de espacios manuales del editor en espaciadores inline seguros.
+- Estado `failed` para fallos de logs y borrado de envíos atascados sin acciones pendientes.
+- Plantillas de mensaje con asunto + body.
+- Validaciones previstas: `npm run build`, `php -l`, `git diff --check`, tag `v2.3.0` y GitHub Release con ZIP limpio.
+
 ## 2.1.0 — Release en preparación — 2026-06-21
 
 - Consolidada la documentación comercial interna de Woo Broadcast Mailer.

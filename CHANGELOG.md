@@ -2,6 +2,16 @@
 
 Todos los cambios relevantes del proyecto se documentan en este archivo.
 
+## 2.3.0
+
+- Mejorado el tratamiento de HTML de broadcast para conservar mejor el espaciado visual en clientes de email.
+- Añadida limpieza de saltos automáticos entre bloques HTML y listas.
+- Añadida conversión de espacios manuales del editor en espaciadores inline seguros para email.
+- Ajustado el margen de párrafos en emails HTML.
+- Añadido estado `failed` para envíos con fallo de registro de logs.
+- Permitido borrar envíos fallidos y envíos en ejecución sin acciones pendientes.
+- Las plantillas de mensaje ahora guardan y cargan asunto + body.
+
 ## 2.2.0
 
 - Consolidada la gestión de Broadcast Lists reutilizables.

@@ -552,7 +552,7 @@ function create_batch_log($scheduled_id, $sent, $failed)
 
     $table = $wpdb->prefix . 'pbm_scheduled_logs';
 
-    $wpdb->insert(
+    $inserted = $wpdb->insert(
         $table,
         array(
             'scheduled_id'  => $scheduled_id,
@@ -563,6 +563,10 @@ function create_batch_log($scheduled_id, $sent, $failed)
         ),
         array('%d', '%s', '%s', '%d', '%d')
     );
+
+    if (! $inserted) {
+        update_scheduled_email_status($scheduled_id, 'failed');
+    }
 }
 
 /**
@@ -599,7 +603,79 @@ function can_delete_scheduled_email($scheduled_id)
         absint($scheduled_id)
     ));
 
-    return in_array($status, array('completed', 'cancelled'), true);
+    if (in_array($status, array('completed', 'cancelled', 'failed'), true)) {
+        return true;
+    }
+
+    return 'running' === $status && ! has_pending_broadcast_actions($scheduled_id);
+}
+
+/**
+ * Comprueba si quedan acciones pendientes para un envío.
+ *
+ * @param int $scheduled_id ID del envío.
+ * @return bool
+ */
+function has_pending_broadcast_actions($scheduled_id)
+{
+    if (! function_exists('as_has_scheduled_action')) {
+        return false;
+    }
+
+    $scheduled_id = absint($scheduled_id);
+    if (as_has_scheduled_action('pbm_execute_scheduled_email', array($scheduled_id), 'product-broadcast-mailer')) {
+        return true;
+    }
+
+    $recipients = get_option('pbm_scheduled_recipients_' . $scheduled_id, array());
+    if (! is_array($recipients) || empty($recipients)) {
+        return false;
+    }
+
+    $delivery_meta = get_delivery_meta($scheduled_id);
+    $plain_body = ! empty($delivery_meta['plain_body']);
+
+    return as_has_scheduled_action(
+        'pbm_process_email_batch',
+        array($recipients, get_scheduled_email_subject($scheduled_id), get_scheduled_email_message($scheduled_id), $scheduled_id, $plain_body),
+        'product-broadcast-mailer'
+    );
+}
+
+/**
+ * Obtiene el asunto de un envío.
+ *
+ * @param int $scheduled_id ID del envío.
+ * @return string
+ */
+function get_scheduled_email_subject($scheduled_id)
+{
+    global $wpdb;
+
+    $table = $wpdb->prefix . 'pbm_scheduled_emails';
+
+    return (string) $wpdb->get_var($wpdb->prepare(
+        "SELECT subject FROM {$table} WHERE id = %d",
+        absint($scheduled_id)
+    ));
+}
+
+/**
+ * Obtiene el mensaje de un envío.
+ *
+ * @param int $scheduled_id ID del envío.
+ * @return string
+ */
+function get_scheduled_email_message($scheduled_id)
+{
+    global $wpdb;
+
+    $table = $wpdb->prefix . 'pbm_scheduled_emails';
+
+    return (string) $wpdb->get_var($wpdb->prepare(
+        "SELECT message FROM {$table} WHERE id = %d",
+        absint($scheduled_id)
+    ));
 }
 
 /**

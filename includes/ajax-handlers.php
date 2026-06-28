@@ -611,10 +611,11 @@ function ajax_save_message_template()
     }
 
     $name = sanitize_text_field(wp_unslash($_POST['name'] ?? ''));
+    $subject = sanitize_text_field(wp_unslash($_POST['subject'] ?? ''));
     $content = wp_kses_post(wp_unslash($_POST['content'] ?? ''));
 
-    if ('' === trim(wp_strip_all_tags($content))) {
-        wp_send_json_error(array('message' => __('La plantilla no tiene contenido', 'wc-pbm')));
+    if ('' === trim(wp_strip_all_tags($content)) && '' === trim($subject)) {
+        wp_send_json_error(array('message' => __('La plantilla no tiene asunto ni contenido', 'wc-pbm')));
     }
 
     $templates = get_message_templates();
@@ -624,6 +625,7 @@ function ajax_save_message_template()
     $templates[$id] = array(
         'id' => $id,
         'name' => $name,
+        'subject' => $subject,
         'content' => $content,
         'created_at' => current_time('mysql', true),
         'updated_at' => current_time('mysql', true),
@@ -1220,7 +1222,7 @@ function ajax_delete_scheduled_email()
     }
 
     if (! can_delete_scheduled_email($scheduled_id)) {
-        wp_send_json_error(array('message' => __('Solo se pueden eliminar envíos completados o cancelados', 'wc-pbm')));
+        wp_send_json_error(array('message' => __('Solo se pueden eliminar envíos completados, cancelados, fallidos o en ejecución sin acciones pendientes', 'wc-pbm')));
     }
 
     if (delete_scheduled_email_with_logs($scheduled_id)) {
@@ -1245,7 +1247,7 @@ function ajax_bulk_delete_scheduled()
 
     $status = sanitize_text_field($_POST['status'] ?? '');
 
-    if (!in_array($status, array('completed', 'cancelled'), true)) {
+    if (!in_array($status, array('completed', 'cancelled', 'failed'), true)) {
         wp_send_json_error(array('message' => __('Estado inválido', 'wc-pbm')));
     }
 
@@ -1303,6 +1305,7 @@ function ajax_list_scheduled_emails()
         'running'   => __('En ejecución', 'wc-pbm'),
         'completed' => __('Completado', 'wc-pbm'),
         'cancelled' => __('Cancelado', 'wc-pbm'),
+        'failed'    => __('Fallido', 'wc-pbm'),
     );
 
     $items = array();
@@ -1337,7 +1340,7 @@ function ajax_list_scheduled_emails()
                 (int) $row->batch_size,
                 (int) $row->emails_per_hour
             ),
-            'can_delete'     => in_array($row->status, array('completed', 'cancelled'), true),
+            'can_delete'     => can_delete_scheduled_email((int) $row->id),
         );
     }
 
@@ -1381,7 +1384,7 @@ function ajax_bulk_delete_scheduled_ids()
     }
 
     if (count($deletable_ids) !== count($ids)) {
-        wp_send_json_error(array('message' => __('Solo se pueden eliminar envíos completados o cancelados', 'wc-pbm')));
+        wp_send_json_error(array('message' => __('Solo se pueden eliminar envíos completados, cancelados, fallidos o en ejecución sin acciones pendientes', 'wc-pbm')));
     }
 
     $deleted = 0;

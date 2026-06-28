@@ -4,30 +4,37 @@ Tags: woocommerce, email, broadcast, scheduler, mailmint
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 2.2.0
+Stable tag: 2.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Sistema de envío masivo para WooCommerce con audiencia global combinada, envío instantáneo/programado, logs y editor de textos de emails.
+Emailing sencillo para WooCommerce: envía avisos puntuales a compradores, productos, listas disponibles en WordPress, Broadcast Lists o emails manuales. Incluye plantillas de asunto y body, bloques rápidos, programación, logs y editor de textos de emails WooCommerce.
 
 == Description ==
 
-Woo Broadcast Mailer permite enviar comunicaciones desde WooCommerce a audiencias segmentadas.
+Woo Broadcast Mailer permite comunicar avisos puntuales desde WooCommerce sin montar una campaña completa en una plataforma externa.
 
 Fuentes disponibles:
 - Compradores de productos WooCommerce
 - Roles de WordPress
 - Listas de Mail Mint, si está disponible
+- Listas disponibles en WordPress desde plugins como AcyMailing, FluentCRM, MailPoet o Newsletter, según integración disponible
+- Broadcast Lists propias
 - Emails manuales
 
 Incluye:
 - Audiencia global combinada con deduplicación
 - Vista previa de destinatarios únicos antes de enviar
+- Exclusión temporal de destinatarios desde la vista previa
+- Broadcast Lists reutilizables
+- Plantillas de mensaje que guardan asunto y body
+- Bloques rápidos: imagen, botón, bloque destacado y separador
+- Opción para enviar HTML sin plantilla global de WP HTML Mail
 - Envío instantáneo o programado
 - Lotes y límite de emails por hora
 - Gestión de envíos y logs
 - Compatibilidad HPOS
-- Editor de textos de emails WooCommerce por idioma
+- Editor de textos de emails WooCommerce y plugins relacionados por idioma
 - Actualizaciones mediante GitHub Releases
 
 == Installation ==
@@ -38,12 +45,19 @@ Incluye:
 
 == Changelog ==
 
+= 2.3.0 =
+* Mejorado el tratamiento de HTML de broadcast para conservar mejor el espaciado visual.
+* Añadida limpieza de saltos automáticos entre bloques HTML y listas.
+* Añadido estado fallido para envíos con problemas de logs y borrado seguro de envíos atascados sin acciones pendientes.
+* Las plantillas de mensaje ahora guardan y cargan asunto + body.
+
 = 2.2.0 =
 * Consolidada la gestión de Broadcast Lists reutilizables y exclusión temporal de destinatarios.
 * Corregido el cierre de envíos instantáneos para llegar a Completado.
 * Añadida opción para enviar HTML sin plantilla global de WP HTML Mail.
 * Añadidas plantillas de mensaje para guardar, cargar y borrar solo el body del email.
 * Añadidos bloques rápidos con imagen, botón, bloque destacado y separador configurable.
+* Añadido Email String Editor para adaptar textos WooCommerce/plugins por idioma.
 
 = 2.1.2 =
 * Añadidas plantillas de mensaje para guardar, cargar y borrar solo el body del email.
@@ -90,8 +104,11 @@ Incluye:
 
 == Upgrade Notice ==
 
+= 2.3.0 =
+Mejora estable de HTML en broadcasts, plantillas de asunto + body y gestión de envíos atascados.
+
 = 2.2.0 =
-Release estable con Broadcast Lists reutilizables, corrección de estado en envíos instantáneos y mejoras del editor visual de mensajes.
+Release estable con Broadcast Lists reutilizables, plantillas de body, bloques rápidos, corrección de estado en envíos instantáneos y editor de textos WooCommerce/plugins por idioma.
 
 = 2.1.2 =
 Mejora del editor de mensajes con plantillas de body y bloques rápidos reutilizables.
