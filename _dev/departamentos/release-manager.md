@@ -6,7 +6,7 @@
 
 ## Resumen humano
 
-Release `2.5.0` en preparación sobre `devWooBM`. La release anterior publicada es `2.4.0`. Este ciclo consolida audiencia programada fija/dinámica y LOG2/LOG3 MVP.
+Release `2.5.0` publicada sobre `devWooBM` con tag `v2.5.0`. Este ciclo consolida audiencia programada fija/dinámica y LOG2/LOG3 MVP.
 
 ## Descubierto
 
@@ -19,16 +19,12 @@ Release `2.5.0` en preparación sobre `devWooBM`. La release anterior publicada 
 - Versión pública actualizada a `2.5.0` en cabecera, `readme.txt`, `CHANGELOG.md` y `README.md`.
 - Memoria `_dev/` actualizada para release `2.5.0`.
 - `estado.md`, `roadmap.md`, `decisiones.md`, `release-notes.md`, notas departamentales y `visual.html` preparados.
+- Validaciones ejecutadas: `npm run build`, `php -l` y `git diff --check`.
+- Commit `release(wcbm): 2.5.0`, push `devWooBM` y tag `v2.5.0` completados.
 
 ## Pendiente
 
-- Ejecutar build si aplica.
-- Ejecutar `php -l` en PHP tocados.
-- Ejecutar `git diff --check`.
-- Commit `release(wcbm): 2.5.0`.
-- Push `devWooBM`.
-- Crear y pushear tag `v2.5.0`.
-- Confirmar GitHub Actions/GitHub Release si la herramienta está disponible.
+- Confirmar GitHub Actions/GitHub Release/ZIP en GitHub; `gh` no está instalado localmente.
 
 ## No volver a investigar
 
@@ -40,8 +36,8 @@ Release `2.5.0` en preparación sobre `devWooBM`. La release anterior publicada 
 
 - QA funcional AD4/LOG2/LOG3 confirmado por usuario; QA no ejecutado por el agente.
 - Updater pendiente de probar en staging.
-- GitHub Release depende del workflow al pushear tag.
+- GitHub Release depende del workflow al pushear tag y queda pendiente de comprobar externamente.
 
 ## Próximo paso recomendado
 
-- Ejecutar validaciones, commit, push y tag `v2.5.0`.
+- Confirmar GitHub Release/ZIP de `v2.5.0` y probar updater en staging.

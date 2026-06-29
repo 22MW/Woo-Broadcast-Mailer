@@ -6,7 +6,7 @@
 
 ## Resumen humano
 
-Se prepara release `2.5.0` con memoria `_dev/` consolidada y documentación pública actualizada. El plugin sigue en `devWooBM` y el objetivo autorizado es commit, push y tag `v2.5.0`.
+Release `2.5.0` publicada con memoria `_dev/` consolidada y documentación pública actualizada. El plugin sigue en `devWooBM`; commit, push y tag `v2.5.0` completados.
 
 ## Descubierto
 
@@ -22,12 +22,12 @@ Se prepara release `2.5.0` con memoria `_dev/` consolidada y documentación púb
 - Actualizados `_dev/estado.md`, `_dev/roadmap.md`, `_dev/decisiones.md`, `_dev/release-notes.md`.
 - Actualizadas notas de Release Manager y Jefe de Proyecto.
 - Actualizado `visual.html` para reflejar release `2.5.0` en preparación.
+- Commit, push `devWooBM` y tag `v2.5.0` completados.
 
 ## Pendiente
 
-- Ejecutar validaciones finales.
-- Commit, push y tag `v2.5.0`.
-- Confirmar GitHub Release/ZIP.
+- Confirmar GitHub Release/ZIP en GitHub Actions; `gh` no está instalado localmente.
+- Probar updater en staging.
 
 ## No volver a investigar
 
@@ -44,4 +44,4 @@ Se prepara release `2.5.0` con memoria `_dev/` consolidada y documentación púb
 
 ## Próximo paso recomendado
 
-- Completar release `2.5.0` con validación, commit, push y tag.
+- Confirmar GitHub Release/ZIP de `v2.5.0` y probar updater en staging.

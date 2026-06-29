@@ -6,7 +6,7 @@
 |---|---|---|---|---|---|---|
 | RLS-2.3.0 | Release estable 2.3.0 | Hecho | Alta | HTML email, estado `failed`, borrado de atascados, plantillas asunto + body. | `includes/functions-email.php`, `includes/functions-scheduled.php`, `includes/ajax-handlers.php`, `src/admin/App.js`, docs | Build OK, `php -l`, tag `v2.3.0` |
 | RLS-2.4.0 | Release estable 2.4.0 | Hecho | Alta | Shortcodes de destinatario, fallback por email, TinyMCE con fuente/tamaño/color y toolbar corregida. | `woo-broadcast-mailer.php`, `includes/functions-email.php`, `src/`, `build/`, docs | Tag `v2.4.0` |
-| RLS-2.5.0 | Release estable 2.5.0 | En curso | Alta | Audiencia programada fija/dinámica, resumen legible de audiencia y LOG2/LOG3 MVP. | `includes/ajax-handlers.php`, `includes/functions-email.php`, `includes/functions-scheduled.php`, `src/`, `build/`, docs, `_dev/` | QA confirmado por usuario; pendiente commit, push y tag `v2.5.0` |
+| RLS-2.5.0 | Release estable 2.5.0 | Hecho | Alta | Audiencia programada fija/dinámica, resumen legible de audiencia y LOG2/LOG3 MVP. | `includes/ajax-handlers.php`, `includes/functions-email.php`, `includes/functions-scheduled.php`, `src/`, `build/`, docs, `_dev/` | QA confirmado por usuario; commit/push/tag `v2.5.0` hecho |
 | ZIP-2.5.0 | ZIP runtime limpio | Pendiente | Alta | GitHub Actions debe empaquetar solo runtime y excluir internos. | `.github/workflows/release.yml` | Pendiente comprobar release tras tag |
 
 ## Plan A — Bloque técnico mínimo
@@ -51,7 +51,6 @@
 
 ## Urgente
 
-- Completar release `2.5.0`: commit, push y tag.
 - Confirmar GitHub Release/ZIP tras push de tag.
 
 ## Recomendado
@@ -70,6 +69,7 @@
 ## Hecho
 
 - Release `2.4.0` publicada.
+- Release `2.5.0` publicada en `devWooBM` con tag `v2.5.0`.
 - AD3/AD4 y LOG2/LOG3 consolidados para release `2.5.0` con QA confirmado por usuario.
 
 ## Bloqueado

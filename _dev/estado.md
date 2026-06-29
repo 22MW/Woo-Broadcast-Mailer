@@ -6,15 +6,16 @@
 
 ## Resumen humano
 
-Woo Broadcast Mailer queda preparado para release estable `2.5.0` en rama `devWooBM`. La release anterior publicada es `2.4.0`. El ciclo actual consolida audiencia programada fija/dinámica y LOG2/LOG3 MVP.
+Woo Broadcast Mailer tiene publicada la release estable `2.5.0` en rama `devWooBM` con tag `v2.5.0`. El ciclo consolida audiencia programada fija/dinámica y LOG2/LOG3 MVP.
 
 ## Estado general
 
-Release `2.5.0` preparada para commit, push y tag. Pendiente confirmar GitHub Actions/GitHub Release tras pushear el tag. AD4 y LOG2/LOG3 tienen QA confirmado por usuario; no fue ejecutado por el agente.
+Release `2.5.0` commiteada, pusheada y tageada. Pendiente confirmar GitHub Actions/GitHub Release/ZIP porque `gh` no está instalado. AD4 y LOG2/LOG3 tienen QA confirmado por usuario; no fue ejecutado por el agente.
 
 ## Hecho
 
 - Release `2.4.0` publicada en rama `devWooBM` con tag `v2.4.0`.
+- Release `2.5.0` publicada en rama `devWooBM` con tag `v2.5.0`.
 - Mejoras 2.3.0: conservación visual del HTML, limpieza de saltos entre bloques/listas, estado `failed`, borrado de envíos atascados sin acciones pendientes y plantillas con asunto + body.
 - Editor TinyMCE ampliado con selector de fuente, tamaño, color de texto y color de fondo.
 - Corregida la toolbar TinyMCE para evitar selector de color duplicado/separado.
@@ -29,14 +30,12 @@ Release `2.5.0` preparada para commit, push y tag. Pendiente confirmar GitHub Ac
 
 ## En curso
 
-- Preparación de release `2.5.0`.
-- Commit, push y tag autorizados por usuario.
-- Actualización de memoria operativa `_dev/` post-release.
+- Confirmación externa de GitHub Actions/GitHub Release/ZIP para `v2.5.0`.
 
 ## Bloqueado
 
 - Prueba del updater en staging pendiente.
-- Confirmación de GitHub Release `v2.5.0` pendiente hasta pushear tag.
+- Confirmación de GitHub Release `v2.5.0` pendiente por falta de `gh` local.
 
 ## Riesgos visibles
 
@@ -57,8 +56,8 @@ Release `2.5.0` preparada para commit, push y tag. Pendiente confirmar GitHub Ac
 
 ## Próximo paso recomendado
 
-- Siguiente paso autorizado por usuario: commit release `2.5.0`, push `devWooBM` y tag `v2.5.0`.
-- Después del tag: confirmar GitHub Release/ZIP generado por Actions cuando esté disponible.
+- Confirmar GitHub Actions/GitHub Release/ZIP generado para `v2.5.0` desde GitHub.
+- Probar updater en staging antes de usarlo como canal crítico.
 
 ## Pendiente de validar
 
