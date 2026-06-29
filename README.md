@@ -4,7 +4,7 @@ Plugin WordPress para WooCommerce que permite enviar avisos puntuales a audienci
 
 ## Estado actual
 
-- Versión estable: `2.4.0`
+- Versión estable: `2.5.0`
 - Panel admin principal en React.
 - Release ZIP limpio generado por GitHub Releases.
 - QA funcional completo de envíos reales pendiente de ejecutar en entorno controlado.
@@ -45,9 +45,10 @@ Funciones principales:
 - Asunto y mensaje personalizados.
 - Shortcodes de destinatario y fecha en el mensaje.
 - Envío instantáneo o programado.
+- Modo fijo o dinámico en envíos programados para conservar el snapshot actual o recalcular la audiencia al ejecutar.
 - Tamaño de lote configurable.
 - Límite de emails por hora.
-- Gestión de envíos y logs.
+- Gestión de envíos y logs con resumen de audiencia y detalle básico por destinatario.
 - Compatibilidad HPOS.
 - Compatibilidad WooCommerce Subscriptions.
 - Filtrado por idioma de pedido cuando WPML está disponible.
@@ -154,7 +155,7 @@ Opciones relevantes:
 
 El plugin usa GitHub Releases para distribuir versiones.
 
-La release estable `2.4.0` consolida shortcodes de destinatario, mejoras TinyMCE de fuente/tamaño/color y ajustes de render HTML para H1/H2.
+La release estable `2.5.0` consolida audiencia programada fija/dinámica, resumen legible de audiencia y logs básicos por destinatario.
 
 ## Limitaciones conocidas
 
@@ -166,6 +167,13 @@ La release estable `2.4.0` consolida shortcodes de destinatario, mejoras TinyMCE
 - El updater debe probarse en staging antes de usarlo como canal crítico de producción.
 
 ## Changelog resumido
+
+### 2.5.0
+
+- Audiencia programada fija/dinámica.
+- Resumen legible de audiencia por envío.
+- Log básico por destinatario con estado, timestamp, error técnico básico y lote.
+- Vista de logs mejorada y limpieza de eventos al borrar envíos.
 
 ### 2.4.0
 

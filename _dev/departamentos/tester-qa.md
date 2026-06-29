@@ -6,7 +6,7 @@
 
 ## Resumen humano
 
-QA funcional confirmado por usuario para el ciclo `2.4.0`. No fue ejecutado por el agente; queda registrado como confirmación manual del usuario para preparar commit.
+QA funcional confirmado por usuario para el ciclo `2.5.0` sobre AD4/LOG2/LOG3. No fue ejecutado por el agente; queda registrado como confirmación manual del usuario para preparar release.
 
 ## Descubierto
 
@@ -22,7 +22,7 @@ QA funcional confirmado por usuario para el ciclo `2.4.0`. No fue ejecutado por 
 
 ## Pendiente
 
-- No quedan pruebas bloqueantes registradas para preparar commit de `2.4.0` según confirmación del usuario.
+- No quedan pruebas bloqueantes registradas para preparar release `2.5.0` según confirmación del usuario.
 - Aperturas/clics quedan para roadmap futuro/recomendado.
 - Rebotes/entrega real quedan para roadmap futuro y dependen del proveedor SMTP.
 

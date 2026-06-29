@@ -1,6 +1,15 @@
 # Release notes internas
 
-## 2.4.0 — Release en preparación — 2026-06-28
+## 2.5.0 — Release en preparación — 2026-06-29
+
+- Consolida AD3/AD4: audiencia programada fija/dinámica con recalculo al ejecutar y snapshot final.
+- Consolida LOG2: resumen legible de audiencia en `pbm_delivery_meta_{id}` con conteos, fuentes, manuales y exclusiones.
+- Consolida LOG3: eventos básicos por destinatario en `pbm_delivery_events_{id}` con email, estado, timestamp, error técnico básico y lote.
+- Mejora la vista de logs con resumen por lote y detalle de destinatarios.
+- QA AD4/LOG2/LOG3 confirmado por usuario; no ejecutado por el agente.
+- Validaciones previstas: `npm run build`, `php -l`, `git diff --check`, commit, push `devWooBM`, tag `v2.5.0` y GitHub Release/ZIP por workflow.
+
+## 2.4.0 — Release publicada — 2026-06-28
 
 - Añadidos shortcodes de broadcast: `{customer_name}`, `{first_name}`, `{last_name}`, `{email}`, `{current_date}`.
 - `{customer_name}` usa nombre del destinatario y busca usuario por email como fallback.
@@ -48,5 +57,5 @@
 
 - QA funcional completo de envíos reales en staging/local.
 - Prueba del updater en staging.
-- Confirmar GitHub Release `v2.4.0` tras pushear tag.
+- Confirmar GitHub Release `v2.5.0` tras pushear tag.
 - Decidir conservación o borrado de `_dev/_md/`.

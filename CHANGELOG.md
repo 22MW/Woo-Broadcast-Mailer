@@ -2,6 +2,14 @@
 
 Todos los cambios relevantes del proyecto se documentan en este archivo.
 
+## 2.5.0
+
+- Añadida audiencia programada fija/dinámica: el modo dinámico recalcula destinatarios al ejecutar y conserva el snapshot final.
+- Añadido resumen legible de audiencia en `pbm_delivery_meta_{id}` con modo, conteos, fuentes, manuales, exclusiones y resumen final.
+- Añadido log básico por destinatario en `pbm_delivery_events_{id}` con email, estado, timestamp, error técnico básico y lote.
+- Mejorada la vista de logs para mostrar resumen por lote y eventos por destinatario.
+- Añadida limpieza de eventos al borrar envíos individuales o en masa.
+
 ## 2.4.0
 
 - Añadidos shortcodes de broadcast: `{customer_name}`, `{first_name}`, `{last_name}`, `{email}` y `{current_date}`.

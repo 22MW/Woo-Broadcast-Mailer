@@ -2,34 +2,32 @@
 
 ## Última actualización
 
-2026-06-28
+2026-06-29
 
 ## Resumen humano
 
-Release `2.4.0` en preparación sobre `devWooBM`. La release anterior publicada es `2.3.0`. Este ciclo es pequeño y concentra mejoras del editor TinyMCE y shortcodes de broadcast.
+Release `2.5.0` en preparación sobre `devWooBM`. La release anterior publicada es `2.4.0`. Este ciclo consolida audiencia programada fija/dinámica y LOG2/LOG3 MVP.
 
 ## Descubierto
 
-- `v2.3.0` ya fue tageada y pusheada.
-- Quedan cambios pendientes en `includes/functions-email.php` y `woo-broadcast-mailer.php` antes de consolidar `2.4.0`.
+- `v2.4.0` ya fue tageada y pusheada.
+- Existe un commit posterior a `v2.4.0` con mejoras de logs de audiencia programada.
 - El workflow de release existente empaqueta solo runtime y excluye `_dev/`.
 
 ## Hecho
 
-- Memoria `_dev/` actualizada para release `2.4.0`.
+- Versión pública actualizada a `2.5.0` en cabecera, `readme.txt`, `CHANGELOG.md` y `README.md`.
+- Memoria `_dev/` actualizada para release `2.5.0`.
 - `estado.md`, `roadmap.md`, `decisiones.md`, `release-notes.md`, notas departamentales y `visual.html` preparados.
-- Release notes internas de `2.4.0` creadas.
 
 ## Pendiente
 
-- Actualizar versión pública a `2.4.0`.
-- Actualizar `CHANGELOG.md`, `readme.txt` y `README.md`.
 - Ejecutar build si aplica.
 - Ejecutar `php -l` en PHP tocados.
 - Ejecutar `git diff --check`.
-- Commit `release(wcbm): 2.4.0`.
+- Commit `release(wcbm): 2.5.0`.
 - Push `devWooBM`.
-- Crear y pushear tag `v2.4.0`.
+- Crear y pushear tag `v2.5.0`.
 - Confirmar GitHub Actions/GitHub Release si la herramienta está disponible.
 
 ## No volver a investigar
@@ -40,10 +38,10 @@ Release `2.4.0` en preparación sobre `devWooBM`. La release anterior publicada 
 
 ## Riesgos o bloqueos
 
-- QA funcional completo pendiente.
+- QA funcional AD4/LOG2/LOG3 confirmado por usuario; QA no ejecutado por el agente.
 - Updater pendiente de probar en staging.
 - GitHub Release depende del workflow al pushear tag.
 
 ## Próximo paso recomendado
 
-- Ejecutar validaciones, commit, push y tag `v2.4.0`.
+- Ejecutar validaciones, commit, push y tag `v2.5.0`.

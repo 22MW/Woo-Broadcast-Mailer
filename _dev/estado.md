@@ -6,15 +6,15 @@
 
 ## Resumen humano
 
-Woo Broadcast Mailer está preparado para commit de release `2.4.0` en rama `devWooBM`. La release anterior publicada es `2.3.0`. El ciclo actual añade mejoras de editor TinyMCE, shortcodes de destinatario, audiencia dinámica programada y LOG2/LOG3 MVP.
+Woo Broadcast Mailer queda preparado para release estable `2.5.0` en rama `devWooBM`. La release anterior publicada es `2.4.0`. El ciclo actual consolida audiencia programada fija/dinámica y LOG2/LOG3 MVP.
 
 ## Estado general
 
-Release `2.4.0` en preparación para commit, push y tag. Pendiente confirmar GitHub Actions/GitHub Release tras pushear el tag. AD4 y LOG2/LOG3 tienen QA confirmado por usuario; no fue ejecutado por el agente.
+Release `2.5.0` preparada para commit, push y tag. Pendiente confirmar GitHub Actions/GitHub Release tras pushear el tag. AD4 y LOG2/LOG3 tienen QA confirmado por usuario; no fue ejecutado por el agente.
 
 ## Hecho
 
-- Release `2.3.0` publicada en rama `devWooBM` con tag `v2.3.0`.
+- Release `2.4.0` publicada en rama `devWooBM` con tag `v2.4.0`.
 - Mejoras 2.3.0: conservación visual del HTML, limpieza de saltos entre bloques/listas, estado `failed`, borrado de envíos atascados sin acciones pendientes y plantillas con asunto + body.
 - Editor TinyMCE ampliado con selector de fuente, tamaño, color de texto y color de fondo.
 - Corregida la toolbar TinyMCE para evitar selector de color duplicado/separado.
@@ -29,20 +29,20 @@ Release `2.4.0` en preparación para commit, push y tag. Pendiente confirmar Git
 
 ## En curso
 
-- Preparación de release `2.4.0`.
-- Preparación de commit autorizado por usuario.
-- Actualización de memoria operativa `_dev/`.
+- Preparación de release `2.5.0`.
+- Commit, push y tag autorizados por usuario.
+- Actualización de memoria operativa `_dev/` post-release.
 
 ## Bloqueado
 
 - Prueba del updater en staging pendiente.
-- Confirmación de GitHub Release `v2.4.0` pendiente hasta pushear tag.
+- Confirmación de GitHub Release `v2.5.0` pendiente hasta pushear tag.
 
 ## Riesgos visibles
 
 ### Alta prioridad
 
-- Confirmar que el ZIP de GitHub Actions para `v2.4.0` se genera correctamente.
+- Confirmar que el ZIP de GitHub Actions para `v2.5.0` se genera correctamente.
 
 ### Media prioridad
 
@@ -57,13 +57,13 @@ Release `2.4.0` en preparación para commit, push y tag. Pendiente confirmar Git
 
 ## Próximo paso recomendado
 
-- Siguiente paso autorizado por usuario: preparar commit de `2.4.0` sin tocar código runtime.
-- Después del commit: pushear `devWooBM`, crear tag `v2.4.0` y confirmar GitHub Release/ZIP cuando se autorice.
+- Siguiente paso autorizado por usuario: commit release `2.5.0`, push `devWooBM` y tag `v2.5.0`.
+- Después del tag: confirmar GitHub Release/ZIP generado por Actions cuando esté disponible.
 
 ## Pendiente de validar
 
 - Updater desde GitHub Release en staging.
-- GitHub Release/ZIP tras push de tag.
+- GitHub Release/ZIP tras push de tag `v2.5.0`.
 
 ## No volver a investigar
 

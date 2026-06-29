@@ -6,8 +6,8 @@
 
 ## Decisiones confirmadas
 
-- **Release actual publicada**: `2.3.0` con tag `v2.3.0`.
-- **Release en preparación**: `2.4.0` para shortcodes de destinatario y mejoras TinyMCE.
+- **Release actual publicada**: `2.4.0` con tag `v2.4.0`.
+- **Release en preparación**: `2.5.0` para audiencia programada fija/dinámica y LOG2/LOG3 MVP.
 - **Rama de trabajo**: `devWooBM`.
 - **Canal de distribución**: GitHub Releases con ZIP generado por workflow.
 - **ZIP release mínimo**: incluye solo runtime: `woo-broadcast-mailer.php`, `includes/`, `assets/`, `build/`, `readme.txt`, `LICENSE`, `uninstall.php`.
@@ -25,6 +25,7 @@
 - **Arquitectura LOG2**: resumen de audiencia legible se resolverá preferentemente con `audience_snapshot` descriptivo dentro de `pbm_delivery_meta_{id}` sin migración obligatoria y fallback histórico actual si falta snapshot.
 - **Arquitectura LOG3**: log básico por destinatario se resolverá preferentemente con option no autoload `pbm_delivery_events_{id}` para evitar migración; tabla/JSON queda como alternativa si el volumen exige escalar.
 - **QA AD4/LOG2/LOG3**: confirmado por usuario el 2026-06-29; no fue ejecutado por el agente.
+- **Versión estable siguiente**: `2.5.0`, por cambios funcionales en audiencia programada y logs tras `2.4.0`.
 - **Aperturas/clics**: no se implementan ahora; quedan en roadmap como LOG4 futuro/recomendado.
 - **Rebotes/entrega real**: no se implementan ahora; quedan en roadmap como LOG5 futuro dependiente de proveedor SMTP/webhook.
 - **Text domain correcto**: `wc-pbm`.

@@ -5,8 +5,9 @@
 | Código | Nombre | Estado | Prioridad | Qué contiene | Archivos/áreas | Validación |
 |---|---|---|---|---|---|---|
 | RLS-2.3.0 | Release estable 2.3.0 | Hecho | Alta | HTML email, estado `failed`, borrado de atascados, plantillas asunto + body. | `includes/functions-email.php`, `includes/functions-scheduled.php`, `includes/ajax-handlers.php`, `src/admin/App.js`, docs | Build OK, `php -l`, tag `v2.3.0` |
-| RLS-2.4.0 | Release estable 2.4.0 | En curso | Alta | Shortcodes de destinatario, fallback por email, TinyMCE con fuente/tamaño/color, toolbar corregida, audiencia dinámica programada y LOG2/LOG3 MVP. | `woo-broadcast-mailer.php`, `includes/functions-email.php`, `includes/`, `src/`, `build/`, docs, `_dev/` | QA confirmado por usuario; pendiente commit, push y tag `v2.4.0` |
-| ZIP-2.4.0 | ZIP runtime limpio | Pendiente | Alta | GitHub Actions debe empaquetar solo runtime y excluir internos. | `.github/workflows/release.yml` | Pendiente comprobar release tras tag |
+| RLS-2.4.0 | Release estable 2.4.0 | Hecho | Alta | Shortcodes de destinatario, fallback por email, TinyMCE con fuente/tamaño/color y toolbar corregida. | `woo-broadcast-mailer.php`, `includes/functions-email.php`, `src/`, `build/`, docs | Tag `v2.4.0` |
+| RLS-2.5.0 | Release estable 2.5.0 | En curso | Alta | Audiencia programada fija/dinámica, resumen legible de audiencia y LOG2/LOG3 MVP. | `includes/ajax-handlers.php`, `includes/functions-email.php`, `includes/functions-scheduled.php`, `src/`, `build/`, docs, `_dev/` | QA confirmado por usuario; pendiente commit, push y tag `v2.5.0` |
+| ZIP-2.5.0 | ZIP runtime limpio | Pendiente | Alta | GitHub Actions debe empaquetar solo runtime y excluir internos. | `.github/workflows/release.yml` | Pendiente comprobar release tras tag |
 
 ## Plan A — Bloque técnico mínimo
 
@@ -50,7 +51,7 @@
 
 ## Urgente
 
-- Completar release `2.4.0`: commit, push y tag.
+- Completar release `2.5.0`: commit, push y tag.
 - Confirmar GitHub Release/ZIP tras push de tag.
 
 ## Recomendado
@@ -65,6 +66,11 @@
 - Separar archivos grandes cuando haya una fase de mantenimiento.
 - Plan LOG4: aperturas y clics mediante tracking específico, no implementados ahora.
 - Plan LOG5: rebotes y entrega real mediante proveedor SMTP/webhook; depende del proveedor y queda fuera del ciclo actual.
+
+## Hecho
+
+- Release `2.4.0` publicada.
+- AD3/AD4 y LOG2/LOG3 consolidados para release `2.5.0` con QA confirmado por usuario.
 
 ## Bloqueado
 
