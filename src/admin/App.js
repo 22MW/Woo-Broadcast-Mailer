@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, CheckboxControl, TextControl } from '@wordpress/components';
+import { Button, Card, CardBody, CheckboxControl, RadioControl, TextControl } from '@wordpress/components';
 import { createPortal, useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import SourceSelector from './components/SourceSelector';
@@ -186,6 +186,7 @@ export default function App() {
   const [batchSize, setBatchSize] = useState('30');
   const [emailsPerHour, setEmailsPerHour] = useState('200');
   const [scheduleEnabled, setScheduleEnabled] = useState(false);
+  const [audienceMode, setAudienceMode] = useState('fixed');
   const [plainBody, setPlainBody] = useState(false);
   const [scheduledDatetime, setScheduledDatetime] = useState('');
   const [previewLoading, setPreviewLoading] = useState(false);
@@ -582,6 +583,12 @@ export default function App() {
   }, [currentPreviewSignature]);
 
   useEffect(() => {
+    if (!scheduleEnabled) {
+      setAudienceMode('fixed');
+    }
+  }, [scheduleEnabled]);
+
+  useEffect(() => {
     const host = messageHostRef.current;
     const row = document.getElementById('pbm-message-row-legacy');
     if (!host || !row) {
@@ -910,6 +917,7 @@ export default function App() {
     params.append('batch_size', String(parseInt(batchSize || '30', 10) || 30));
     params.append('emails_per_hour', String(parseInt(emailsPerHour || '200', 10) || 200));
     params.append('schedule_enabled', scheduleEnabled ? '1' : '0');
+    params.append('audience_mode', scheduleEnabled ? audienceMode : 'fixed');
     params.append('plain_body', plainBody ? '1' : '0');
     params.append('scheduled_datetime', scheduledDatetime);
     params.append('nonce', nonce);
@@ -1048,6 +1056,24 @@ export default function App() {
               style={{ visibility: scheduleEnabled ? 'visible' : 'hidden' }}
             />
           </div>
+          {scheduleEnabled && previewData && !isPreviewStale && (
+            <div className="pbm-react-audience-mode">
+              <RadioControl
+                label={__('Audiencia programada', 'wc-pbm')}
+                selected={audienceMode}
+                options={[
+                  { label: __('Fija: usar los destinatarios exactos de esta vista previa', 'wc-pbm'), value: 'fixed' },
+                  { label: __('Dinámica: recalcular la audiencia al ejecutar', 'wc-pbm'), value: 'dynamic' },
+                ]}
+                onChange={setAudienceMode}
+              />
+              {audienceMode === 'dynamic' && (
+                <p className="description">
+                  {__('Las fuentes vivas se recalcularán en la fecha programada. Los emails quitados de la vista previa seguirán excluidos.', 'wc-pbm')}
+                </p>
+              )}
+            </div>
+          )}
           <div className="pbm-react-estimate">
             <strong>{__('Resumen estimado:', 'wc-pbm')}</strong>{' '}
             {`${deliveryEstimate.unique} ${__('únicos', 'wc-pbm')} · ${deliveryEstimate.batches} ${__('lotes', 'wc-pbm')} · ${deliveryEstimate.intervalMinutes} ${__('min entre lotes', 'wc-pbm')} · ${formatEstimatedDuration(deliveryEstimate.totalWindowMinutes)}`}

@@ -2,42 +2,40 @@
 
 ## Última actualización
 
-2026-06-28
+2026-06-29
 
 ## Resumen humano
 
-QA funcional completo sigue pendiente. Para el ciclo `2.4.0` solo se han ejecutado validaciones técnicas previstas; queda pendiente validar en navegador y con envío real los shortcodes y controles TinyMCE.
+QA funcional confirmado por usuario para el ciclo `2.4.0`. No fue ejecutado por el agente; queda registrado como confirmación manual del usuario para preparar commit.
 
 ## Descubierto
 
-- Flujos QA nuevos del ciclo `2.4.0`: shortcodes de destinatario, TinyMCE con fuente/tamaño/color, toolbar sin duplicado y render de H1/H2 en email.
-- QA real puede crear envíos, logs o acciones programadas.
+- El usuario confirmó “QA hecho”. Se registra como QA confirmado por usuario, no como prueba ejecutada por el agente.
+- Alcance indicado por usuario: AD4 y validación de LOG2/LOG3 si aplica.
 
 ## Hecho
 
-- QA funcional no ejecutado todavía.
-- Validación técnica prevista: `php -l`, build si aplica y `git diff --check`.
+- AD4: QA funcional confirmado por usuario.
+- LOG2: QA confirmado por usuario sobre resumen de audiencia legible.
+- LOG3: QA confirmado por usuario sobre log básico por destinatario.
+- Validación técnica ejecutada por agente en esta consolidación: `git diff --check` pendiente de resultado en cierre.
 
 ## Pendiente
 
-- Validar `{customer_name}` con destinatario que tenga nombre en la fuente.
-- Validar `{customer_name}`, `{first_name}`, `{last_name}` con usuario WordPress existente por email.
-- Validar `{email}` y `{current_date}`.
-- Validar editor TinyMCE en navegador: fuente, tamaño, color de texto y color de fondo.
-- Validar que no aparece selector de color duplicado/separado tras limpiar caché.
-- Validar email recibido con H1/H2, color, fondo y tamaño.
+- No quedan pruebas bloqueantes registradas para preparar commit de `2.4.0` según confirmación del usuario.
+- Aperturas/clics quedan para roadmap futuro/recomendado.
+- Rebotes/entrega real quedan para roadmap futuro y dependen del proveedor SMTP.
 
 ## No volver a investigar
 
-- QA funcional completo requiere permiso porque puede crear envíos/logs/acciones.
+- QA funcional fue confirmado por usuario el 2026-06-29; no fue ejecutado por el agente.
 - Email catcher recomendado: Mailpit/MailHog o SMTP controlado.
 
 ## Riesgos o bloqueos
 
-- Clientes de email pueden modificar fuentes/colores.
-- Caché del navegador puede mostrar toolbar antigua.
-- Sin usuario asociado al email, first/last name pueden quedar vacíos.
+- Aperturas/clics requieren tracking específico y decisión de privacidad antes de implementarse.
+- Rebotes/entrega real requieren integración con proveedor SMTP/webhook; no son fiables solo con `wp_mail`.
 
 ## Próximo paso recomendado
 
-- Después de release, ejecutar prueba controlada con un email manual y un usuario WordPress existente.
+- Pasar a commit autorizado por usuario sin tocar código runtime.

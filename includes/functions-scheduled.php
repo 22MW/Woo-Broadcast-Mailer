@@ -328,6 +328,10 @@ function get_delivery_type_label($delivery_meta)
  */
 function get_delivery_audience_label($email, $delivery_meta)
 {
+    if (! empty($delivery_meta['audience_snapshot']['summary'])) {
+        return (string) $delivery_meta['audience_snapshot']['summary'];
+    }
+
     if (! empty($delivery_meta['global']['is_global']) && ! empty($delivery_meta['global']['sources']) && is_array($delivery_meta['global']['sources'])) {
         $sources = $delivery_meta['global']['sources'];
         $parts = array();
@@ -354,6 +358,218 @@ function get_delivery_audience_label($email, $delivery_meta)
     }
 
     return (string) $email->user_role;
+}
+
+/**
+ * Construye un snapshot descriptivo de audiencia.
+ *
+ * @param array  $audience_items   Items seleccionados.
+ * @param array  $manual_emails    Emails manuales.
+ * @param array  $excluded_emails  Emails excluidos.
+ * @param array  $recipients       Destinatarios resueltos.
+ * @param string $audience_mode    Modo de audiencia.
+ * @return array
+ */
+function build_delivery_audience_snapshot($audience_items, $manual_emails, $excluded_emails, $recipients, $audience_mode)
+{
+    $items = build_delivery_audience_snapshot_items($audience_items);
+    $manual_count = count(normalize_email_list($manual_emails));
+    $excluded_count = count(normalize_email_list($excluded_emails));
+    $final_count = is_array($recipients) ? count($recipients) : 0;
+
+    return array(
+        'mode'                  => 'dynamic' === $audience_mode ? 'dynamic' : 'fixed',
+        'created_at'            => current_time('mysql', true),
+        'preview_count'         => $final_count,
+        'final_count'           => $final_count,
+        'items'                 => $items,
+        'manual_count'          => $manual_count,
+        'excluded_count'        => $excluded_count,
+        'excluded_emails_count' => $excluded_count,
+        'summary'               => build_delivery_audience_snapshot_summary($items, $manual_count, $excluded_count, $final_count),
+    );
+}
+
+/**
+ * Construye items descriptivos de audiencia.
+ *
+ * @param array $audience_items Items seleccionados.
+ * @return array
+ */
+function build_delivery_audience_snapshot_items($audience_items)
+{
+    $items = array();
+    $sources = get_recipient_sources();
+
+    foreach ((array) $audience_items as $item) {
+        if (! is_array($item)) {
+            continue;
+        }
+
+        $source = sanitize_text_field($item['source'] ?? '');
+        $selector_value = sanitize_text_field($item['selectorValue'] ?? ($item['selector_value'] ?? ''));
+        if ('' === $source || '' === $selector_value) {
+            continue;
+        }
+
+        $status = isset($sources[$source]) ? 'available' : 'unknown';
+        if (isset($sources[$source]['enabled']) && ! $sources[$source]['enabled']) {
+            $status = 'missing';
+        }
+
+        $items[] = array(
+            'source'         => $source,
+            'selector_value' => $selector_value,
+            'source_label'   => get_delivery_audience_source_label($source, $sources),
+            'selector_label' => get_delivery_audience_selector_label($source, $selector_value),
+            'count'          => get_delivery_audience_item_count($source, $selector_value),
+            'status'         => $status,
+        );
+    }
+
+    return $items;
+}
+
+/**
+ * Obtiene etiqueta de fuente para snapshot.
+ *
+ * @param string $source  Fuente.
+ * @param array  $sources Fuentes registradas.
+ * @return string
+ */
+function get_delivery_audience_source_label($source, $sources)
+{
+    if (! empty($sources[$source]['label'])) {
+        return (string) $sources[$source]['label'];
+    }
+
+    return (string) $source;
+}
+
+/**
+ * Obtiene etiqueta de selector para snapshot.
+ *
+ * @param string $source         Fuente.
+ * @param string $selector_value Valor.
+ * @return string
+ */
+function get_delivery_audience_selector_label($source, $selector_value)
+{
+    if ('product' === $source) {
+        $product = wc_get_product(absint($selector_value));
+        return $product ? $product->get_name() . ' (#' . $product->get_id() . ')' : sprintf(__('Producto #%d', 'wc-pbm'), absint($selector_value));
+    }
+
+    if ('role' === $source) {
+        $roles = wp_roles()->get_names();
+        return (string) ($roles[$selector_value] ?? $selector_value);
+    }
+
+    if ('mailmint' === $source) {
+        foreach (get_mailmint_lists_for_selector() as $list) {
+            if ((string) ($list['id'] ?? '') === (string) $selector_value) {
+                return (string) $list['title'] . ' (#' . absint($list['id']) . ')';
+            }
+        }
+        return sprintf(__('Lista Mail Mint #%d', 'wc-pbm'), absint($selector_value));
+    }
+
+    if ('broadcast_list' === $source) {
+        $lists = get_broadcast_lists();
+        if (! empty($lists[$selector_value]['name'])) {
+            return (string) $lists[$selector_value]['name'];
+        }
+    }
+
+    return (string) $selector_value;
+}
+
+/**
+ * Cuenta destinatarios de un item de audiencia.
+ *
+ * @param string $source         Fuente.
+ * @param string $selector_value Valor.
+ * @return int
+ */
+function get_delivery_audience_item_count($source, $selector_value)
+{
+    $args = array(
+        'product_id'        => 'product' === $source ? absint($selector_value) : 0,
+        'role'              => 'role' === $source ? $selector_value : '',
+        'mailmint_list_id'  => 'mailmint' === $source ? absint($selector_value) : 0,
+        'broadcast_list_id' => 'broadcast_list' === $source ? $selector_value : '',
+    );
+
+    $recipients = get_recipients_by_source($source, $args);
+    return is_array($recipients) ? count($recipients) : 0;
+}
+
+/**
+ * Construye resumen legible del snapshot.
+ *
+ * @param array $items          Items.
+ * @param int   $manual_count   Manuales.
+ * @param int   $excluded_count Excluidos.
+ * @param int   $final_count    Total final.
+ * @return string
+ */
+function build_delivery_audience_snapshot_summary($items, $manual_count, $excluded_count, $final_count)
+{
+    $parts = array();
+    foreach ((array) $items as $item) {
+        $parts[] = sprintf(
+            '%1$s: %2$s (%3$d)',
+            (string) ($item['source_label'] ?? ''),
+            (string) ($item['selector_label'] ?? ''),
+            (int) ($item['count'] ?? 0)
+        );
+    }
+
+    if ($manual_count > 0) {
+        $parts[] = sprintf(__('Manuales: %d', 'wc-pbm'), $manual_count);
+    }
+
+    $summary = empty($parts) ? __('Audiencia no definida', 'wc-pbm') : implode(' | ', $parts);
+    if ($excluded_count > 0) {
+        $summary .= ' | ' . sprintf(__('Excluidos: %d', 'wc-pbm'), $excluded_count);
+    }
+
+    return sprintf(
+        /* translators: %1$s: resumen de fuentes, %2$d: total final */
+        __('%1$s | Total: %2$d', 'wc-pbm'),
+        $summary,
+        $final_count
+    );
+}
+
+/**
+ * Actualiza el snapshot final de una audiencia dinámica.
+ *
+ * @param int   $delivery_id   ID del envío.
+ * @param array $delivery_meta Metadatos.
+ * @param array $recipients    Destinatarios finales.
+ * @return void
+ */
+function update_dynamic_delivery_audience_snapshot($delivery_id, $delivery_meta, $recipients)
+{
+    $config = is_array($delivery_meta['audience_config'] ?? null) ? $delivery_meta['audience_config'] : array();
+    $final_snapshot = build_delivery_audience_snapshot(
+        is_array($config['audience_items'] ?? null) ? $config['audience_items'] : array(),
+        is_array($config['manual_emails'] ?? null) ? $config['manual_emails'] : array(),
+        is_array($config['excluded_emails'] ?? null) ? $config['excluded_emails'] : array(),
+        $recipients,
+        'dynamic'
+    );
+
+    $snapshot = is_array($delivery_meta['audience_snapshot'] ?? null) ? $delivery_meta['audience_snapshot'] : $final_snapshot;
+    $snapshot['final_count'] = count((array) $recipients);
+    $snapshot['final_items'] = $final_snapshot['items'];
+    $snapshot['final_summary'] = $final_snapshot['summary'];
+    $snapshot['final_updated_at'] = current_time('mysql', true);
+    $snapshot['summary'] = $final_snapshot['summary'];
+
+    $delivery_meta['audience_snapshot'] = $snapshot;
+    update_option('pbm_delivery_meta_' . absint($delivery_id), $delivery_meta, false);
 }
 
 /**
@@ -396,9 +612,16 @@ function execute_scheduled_email($scheduled_id)
     update_scheduled_email_status($scheduled_id, 'running');
 
     try {
-        $users = get_scheduled_recipients_snapshot($scheduled_id);
         $delivery_meta = get_delivery_meta($scheduled_id);
         $plain_body = ! empty($delivery_meta['plain_body']);
+
+        if ('dynamic' === ($delivery_meta['audience_mode'] ?? 'fixed')) {
+            $users = resolve_dynamic_scheduled_recipients($delivery_meta);
+            save_scheduled_recipients_snapshot($scheduled_id, $users);
+            update_dynamic_delivery_audience_snapshot($scheduled_id, $delivery_meta, $users);
+        } else {
+            $users = get_scheduled_recipients_snapshot($scheduled_id);
+        }
 
         if (empty($users)) {
             // Compatibilidad: envíos antiguos por rol.
@@ -442,6 +665,42 @@ function execute_scheduled_email($scheduled_id)
 
         update_scheduled_email_status($scheduled_id, 'cancelled');
     }
+}
+
+/**
+ * Recalcula destinatarios de una audiencia dinámica programada.
+ *
+ * @param array $delivery_meta Metadatos del envío.
+ * @return array
+ */
+function resolve_dynamic_scheduled_recipients($delivery_meta)
+{
+    $config = is_array($delivery_meta['audience_config'] ?? null) ? $delivery_meta['audience_config'] : array();
+    $audience_items = is_array($config['audience_items'] ?? null) ? $config['audience_items'] : array();
+    $manual_emails = is_array($config['manual_emails'] ?? null) ? $config['manual_emails'] : array();
+    $excluded_emails = is_array($config['excluded_emails'] ?? null) ? $config['excluded_emails'] : array();
+
+    $recipients = resolve_global_recipients($audience_items, $manual_emails);
+    return exclude_recipients_from_list($recipients, $excluded_emails);
+}
+
+/**
+ * Guarda el snapshot final de destinatarios de un envío programado.
+ *
+ * @param int   $scheduled_id ID del envío programado.
+ * @param array $recipients   Destinatarios finales.
+ * @return void
+ */
+function save_scheduled_recipients_snapshot($scheduled_id, $recipients)
+{
+    $option_key = 'pbm_scheduled_recipients_' . absint($scheduled_id);
+
+    if (false === get_option($option_key, false)) {
+        add_option($option_key, $recipients, '', false);
+        return;
+    }
+
+    update_option($option_key, $recipients, false);
 }
 
 /**
@@ -588,6 +847,57 @@ function get_scheduled_logs($scheduled_id)
 }
 
 /**
+ * Añade un evento básico por destinatario.
+ *
+ * @param int    $delivery_id  ID del envío.
+ * @param string $email        Email destinatario.
+ * @param string $status       Estado del evento.
+ * @param string $error        Error básico.
+ * @param int    $batch_index  Índice de lote.
+ * @return void
+ */
+function add_delivery_event($delivery_id, $email, $status, $error = '', $batch_index = 0)
+{
+    $delivery_id = absint($delivery_id);
+    $email = sanitize_email($email);
+    $status = 'failed' === $status ? 'failed' : 'sent';
+
+    if ($delivery_id < 1 || ! is_email($email)) {
+        return;
+    }
+
+    $option_key = 'pbm_delivery_events_' . $delivery_id;
+    $events = get_option($option_key, array());
+    $events = is_array($events) ? $events : array();
+    $events[] = array(
+        'email'       => $email,
+        'status'      => $status,
+        'timestamp'   => current_time('mysql', true),
+        'error'       => sanitize_text_field($error),
+        'batch_index' => absint($batch_index),
+    );
+
+    if (false === get_option($option_key, false)) {
+        add_option($option_key, $events, '', false);
+        return;
+    }
+
+    update_option($option_key, $events, false);
+}
+
+/**
+ * Obtiene eventos por destinatario.
+ *
+ * @param int $delivery_id ID del envío.
+ * @return array
+ */
+function get_delivery_events($delivery_id)
+{
+    $events = get_option('pbm_delivery_events_' . absint($delivery_id), array());
+    return is_array($events) ? $events : array();
+}
+
+/**
  * Comprueba si un envío puede borrarse sin afectar colas activas.
  *
  * @param int $scheduled_id ID del envío.
@@ -705,6 +1015,7 @@ function delete_scheduled_email_with_logs($scheduled_id)
     if ($deleted) {
         delete_option('pbm_delivery_meta_' . $scheduled_id);
         delete_option('pbm_scheduled_recipients_' . $scheduled_id);
+        delete_option('pbm_delivery_events_' . $scheduled_id);
     }
 
     return $deleted;
@@ -750,6 +1061,7 @@ function bulk_delete_scheduled_by_status($status)
     foreach ($ids as $id) {
         delete_option('pbm_delivery_meta_' . absint($id));
         delete_option('pbm_scheduled_recipients_' . absint($id));
+        delete_option('pbm_delivery_events_' . absint($id));
     }
 
     return $deleted;

@@ -23,12 +23,30 @@ function process_email_batch($batch, $subject, $message, $scheduled_id = 0, $pla
 {
     $sent = 0;
     $failed = 0;
+    $batch_index = 0;
+
+    if ($scheduled_id > 0) {
+        $batch_index = count(get_scheduled_logs($scheduled_id)) + 1;
+    }
 
     foreach ($batch as $recipient) {
-        if (send_single_email($recipient, $subject, $message, $plain_body)) {
+        $recipient_email = sanitize_email($recipient['email'] ?? '');
+        $email_sent = send_single_email($recipient, $subject, $message, $plain_body);
+
+        if ($email_sent) {
             $sent++;
         } else {
             $failed++;
+        }
+
+        if ($scheduled_id > 0) {
+            add_delivery_event(
+                $scheduled_id,
+                $recipient_email,
+                $email_sent ? 'sent' : 'failed',
+                $email_sent ? '' : __('wp_mail devolvió false', 'wc-pbm'),
+                $batch_index
+            );
         }
     }
 

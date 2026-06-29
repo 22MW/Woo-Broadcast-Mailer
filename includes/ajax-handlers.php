@@ -47,6 +47,35 @@ function normalize_email_list($emails)
 }
 
 /**
+ * Sanitiza items de audiencia recibidos desde AJAX.
+ *
+ * @param array $audience_items Items de audiencia.
+ * @return array
+ */
+function sanitize_audience_items($audience_items)
+{
+    $result = array();
+    foreach ((array) $audience_items as $item) {
+        if (! is_array($item)) {
+            continue;
+        }
+
+        $source = sanitize_text_field($item['source'] ?? '');
+        $selector_value = sanitize_text_field($item['selectorValue'] ?? '');
+        if ('' === $source || '' === $selector_value) {
+            continue;
+        }
+
+        $result[] = array(
+            'source'        => $source,
+            'selectorValue' => $selector_value,
+        );
+    }
+
+    return $result;
+}
+
+/**
  * Resuelve destinatarios globales desde items + manuales.
  *
  * @param array $audience_items Items de audiencia.
@@ -764,8 +793,10 @@ function ajax_send_broadcast()
     $message    = wp_kses_post($_POST['message'] ?? '');
     $batch_size = absint($_POST['batch_size'] ?? 30);
     $emails_per_hour = absint($_POST['emails_per_hour'] ?? 200);
-    $excluded_emails = get_json_array_from_post('excluded_emails');
+    $excluded_emails = normalize_email_list(get_json_array_from_post('excluded_emails'));
     $schedule_enabled = ! empty($_POST['schedule_enabled']) && '1' === sanitize_text_field(wp_unslash($_POST['schedule_enabled']));
+    $audience_mode = sanitize_text_field(wp_unslash($_POST['audience_mode'] ?? 'fixed'));
+    $audience_mode = $schedule_enabled && 'dynamic' === $audience_mode ? 'dynamic' : 'fixed';
     $plain_body = ! empty($_POST['plain_body']) && '1' === sanitize_text_field(wp_unslash($_POST['plain_body']));
     $scheduled_datetime = sanitize_text_field($_POST['scheduled_datetime'] ?? '');
 
@@ -789,8 +820,8 @@ function ajax_send_broadcast()
         wp_send_json_error(array('message' => get_action_scheduler_unavailable_message()));
     }
 
-    $audience_items = get_json_array_from_post('audience_items');
-    $manual_emails = get_json_array_from_post('manual_emails');
+    $audience_items = sanitize_audience_items(get_json_array_from_post('audience_items'));
+    $manual_emails = normalize_email_list(get_json_array_from_post('manual_emails'));
     $is_global_audience = ! empty($audience_items) || ! empty($manual_emails);
 
     if (! $is_global_audience) {
@@ -830,6 +861,14 @@ function ajax_send_broadcast()
     if (empty($recipients)) {
         wp_send_json_error(array('message' => __('No quedan destinatarios después de las exclusiones temporales', 'wc-pbm')));
     }
+
+    $snapshot_items = $is_global_audience ? $audience_items : array(
+        array(
+            'source'        => $source,
+            'selectorValue' => get_single_audience_selector_value($source, $product_id, $role, $mailmint_list_id),
+        ),
+    );
+    $audience_snapshot = build_delivery_audience_snapshot($snapshot_items, $manual_emails, $excluded_emails, $recipients, $audience_mode);
 
     if ($schedule_enabled) {
         if (! $scheduled_datetime) {
@@ -873,6 +912,13 @@ function ajax_send_broadcast()
             'source'   => $source,
             'audience' => $audience_label,
             'global'   => $global_meta,
+            'audience_mode'   => $audience_mode,
+            'audience_snapshot' => $audience_snapshot,
+            'audience_config' => array(
+                'audience_items'  => $audience_items,
+                'manual_emails'   => $manual_emails,
+                'excluded_emails' => $excluded_emails,
+            ),
             'plain_body' => $plain_body,
         ), '', false);
 
@@ -916,6 +962,8 @@ function ajax_send_broadcast()
         'source'   => $source,
         'audience' => $audience_label,
         'global'   => $global_meta,
+        'audience_mode' => 'fixed',
+        'audience_snapshot' => $audience_snapshot,
         'plain_body' => $plain_body,
     ), '', false);
 
@@ -933,6 +981,32 @@ function ajax_send_broadcast()
             count($recipients)
         ),
     ));
+}
+
+/**
+ * Devuelve el valor de selector para audiencia simple.
+ *
+ * @param string $source Fuente.
+ * @param int    $product_id ID producto.
+ * @param string $role Rol.
+ * @param int    $mailmint_list_id ID lista Mail Mint.
+ * @return string
+ */
+function get_single_audience_selector_value($source, $product_id, $role, $mailmint_list_id)
+{
+    if ('product' === $source) {
+        return (string) absint($product_id);
+    }
+
+    if ('role' === $source) {
+        return (string) $role;
+    }
+
+    if ('mailmint' === $source) {
+        return (string) absint($mailmint_list_id);
+    }
+
+    return '';
 }
 
 /**
@@ -1159,8 +1233,9 @@ function ajax_get_scheduled_logs()
     }
 
     $logs = get_scheduled_logs($scheduled_id);
+    $events = get_delivery_events($scheduled_id);
 
-    if (empty($logs)) {
+    if (empty($logs) && empty($events)) {
         wp_send_json_success(array(
             'html' => '<p>' . esc_html__('No hay logs disponibles.', 'wc-pbm') . '</p>',
         ));
@@ -1168,34 +1243,61 @@ function ajax_get_scheduled_logs()
 
     ob_start();
 ?>
-    <table class="widefat" style="width: 100%;">
-        <thead>
-            <tr>
-                <th><?php esc_html_e('Inicio', 'wc-pbm'); ?></th>
-                <th><?php esc_html_e('Fin', 'wc-pbm'); ?></th>
-                <th><?php esc_html_e('Enviados', 'wc-pbm'); ?></th>
-                <th><?php esc_html_e('Fallidos', 'wc-pbm'); ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($logs as $log) : ?>
+    <?php if (! empty($logs)) : ?>
+        <h3><?php esc_html_e('Resumen por lote', 'wc-pbm'); ?></h3>
+        <table class="widefat" style="width: 100%;">
+            <thead>
                 <tr>
-                    <td><?php echo esc_html(get_date_from_gmt($log->started_at, 'd/m/Y H:i:s')); ?></td>
-                    <td><?php echo $log->completed_at ? esc_html(get_date_from_gmt($log->completed_at, 'd/m/Y H:i:s')) : '-'; ?></td>
-                    <td><?php echo esc_html($log->total_sent); ?></td>
-                    <td><?php echo esc_html($log->total_failed); ?></td>
+                    <th><?php esc_html_e('Inicio', 'wc-pbm'); ?></th>
+                    <th><?php esc_html_e('Fin', 'wc-pbm'); ?></th>
+                    <th><?php esc_html_e('Enviados', 'wc-pbm'); ?></th>
+                    <th><?php esc_html_e('Fallidos', 'wc-pbm'); ?></th>
                 </tr>
-                <?php if ($log->error_message) : ?>
+            </thead>
+            <tbody>
+                <?php foreach ($logs as $log) : ?>
                     <tr>
-                        <td colspan="4">
-                            <strong><?php esc_html_e('Error:', 'wc-pbm'); ?></strong>
-                            <?php echo esc_html($log->error_message); ?>
-                        </td>
+                        <td><?php echo esc_html(get_date_from_gmt($log->started_at, 'd/m/Y H:i:s')); ?></td>
+                        <td><?php echo $log->completed_at ? esc_html(get_date_from_gmt($log->completed_at, 'd/m/Y H:i:s')) : '-'; ?></td>
+                        <td><?php echo esc_html($log->total_sent); ?></td>
+                        <td><?php echo esc_html($log->total_failed); ?></td>
                     </tr>
-                <?php endif; ?>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+                    <?php if ($log->error_message) : ?>
+                        <tr>
+                            <td colspan="4">
+                                <strong><?php esc_html_e('Error:', 'wc-pbm'); ?></strong>
+                                <?php echo esc_html($log->error_message); ?>
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
+
+    <?php if (! empty($events)) : ?>
+        <h3><?php esc_html_e('Eventos por destinatario', 'wc-pbm'); ?></h3>
+        <table class="widefat" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th><?php esc_html_e('Fecha', 'wc-pbm'); ?></th>
+                    <th><?php esc_html_e('Email', 'wc-pbm'); ?></th>
+                    <th><?php esc_html_e('Estado', 'wc-pbm'); ?></th>
+                    <th><?php esc_html_e('Error', 'wc-pbm'); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($events as $event) : ?>
+                    <tr>
+                        <td><?php echo esc_html(get_date_from_gmt((string) ($event['timestamp'] ?? ''), 'd/m/Y H:i:s')); ?></td>
+                        <td><?php echo esc_html($event['email'] ?? ''); ?></td>
+                        <td><?php echo esc_html('sent' === ($event['status'] ?? '') ? __('Enviado', 'wc-pbm') : __('Fallido', 'wc-pbm')); ?></td>
+                        <td><?php echo esc_html($event['error'] ?? ''); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
 <?php
     $html = ob_get_clean();
 
@@ -1315,6 +1417,15 @@ function ajax_list_scheduled_emails()
         $total_messages = is_array($recipients) ? count($recipients) : 0;
 
         if ($total_messages < 1) {
+            $snapshot = is_array($meta['audience_snapshot'] ?? null) ? $meta['audience_snapshot'] : array();
+            if (! empty($snapshot['final_count'])) {
+                $total_messages = (int) $snapshot['final_count'];
+            } elseif (! empty($snapshot['preview_count'])) {
+                $total_messages = (int) $snapshot['preview_count'];
+            }
+        }
+
+        if ($total_messages < 1) {
             $logs = get_scheduled_logs((int) $row->id);
             if (! empty($logs)) {
                 $sum = 0;
@@ -1331,6 +1442,8 @@ function ajax_list_scheduled_emails()
             'type'           => get_delivery_type_label($meta),
             'date'           => get_date_from_gmt($row->scheduled_at, 'd/m/Y H:i'),
             'audience'       => get_delivery_audience_label($row, $meta),
+            'audience_mode'  => (string) ($meta['audience_snapshot']['mode'] ?? ($meta['audience_mode'] ?? 'fixed')),
+            'audience_summary' => get_delivery_audience_label($row, $meta),
             'subject'        => (string) $row->subject,
             'status'         => (string) $row->status,
             'status_label'   => (string) ($status_labels[$row->status] ?? $row->status),

@@ -2,60 +2,51 @@
 
 ## Última actualización
 
-2026-06-18
+2026-06-29
 
-## Resumen humano
+## Relevo breve
 
-Arquitectura principal confirmada: React admin + AJAX + Action Scheduler + tablas propias. Plan A ya está aplicado. Email String Editor E1-E3 queda implementado como módulo propio, admin clásico y submenú WooCommerce, sin activar todavía aplicación `gettext` real en emails.
+Arquitectura LOG2/LOG3 preparada. No se implementó código. La solución mínima conserva tablas actuales, añade metadatos en `pbm_delivery_meta_{id}` y un option de eventos por destinatario para no requerir migración.
 
-## Descubierto
+## Hecho en esta tarea
 
-- Flujo principal confirmado: React construye audiencia, AJAX resuelve/envía, PHP programa lotes y Action Scheduler ejecuta `wp_mail()`.
-- Admin React convive con formulario legacy oculto para `wp_editor`, selectores y hidden inputs.
-- Hooks principales: `plugins_loaded`, `admin_menu`, `admin_enqueue_scripts`, `admin_post_pbm_save_settings`, `admin_init`, AJAX admin y Action Scheduler.
-- Action Scheduler usa dos niveles: `pbm_execute_scheduled_email` y `pbm_process_email_batch`.
-- Datos propios: tablas `pbm_scheduled_emails` y `pbm_scheduled_logs`; options `pbm_delivery_meta_{id}` y `pbm_scheduled_recipients_{id}`.
-- Integraciones opcionales: WooCommerce Subscriptions, WPML y Mail Mint.
-- Mail Mint se integra por tablas internas, no por API pública confirmada.
-- Email String Editor se incorporó en `includes/email-string-editor/` con clases separadas.
+- Hecho confirmado por código leído:
+  - `pbm_scheduled_logs` solo guarda totales por lote (`total_sent`, `total_failed`, `error_message`), no emails concretos.
+  - `process_email_batch()` solo cuenta `sent/failed`; `send_single_email()` devuelve `bool` de `wp_mail()`.
+  - `maybe_complete_scheduled_email()` borra `pbm_scheduled_recipients_{id}` al completar; el snapshot de destinatarios no queda como histórico estable.
+  - `build_global_audience_meta()` solo guarda conteos por fuente; por eso el resumen actual no puede mostrar nombres.
+- LOG2 recomendado sin migración:
+  - Añadir en `pbm_delivery_meta_{id}` un `audience_snapshot` descriptivo, no operativo.
+  - Estructura mínima: `mode`, `created_at`, `preview_count`, `final_count`, `items[]`, `manual_count`, `excluded_count`, `excluded_emails_count` y `summary`.
+  - Cada item: `source`, `selector_value`, `source_label`, `selector_label`, `count`, `status` (`available`/`missing`/`unknown`).
+  - Para `dynamic`, guardar snapshot de preview al programar y actualizar `final_count`/`final_items` al ejecutar si se recalcula.
+  - Para históricos sin `audience_snapshot`, mantener fallback actual de `get_delivery_audience_label()`.
+- Construcción de labels:
+  - Preferir reconstrucción en PHP como fuente de verdad al guardar, usando datos sanitizados y APIs nativas.
+  - React puede enviar `sourceLabel`/`selectorLabel` como ayuda solo si se sanitiza y se trata como fallback; no confiar en labels del cliente para persistencia definitiva.
+  - Mejorar helper equivalente a `get_source_audience_label()` para roles con `wp_roles()->get_names()`, productos con `get_the_title()`, Broadcast Lists con su storage actual y Mail Mint si hay lista disponible; si no, usar fallback `Fuente #ID`.
+- LOG3 recomendado sin migración:
+  - Crear option no autoload `pbm_delivery_events_{id}` con eventos por destinatario.
+  - Registrar eventos desde `process_email_batch()` después de cada `send_single_email()`.
+  - Evento mínimo: `email`, `status` (`sent`/`failed`), `timestamp`, `error`, `batch_index` opcional.
+  - Error MVP: si `wp_mail()` devuelve `false`, registrar `wp_mail devolvió false`; no guardar cuerpo del email.
+  - Retención: borrar `pbm_delivery_events_{id}` junto con `delete_scheduled_email_with_logs()` y borrados masivos.
 
-## Hecho
+## Pendiente / riesgos
 
-- Revisión de arquitectura completada.
-- Plan A aplicado y consolidado.
-- Email String Editor E1-E3 implementado:
-  - cargador `includes/email-string-editor.php`;
-  - coordinador `Email_String_Editor`;
-  - scanner de plantillas permitidas;
-  - repositorio `pbm_email_string_overrides`;
-  - compatibilidad de lectura con `wc_custom_email_strings`;
-  - resolver de idiomas;
-  - pantalla admin MVP;
-  - guardado y borrado con `admin-post` prefijado.
-
-## Pendiente
-
-- QA admin de Email String Editor E1-E3.
-- Confirmar hooks WooCommerce seguros para activar contexto email antes de E4.
-- Implementar E4 solo cuando esté claro cómo limitar `gettext` a emails WooCommerce.
-- Confirmar si `render_scheduled_emails_tab()` y `ajax_create_scheduled_email()` siguen en uso.
-- Revisar integración Mail Mint contra documentación/API real si se amplía.
+- Pendiente confirmar estructura/storage exacto de Broadcast Lists y Mail Mint si se quieren labels reales más allá del fallback.
+- `wp_mail()` no devuelve causa técnica fiable; capturar `wp_mail_failed` con contexto por destinatario queda como mejora posterior, no MVP obligatorio.
+- Guardar eventos por destinatario aumenta datos personales almacenados; requiere política de retención aceptada antes de producción.
+- Si el volumen crece mucho, el option por envío puede quedarse corto; entonces convendría tabla propia o columna JSON vía `dbDelta`, fuera del MVP mínimo.
 
 ## No volver a investigar
 
-- Arquitectura confirmada: React admin + AJAX + Action Scheduler + tablas propias.
-- Tablas propias confirmadas: `pbm_scheduled_emails` y `pbm_scheduled_logs`.
-- Hooks Action Scheduler confirmados: `pbm_execute_scheduled_email` y `pbm_process_email_batch`.
-- Updater GitHub Releases confirmado en `includes/updater.php`.
-- Email String Editor E1-E3 está integrado como módulo propio; no se copió el plugin heredado tal cual.
+- Action Scheduler ya tiene dos fases: `pbm_execute_scheduled_email` y `pbm_process_email_batch`.
+- El completado depende de snapshot/logs; por eso el modo dinámico debe crear snapshot final justo antes de programar lotes.
+- Manuales son fijos; exclusiones se aplican al resultado final.
+- Para LOG3 no existe log por email en la tabla actual; solo totales por lote.
+- Para LOG2 el metadato actual `global.sources` solo permite conteos, no nombres/labels.
 
-## Riesgos o bloqueos
+## Relevo para
 
-- E4 es el riesgo principal: `gettext` global puede afectar checkout/admin si no se limita al contexto email.
-- Resolver idioma real del email sigue pendiente para sitios WPML/Polylang.
-- QA funcional puede crear envíos/logs/acciones; requiere permiso separado.
-
-## Próximo paso recomendado
-
-- QA admin de E1-E3.
-- Después decidir E4 con hook seguro de contexto email.
+→ Desarrollador, si se aprueba implementación LOG2/LOG3: implementar `audience_snapshot` en delivery meta, fallback histórico, `pbm_delivery_events_{id}` por destinatario, borrado de eventos al eliminar envíos y endpoint/UI de lectura básica.
