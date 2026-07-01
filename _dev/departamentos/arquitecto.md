@@ -2,51 +2,43 @@
 
 ## Última actualización
 
-2026-06-29
+2026-07-01
 
 ## Relevo breve
 
-Arquitectura LOG2/LOG3 preparada. No se implementó código. La solución mínima conserva tablas actuales, añade metadatos en `pbm_delivery_meta_{id}` y un option de eventos por destinatario para no requerir migración.
+Arquitectura para portar mensajes tipo toast desde AuthGate a Woo Broadcast Mailer. No se implementó código. Adaptación mínima recomendada: crear helper React local `showToast(message, type)` en `src/admin/App.js`, renderizar toasts dentro de `.pbm-react-shell` y copiar solo los estilos necesarios de `.mw22-back-toast` adaptados a `.pbm-admin .pbm-back-toast`.
 
 ## Hecho en esta tarea
 
-- Hecho confirmado por código leído:
-  - `pbm_scheduled_logs` solo guarda totales por lote (`total_sent`, `total_failed`, `error_message`), no emails concretos.
-  - `process_email_batch()` solo cuenta `sent/failed`; `send_single_email()` devuelve `bool` de `wp_mail()`.
-  - `maybe_complete_scheduled_email()` borra `pbm_scheduled_recipients_{id}` al completar; el snapshot de destinatarios no queda como histórico estable.
-  - `build_global_audience_meta()` solo guarda conteos por fuente; por eso el resumen actual no puede mostrar nombres.
-- LOG2 recomendado sin migración:
-  - Añadir en `pbm_delivery_meta_{id}` un `audience_snapshot` descriptivo, no operativo.
-  - Estructura mínima: `mode`, `created_at`, `preview_count`, `final_count`, `items[]`, `manual_count`, `excluded_count`, `excluded_emails_count` y `summary`.
-  - Cada item: `source`, `selector_value`, `source_label`, `selector_label`, `count`, `status` (`available`/`missing`/`unknown`).
-  - Para `dynamic`, guardar snapshot de preview al programar y actualizar `final_count`/`final_items` al ejecutar si se recalcula.
-  - Para históricos sin `audience_snapshot`, mantener fallback actual de `get_delivery_audience_label()`.
-- Construcción de labels:
-  - Preferir reconstrucción en PHP como fuente de verdad al guardar, usando datos sanitizados y APIs nativas.
-  - React puede enviar `sourceLabel`/`selectorLabel` como ayuda solo si se sanitiza y se trata como fallback; no confiar en labels del cliente para persistencia definitiva.
-  - Mejorar helper equivalente a `get_source_audience_label()` para roles con `wp_roles()->get_names()`, productos con `get_the_title()`, Broadcast Lists con su storage actual y Mail Mint si hay lista disponible; si no, usar fallback `Fuente #ID`.
-- LOG3 recomendado sin migración:
-  - Crear option no autoload `pbm_delivery_events_{id}` con eventos por destinatario.
-  - Registrar eventos desde `process_email_batch()` después de cada `send_single_email()`.
-  - Evento mínimo: `email`, `status` (`sent`/`failed`), `timestamp`, `error`, `batch_index` opcional.
-  - Error MVP: si `wp_mail()` devuelve `false`, registrar `wp_mail devolvió false`; no guardar cuerpo del email.
-  - Retención: borrar `pbm_delivery_events_{id}` junto con `delete_scheduled_email_with_logs()` y borrados masivos.
+- AuthGate confirmado:
+  - `assets/js/22mw-back.js` define `showToast(root, message, type)` y lo usa para `updated=1`.
+  - `assets/js/authgate-back.js` duplica `showToast()` y lo usa en formularios AJAX.
+  - `assets/css/22mw-back.css` contiene la base visual `.mw22-back-toast`, `.is-error`, `.is-hiding` y `@keyframes mw22-back-toast-in`.
+  - `assets/css/authgate-back.css` reposiciona el toast en admin con `.authgate-back > .mw22-back-toast` y oculta notices clásicas.
+- Woo Broadcast Mailer confirmado:
+  - React vive en `src/admin/App.js`, `src/admin/components/AudienceBuilder.js`, `src/admin/email-editor/EmailStringEditorApp.js` y build en `build/`.
+  - Mensajes actuales: `setMessage()` + `<Notice>` en `AudienceBuilder`, `setBroadcastListMessage()` + `pbm-react-notice`, y `window.alert()` en preview/envío/logs.
+  - CSS admin principal: `assets/css/admin.css`; `src/admin/styles.css` solo importa comentario y genera build.
+- Recomendación técnica mínima:
+  - No copiar `22mw-back.js` completo: trae tema, switches y subnav no usados por Woo Broadcast Mailer.
+  - Copiar solo la idea de `showToast`: cola/estado React o helper local, timeout 2800/3200, tipos `success`, `error`, opcional `warning`.
+  - Sustituir mensajes principales de `App.js` por toast; dejar el cambio del Email String Editor como opcional si el usuario quiere “todo React/admin”.
 
 ## Pendiente / riesgos
 
-- Pendiente confirmar estructura/storage exacto de Broadcast Lists y Mail Mint si se quieren labels reales más allá del fallback.
-- `wp_mail()` no devuelve causa técnica fiable; capturar `wp_mail_failed` con contexto por destinatario queda como mejora posterior, no MVP obligatorio.
-- Guardar eventos por destinatario aumenta datos personales almacenados; requiere política de retención aceptada antes de producción.
-- Si el volumen crece mucho, el option por envío puede quedarse corto; entonces convendría tabla propia o columna JSON vía `dbDelta`, fuera del MVP mínimo.
+- Requiere build con `npm run build` porque afecta `src/admin/App.js` y probablemente `build/index.js`/`build/index.css`.
+- Riesgo de conflicto si se reutiliza `.mw22-back-toast`: mejor namespace `.pbm-back-toast` o `.pbm-admin-toast`.
+- Si se quitan todos los `<Notice>`, revisar accesibilidad: añadir `role="status"`/`aria-live="polite"` y `role="alert"` para errores.
+- `window.alert()` bloquea flujo; sustituirlo por toast cambia comportamiento UX pero no backend.
+- Text domain confirmado para textos nuevos: `wc-pbm`.
 
 ## No volver a investigar
 
-- Action Scheduler ya tiene dos fases: `pbm_execute_scheduled_email` y `pbm_process_email_batch`.
-- El completado depende de snapshot/logs; por eso el modo dinámico debe crear snapshot final justo antes de programar lotes.
-- Manuales son fijos; exclusiones se aplican al resultado final.
-- Para LOG3 no existe log por email en la tabla actual; solo totales por lote.
-- Para LOG2 el metadato actual `global.sources` solo permite conteos, no nombres/labels.
+- AuthGate `showToast` está en `assets/js/22mw-back.js` y `assets/js/authgate-back.js`.
+- Estilos base del toast AuthGate están en `assets/css/22mw-back.css` líneas 388-426; override admin en `assets/css/authgate-back.css` líneas 157-162.
+- Woo Broadcast Mailer usa React compilado con `@wordpress/scripts`; cambiar `src/admin/*` requiere regenerar `build/`.
+- Text domain de Woo Broadcast Mailer: `wc-pbm`.
 
 ## Relevo para
 
-→ Desarrollador, si se aprueba implementación LOG2/LOG3: implementar `audience_snapshot` en delivery meta, fallback histórico, `pbm_delivery_events_{id}` por destinatario, borrado de eventos al eliminar envíos y endpoint/UI de lectura básica.
+→ Desarrollador: implementar adaptación mínima en `src/admin/App.js`, `src/admin/components/AudienceBuilder.js` si se elimina el Notice actual, `assets/css/admin.css` y regenerar `build/index.js`/`build/index.css` con `npm run build`. Opcional: extender el mismo patrón a `src/admin/email-editor/EmailStringEditorApp.js` y `src/admin/components/ScheduledLogsPanel.js` si el alcance aprobado incluye todas las pantallas React/admin.

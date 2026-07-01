@@ -2,50 +2,44 @@
 
 ## Última actualización
 
-2026-06-29
+2026-07-02
 
 ## Resumen humano
 
-Woo Broadcast Mailer tiene publicada la release estable `2.5.0` en rama `devWooBM` con tag `v2.5.0`. El ciclo consolida audiencia programada fija/dinámica y LOG2/LOG3 MVP.
+Woo Broadcast Mailer queda en release estable `2.6.0` sobre rama `devWooBM`, con tag `v2.6.0`. La versión consolida el sistema toast React admin estilo AuthGate para mensajes principales del panel.
 
 ## Estado general
 
-Release `2.5.0` commiteada, pusheada y tageada. Pendiente confirmar GitHub Actions/GitHub Release/ZIP porque `gh` no está instalado. AD4 y LOG2/LOG3 tienen QA confirmado por usuario; no fue ejecutado por el agente.
+Release `2.6.0` preparada como release publicada en rama `devWooBM` con commit, push y tag autorizados por el usuario. QA visual de toasts confirmado por usuario como “QA ok”; no fue ejecutado por el agente. Pendiente confirmar GitHub Actions/GitHub Release/ZIP porque `gh` no está instalado localmente.
 
 ## Hecho
 
 - Release `2.4.0` publicada en rama `devWooBM` con tag `v2.4.0`.
 - Release `2.5.0` publicada en rama `devWooBM` con tag `v2.5.0`.
-- Mejoras 2.3.0: conservación visual del HTML, limpieza de saltos entre bloques/listas, estado `failed`, borrado de envíos atascados sin acciones pendientes y plantillas con asunto + body.
-- Editor TinyMCE ampliado con selector de fuente, tamaño, color de texto y color de fondo.
-- Corregida la toolbar TinyMCE para evitar selector de color duplicado/separado.
-- Añadidos shortcodes de broadcast: `{customer_name}`, `{first_name}`, `{last_name}`, `{email}`, `{current_date}`.
-- `{customer_name}` ahora busca datos de usuario por email si el destinatario no trae nombre.
-- `h1` y `h2` reciben estilos inline mínimos al enviar para conservar formato en clientes de email.
-- AD3 implementado: modo fijo/dinámico para envíos programados, persistencia de configuración dinámica y snapshot final recalculado al ejecutar.
-- AD4 hecho: QA funcional confirmado por usuario.
-- LOG1 hecho: análisis funcional de resumen de audiencia legible y logs informativos.
-- LOG2 hecho: snapshot descriptivo de audiencia en `pbm_delivery_meta_{id}` con fallback histórico; QA confirmado por usuario.
-- LOG3 hecho: eventos básicos por destinatario en `pbm_delivery_events_{id}` sin nuevas tablas; QA confirmado por usuario.
+- Release `2.6.0` consolida UI5: sistema toast React admin estilo AuthGate para mensajes principales del panel, con namespace propio y accesibilidad `aria-live`/`role="alert"`.
+- AD3/AD4 hecho: modo fijo/dinámico para envíos programados; QA funcional confirmado por usuario.
+- LOG2 hecho: snapshot descriptivo de audiencia en `pbm_delivery_meta_{id}`; QA confirmado por usuario.
+- LOG3 hecho: eventos básicos por destinatario en `pbm_delivery_events_{id}`; QA confirmado por usuario.
+- Cambio previo de arquitectura de toasts preservado en `_dev/departamentos/arquitecto.md`.
 
 ## En curso
 
-- Confirmación externa de GitHub Actions/GitHub Release/ZIP para `v2.5.0`.
+- Confirmación externa de GitHub Actions/GitHub Release/ZIP para `v2.6.0`.
 
 ## Bloqueado
 
 - Prueba del updater en staging pendiente.
-- Confirmación de GitHub Release `v2.5.0` pendiente por falta de `gh` local.
+- Confirmación de GitHub Release `v2.6.0` pendiente por falta de `gh` local.
 
 ## Riesgos visibles
 
 ### Alta prioridad
 
-- Confirmar que el ZIP de GitHub Actions para `v2.5.0` se genera correctamente.
+- Confirmar que el ZIP de GitHub Actions para `v2.6.0` se genera correctamente.
 
 ### Media prioridad
 
-- La toolbar TinyMCE puede depender de caché del navegador/admin; si no se ve el cambio, limpiar caché.
+- Limpiar caché del navegador/admin si no se ve el cambio visual de toasts tras actualizar.
 - La entregabilidad depende de SMTP/configuración real.
 - Plan LOG: aperturas/clics quedan como futuro/recomendado; rebotes y entrega real dependen de proveedor SMTP/webhook.
 
@@ -56,13 +50,13 @@ Release `2.5.0` commiteada, pusheada y tageada. Pendiente confirmar GitHub Actio
 
 ## Próximo paso recomendado
 
-- Confirmar GitHub Actions/GitHub Release/ZIP generado para `v2.5.0` desde GitHub.
+- Confirmar GitHub Actions/GitHub Release/ZIP generado para `v2.6.0` desde GitHub.
 - Probar updater en staging antes de usarlo como canal crítico.
 
 ## Pendiente de validar
 
 - Updater desde GitHub Release en staging.
-- GitHub Release/ZIP tras push de tag `v2.5.0`.
+- GitHub Release/ZIP tras push de tag `v2.6.0`.
 
 ## No volver a investigar
 
@@ -72,6 +66,5 @@ Release `2.5.0` commiteada, pusheada y tageada. Pendiente confirmar GitHub Actio
 - GitHub Releases es el canal de distribución.
 - ZIP release excluye `_dev/`, `node_modules/`, `src/`, `.git`, `.github/`, paquetes Node, cachés y archivos locales.
 - Node local disponible en `/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin`.
-- Plan LOG MVP recomendado: resumen de audiencia legible + log básico por destinatario antes de clics/aperturas.
-- LOG2/LOG3 arquitectura: sin migración obligatoria; usar `audience_snapshot` en `pbm_delivery_meta_{id}` y `pbm_delivery_events_{id}` como option no autoload.
-- QA de AD4/LOG2/LOG3 confirmado por usuario el 2026-06-29; no ejecutado por el agente.
+- Toast admin usa namespace propio `.pbm-admin-toast` / `.pbm-admin-toasts`; no se copió `22mw-back.js` completo.
+- QA de UI5 confirmado por usuario el 2026-07-02; no ejecutado por el agente.

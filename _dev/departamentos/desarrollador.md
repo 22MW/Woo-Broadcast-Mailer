@@ -2,11 +2,11 @@
 
 ## Última actualización
 
-2026-06-29
+2026-07-01
 
 ## Resumen humano
 
-LOG2/LOG3 implementados como MVP sin nuevas tablas ni React: snapshot descriptivo de audiencia en metadatos y eventos básicos por destinatario en option no autoload.
+Sistema toast React admin implementado con patrón AuthGate adaptado, namespace propio y sin tocar el cambio ajeno de arquitectura.
 
 ## Descubierto
 
@@ -45,6 +45,11 @@ LOG2/LOG3 implementados como MVP sin nuevas tablas ni React: snapshot descriptiv
 - No se tocaron React ni build porque el alcance se resolvió con PHP/AJAX existente.
 - Build de `src/admin/App.js` generado en `build/index.js`.
 - Validación técnica LOG2/LOG3 ejecutada: `php -l` OK en PHP tocados y `git diff --check` OK.
+- Añadido helper/viewport toast en `src/admin/App.js` con estado React, `aria-live`, `role="alert"`, `is-hiding`, 2800/3200 ms y tipos `success`, `error`, `warning`.
+- Sustituidos mensajes principales de `App.js` por `showToast`; el éxito de envío retrasa la recarga 900 ms para que el toast sea visible.
+- Sustituidos `window.alert()` de error en `ScheduledLogsPanel` por toast compartido.
+- `AudienceBuilder` ya no renderiza `Notice` local para esos mensajes.
+- Añadido CSS `.pbm-admin-toasts` / `.pbm-admin-toast` en `assets/css/admin.css` y build React generado.
 
 ## Pendiente
 
@@ -53,6 +58,7 @@ LOG2/LOG3 implementados como MVP sin nuevas tablas ni React: snapshot descriptiv
 - QA email real con tamaños/fuentes/colores.
 - QA AD4 pendiente: rol dinámico, Broadcast List dinámica, manuales, exclusiones y logs en entorno controlado.
 - QA controlado LOG2/LOG3 pendiente porque requiere crear/ejecutar envíos y logs reales.
+- QA visual/manual del toast confirmado por usuario para release `2.6.0`.
 
 ## No volver a investigar
 
@@ -61,6 +67,8 @@ LOG2/LOG3 implementados como MVP sin nuevas tablas ni React: snapshot descriptiv
 - `{unsubscribe_note}` queda fuera hasta tener sistema real de baja/exclusión.
 - Audiencia dinámica programada usa `audience_mode=dynamic` en `pbm_delivery_meta_{id}`; si falta, el comportamiento es `fixed`.
 - LOG2/LOG3 no añade migración: usa `audience_snapshot` dentro de `pbm_delivery_meta_{id}` y `pbm_delivery_events_{id}` como option no autoload.
+- Toast admin usa namespace propio `.pbm-admin-toast` / `.pbm-admin-toasts`; no se copió `22mw-back.js` completo.
+- QA UI5 fue confirmado por usuario el 2026-07-02; no fue ejecutado por el agente.
 
 ## Riesgos o bloqueos
 
@@ -68,7 +76,8 @@ LOG2/LOG3 implementados como MVP sin nuevas tablas ni React: snapshot descriptiv
 - La visualización final de fuentes/colores depende del cliente de email.
 - Si una fuente dinámica queda vacía o no disponible al ejecutar, el envío se cancela usando el log de error existente.
 - `pbm_delivery_events_{id}` guarda emails destinatarios; sigue pendiente definir política de retención/privacidad antes de uso real en producción.
+- El éxito de envío recarga la página tras 900 ms; validar si ese tiempo es suficiente en navegador real.
 
 ## Próximo paso recomendado
 
-- Pasar a QA controlado de AD4/LOG2/LOG3 solo con permiso porque crea envíos, acciones programadas y logs.
+- Pasar a release `2.6.0`; para envíos reales, pedir permiso porque puede crear acciones programadas y logs.

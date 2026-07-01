@@ -2,6 +2,13 @@
 
 Todos los cambios relevantes del proyecto se documentan en este archivo.
 
+## 2.6.0
+
+- Añadido sistema de toasts en el admin React para mensajes principales del panel.
+- Sustituidas alertas bloqueantes en preview, envío y logs por notificaciones no intrusivas.
+- Añadidos estilos `.pbm-admin-toast` con namespace propio y estados `success`, `error` y `warning`.
+- Añadida accesibilidad básica con `aria-live`, `aria-atomic` y `role="alert"`.
+
 ## 2.5.0
 
 - Añadida audiencia programada fija/dinámica: el modo dinámico recalcula destinatarios al ejecutar y conserva el snapshot final.

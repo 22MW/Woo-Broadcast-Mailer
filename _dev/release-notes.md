@@ -1,5 +1,14 @@
 # Release notes internas
 
+## 2.6.0 — Release publicada — 2026-07-02
+
+- Consolida UI5: sistema toast React admin estilo AuthGate para mensajes principales del panel.
+- Sustituye alertas bloqueantes de preview, envío y logs por notificaciones no intrusivas.
+- Añade namespace propio `.pbm-admin-toast` / `.pbm-admin-toasts`, estados `success`, `error`, `warning` y accesibilidad básica.
+- QA visual confirmado por usuario como “QA ok”; no ejecutado por el agente.
+- Validaciones previstas/ejecutadas en release: `npm run build`, `php -l`, `git diff --check`, commit `release(wcbm): 2.6.0`, push `devWooBM` y tag `v2.6.0`.
+- GitHub Release/ZIP queda pendiente de comprobar en GitHub Actions porque `gh` no está instalado localmente.
+
 ## 2.5.0 — Release publicada — 2026-06-29
 
 - Consolida AD3/AD4: audiencia programada fija/dinámica con recalculo al ejecutar y snapshot final.
@@ -58,5 +67,5 @@
 
 - QA funcional completo de envíos reales en staging/local.
 - Prueba del updater en staging.
-- Confirmar GitHub Release `v2.5.0` tras pushear tag.
+- Confirmar GitHub Release `v2.6.0` tras pushear tag.
 - Decidir conservación o borrado de `_dev/_md/`.

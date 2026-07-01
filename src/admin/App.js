@@ -1,5 +1,5 @@
 import { Button, Card, CardBody, CheckboxControl, RadioControl, TextControl } from '@wordpress/components';
-import { createPortal, useEffect, useMemo, useRef, useState } from '@wordpress/element';
+import { createPortal, useCallback, useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import SourceSelector from './components/SourceSelector';
 import DependentSelector from './components/DependentSelector';
@@ -118,6 +118,26 @@ async function postAjax(params) {
   return response.json();
 }
 
+function ToastViewport({ toasts }) {
+  if (!toasts.length) {
+    return null;
+  }
+
+  return (
+    <div className="pbm-admin-toasts" aria-live="polite" aria-atomic="true">
+      {toasts.map((toast) => (
+        <div
+          key={toast.id}
+          className={`pbm-admin-toast pbm-admin-toast-${toast.type || 'success'}${toast.hiding ? ' is-hiding' : ''}`}
+          role="alert"
+        >
+          {toast.text}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 async function fetchRecipientCount(source, selectorValue, nonce) {
   if (!window.ajaxurl || !selectorValue) {
     return 0;
@@ -179,7 +199,7 @@ export default function App() {
   const [source, setSource] = useState(getCurrentValue('pbm_recipient_source') || 'product');
   const [globalAudience, setGlobalAudience] = useState([]);
   const [manualEmails, setManualEmails] = useState([]);
-  const [message, setMessage] = useState(null);
+  const [toasts, setToasts] = useState([]);
   const [itemDetails, setItemDetails] = useState({});
   const [countByKey, setCountByKey] = useState({});
   const [subject, setSubject] = useState('');
@@ -205,6 +225,19 @@ export default function App() {
   const [highlightBlock, setHighlightBlock] = useState({ background: '#f8fafc', border: '#d1d5db', padding: '20' });
   const [separatorBlock, setSeparatorBlock] = useState({ color: '#d1d5db', height: '1', margin: '24' });
   const [activeQuickBlock, setActiveQuickBlock] = useState('');
+
+  const showToast = useCallback((text, type = 'success') => {
+    const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const nextToast = { id, text, type, hiding: false };
+
+    setToasts((current) => [...current, nextToast]);
+    setTimeout(() => {
+      setToasts((current) => current.map((toast) => (toast.id === id ? { ...toast, hiding: true } : toast)));
+    }, 2800);
+    setTimeout(() => {
+      setToasts((current) => current.filter((toast) => toast.id !== id));
+    }, 3200);
+  }, []);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [topItemsBySource, setTopItemsBySource] = useState({ product: [], role: [], mailmint: [], broadcast_list: [] });
@@ -377,7 +410,7 @@ export default function App() {
 
   const addToGlobalAudience = async () => {
     if (selectedValues.length === 0) {
-      setMessage({ type: 'warning', text: __('Debes seleccionar al menos un elemento.', 'wc-pbm') });
+      showToast(__('Debes seleccionar al menos un elemento.', 'wc-pbm'), 'warning');
       return;
     }
 
@@ -426,13 +459,13 @@ export default function App() {
       setCountByKey((prev) => ({ ...prev, [key]: emails.length }));
     }
 
-    setMessage({ type: 'success', text: __('Elementos añadidos a la lista global.', 'wc-pbm') });
+    showToast(__('Elementos añadidos a la lista global.', 'wc-pbm'), 'success');
   };
 
   const addManualEmails = (rawInput) => {
     const parsed = parseEmails(rawInput);
     if (parsed.length === 0) {
-      setMessage({ type: 'warning', text: __('No hay emails para añadir.', 'wc-pbm') });
+      showToast(__('No hay emails para añadir.', 'wc-pbm'), 'warning');
       return;
     }
 
@@ -440,7 +473,7 @@ export default function App() {
     const invalidCount = parsed.length - validEmails.length;
 
     if (validEmails.length === 0) {
-      setMessage({ type: 'warning', text: __('Todos los emails son inválidos.', 'wc-pbm') });
+      showToast(__('Todos los emails son inválidos.', 'wc-pbm'), 'warning');
       return;
     }
 
@@ -455,24 +488,23 @@ export default function App() {
     });
 
     if (uniqueToAdd.length === 0) {
-      setMessage({ type: 'warning', text: __('Los emails manuales ya estaban añadidos.', 'wc-pbm') });
+      showToast(__('Los emails manuales ya estaban añadidos.', 'wc-pbm'), 'warning');
       return;
     }
 
     setManualEmails((prev) => [...prev, ...uniqueToAdd]);
 
     if (invalidCount > 0) {
-      setMessage({ type: 'warning', text: __('Algunos emails eran inválidos y no se añadieron.', 'wc-pbm') });
+      showToast(__('Algunos emails eran inválidos y no se añadieron.', 'wc-pbm'), 'warning');
       return;
     }
 
-    setMessage({ type: 'success', text: __('Emails manuales añadidos.', 'wc-pbm') });
+    showToast(__('Emails manuales añadidos.', 'wc-pbm'), 'success');
   };
 
   const removeFromGlobalAudience = (key) => {
     if ('manual:group' === key) {
       setManualEmails([]);
-      setMessage(null);
       return;
     }
 
@@ -482,14 +514,12 @@ export default function App() {
       delete next[key];
       return next;
     });
-    setMessage(null);
   };
 
   const clearGlobalAudience = () => {
     setGlobalAudience([]);
     setManualEmails([]);
     setItemDetails({});
-    setMessage(null);
   };
 
   const listItems = useMemo(() => {
@@ -609,7 +639,7 @@ export default function App() {
 
   const previewAudience = async () => {
     if (listItems.length === 0) {
-      window.alert(__('Añade destinatarios antes de previsualizar.', 'wc-pbm'));
+      showToast(__('Añade destinatarios antes de previsualizar.', 'wc-pbm'), 'warning');
       return;
     }
 
@@ -632,7 +662,7 @@ export default function App() {
     setPreviewLoading(false);
 
     if (!data || !data.success || !data.data) {
-      window.alert(data?.data?.message || __('Error al obtener destinatarios', 'wc-pbm'));
+      showToast(data?.data?.message || __('Error al obtener destinatarios', 'wc-pbm'), 'error');
       return;
     }
 
@@ -655,7 +685,7 @@ export default function App() {
   const saveCurrentPreviewAsBroadcastList = async () => {
     const emails = uniqueEmails(previewData?.emails || []);
     if (emails.length === 0) {
-      setMessage({ type: 'warning', text: __('No hay emails en la vista previa para guardar.', 'wc-pbm') });
+      showToast(__('No hay emails en la vista previa para guardar.', 'wc-pbm'), 'warning');
       return;
     }
     const nonceField = document.getElementById('pbm_nonce');
@@ -667,12 +697,12 @@ export default function App() {
     params.append('nonce', nonce);
     const data = await postAjax(params);
     if (!data?.success) {
-      setMessage({ type: 'error', text: data?.data?.message || __('No se pudo guardar la lista.', 'wc-pbm') });
+      showToast(data?.data?.message || __('No se pudo guardar la lista.', 'wc-pbm'), 'error');
       return;
     }
     setNewBroadcastListName('');
     await loadBroadcastLists();
-    setMessage({ type: 'success', text: data.data?.message || __('Broadcast List guardada.', 'wc-pbm') });
+    showToast(data.data?.message || __('Broadcast List guardada.', 'wc-pbm'), 'success');
   };
 
   const updateBroadcastList = async (list, nextEmails = null, nextName = null) => {
@@ -686,7 +716,7 @@ export default function App() {
     params.append('nonce', nonce);
     const data = await postAjax(params);
     if (!data?.success) {
-      setMessage({ type: 'error', text: data?.data?.message || __('No se pudo actualizar la lista.', 'wc-pbm') });
+      showToast(data?.data?.message || __('No se pudo actualizar la lista.', 'wc-pbm'), 'error');
       return;
     }
     await loadBroadcastLists();
@@ -705,7 +735,7 @@ export default function App() {
     params.append('nonce', nonce);
     const data = await postAjax(params);
     if (!data?.success) {
-      setMessage({ type: 'error', text: data?.data?.message || __('No se pudo borrar la lista.', 'wc-pbm') });
+      showToast(data?.data?.message || __('No se pudo borrar la lista.', 'wc-pbm'), 'error');
       return;
     }
     await loadBroadcastLists();
@@ -772,7 +802,7 @@ export default function App() {
   const saveCurrentMessageTemplate = async () => {
     const content = getClassicEditorMessage();
     if (!content.trim()) {
-      setMessage({ type: 'warning', text: __('No hay contenido de mensaje para guardar.', 'wc-pbm') });
+      showToast(__('No hay contenido de mensaje para guardar.', 'wc-pbm'), 'warning');
       return;
     }
 
@@ -787,19 +817,19 @@ export default function App() {
     const data = await postAjax(params);
 
     if (!data?.success) {
-      setMessage({ type: 'error', text: data?.data?.message || __('No se pudo guardar la plantilla.', 'wc-pbm') });
+      showToast(data?.data?.message || __('No se pudo guardar la plantilla.', 'wc-pbm'), 'error');
       return;
     }
 
     setNewMessageTemplateName('');
     await loadMessageTemplates();
-    setMessage({ type: 'success', text: data.data?.message || __('Plantilla guardada.', 'wc-pbm') });
+    showToast(data.data?.message || __('Plantilla guardada.', 'wc-pbm'), 'success');
   };
 
   const loadMessageTemplate = (template) => {
     setSubject(template.subject || '');
     setClassicEditorMessage(template.content || '');
-    setMessage({ type: 'success', text: __('Plantilla cargada en el asunto y mensaje.', 'wc-pbm') });
+    showToast(__('Plantilla cargada en el asunto y mensaje.', 'wc-pbm'), 'success');
   };
 
   const deleteMessageTemplate = async (template) => {
@@ -816,12 +846,12 @@ export default function App() {
     const data = await postAjax(params);
 
     if (!data?.success) {
-      setMessage({ type: 'error', text: data?.data?.message || __('No se pudo borrar la plantilla.', 'wc-pbm') });
+      showToast(data?.data?.message || __('No se pudo borrar la plantilla.', 'wc-pbm'), 'error');
       return;
     }
 
     await loadMessageTemplates();
-    setMessage({ type: 'success', text: data.data?.message || __('Plantilla eliminada.', 'wc-pbm') });
+    showToast(data.data?.message || __('Plantilla eliminada.', 'wc-pbm'), 'success');
   };
 
   const insertImageBlock = () => {
@@ -873,26 +903,26 @@ export default function App() {
 
   const sendBroadcast = async () => {
     if (listItems.length === 0) {
-      window.alert(__('Añade destinatarios antes de enviar.', 'wc-pbm'));
+      showToast(__('Añade destinatarios antes de enviar.', 'wc-pbm'), 'warning');
       return;
     }
     if (!previewData || Number(previewData.total || 0) < 1) {
-      window.alert(__('Primero debes hacer una vista previa.', 'wc-pbm'));
+      showToast(__('Primero debes hacer una vista previa.', 'wc-pbm'), 'warning');
       return;
     }
     if (isPreviewStale) {
-      window.alert(__('La audiencia o configuración cambió. Actualiza la vista previa antes de enviar.', 'wc-pbm'));
+      showToast(__('La audiencia o configuración cambió. Actualiza la vista previa antes de enviar.', 'wc-pbm'), 'warning');
       return;
     }
 
     const messageContent = getClassicEditorMessage();
     if (!subject.trim() || !messageContent.trim()) {
-      window.alert(__('Asunto y mensaje son obligatorios.', 'wc-pbm'));
+      showToast(__('Asunto y mensaje son obligatorios.', 'wc-pbm'), 'warning');
       return;
     }
 
     if (scheduleEnabled && !scheduledDatetime) {
-      window.alert(__('Debes indicar fecha y hora para programar.', 'wc-pbm'));
+      showToast(__('Debes indicar fecha y hora para programar.', 'wc-pbm'), 'warning');
       return;
     }
 
@@ -926,12 +956,12 @@ export default function App() {
     setSending(false);
 
     if (!data || !data.success) {
-      window.alert(data?.data?.message || __('Error al programar el envío', 'wc-pbm'));
+      showToast(data?.data?.message || __('Error al programar el envío', 'wc-pbm'), 'error');
       return;
     }
 
-    window.alert(data.data.message || __('Envío creado correctamente', 'wc-pbm'));
-    window.location.reload();
+    showToast(data.data.message || __('Envío creado correctamente', 'wc-pbm'), 'success');
+    setTimeout(() => window.location.reload(), 900);
   };
 
   return (
@@ -954,7 +984,6 @@ export default function App() {
               canAdd={selectedValues.length > 0}
               selectedLabel={selectedLabel}
               onAdd={addToGlobalAudience}
-              message={message}
             />
           </div>
           <div className="pbm-react-audience-manual">
@@ -1108,7 +1137,8 @@ export default function App() {
             )}
           </div>
         </div>
-        <ScheduledLogsPanel />
+        <ScheduledLogsPanel showToast={showToast} />
+        <ToastViewport toasts={toasts} />
         {broadcastListSettingsNode ? createPortal(renderBroadcastListSettings(), broadcastListSettingsNode) : null}
       </CardBody>
     </Card>

@@ -18,7 +18,7 @@ async function postAjax(params) {
   return response.json();
 }
 
-export default function ScheduledLogsPanel() {
+export default function ScheduledLogsPanel({ showToast }) {
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -29,6 +29,12 @@ export default function ScheduledLogsPanel() {
   const [showLogs, setShowLogs] = useState(false);
 
   const scheduledNonce = window.pbmAdminApp?.scheduledNonce || '';
+
+  const notify = (text, type = 'success') => {
+    if (typeof showToast === 'function') {
+      showToast(text, type);
+    }
+  };
 
   const loadData = async () => {
     const params = new URLSearchParams();
@@ -97,7 +103,7 @@ export default function ScheduledLogsPanel() {
 
     const data = await postAjax(params);
     if (!data || !data.success) {
-      window.alert(data?.data?.message || __('Error al borrar', 'wc-pbm'));
+      notify(data?.data?.message || __('Error al borrar', 'wc-pbm'), 'error');
       return;
     }
 
@@ -116,7 +122,7 @@ export default function ScheduledLogsPanel() {
 
     const data = await postAjax(params);
     if (!data || !data.success) {
-      window.alert(data?.data?.message || __('Error al borrar', 'wc-pbm'));
+      notify(data?.data?.message || __('Error al borrar', 'wc-pbm'), 'error');
       return;
     }
 
@@ -131,7 +137,7 @@ export default function ScheduledLogsPanel() {
 
     const data = await postAjax(params);
     if (!data || !data.success) {
-      window.alert(data?.data?.message || __('Error al obtener logs', 'wc-pbm'));
+      notify(data?.data?.message || __('Error al obtener logs', 'wc-pbm'), 'error');
       return;
     }
 

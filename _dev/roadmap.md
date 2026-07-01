@@ -7,7 +7,8 @@
 | RLS-2.3.0 | Release estable 2.3.0 | Hecho | Alta | HTML email, estado `failed`, borrado de atascados, plantillas asunto + body. | `includes/functions-email.php`, `includes/functions-scheduled.php`, `includes/ajax-handlers.php`, `src/admin/App.js`, docs | Build OK, `php -l`, tag `v2.3.0` |
 | RLS-2.4.0 | Release estable 2.4.0 | Hecho | Alta | Shortcodes de destinatario, fallback por email, TinyMCE con fuente/tamaño/color y toolbar corregida. | `woo-broadcast-mailer.php`, `includes/functions-email.php`, `src/`, `build/`, docs | Tag `v2.4.0` |
 | RLS-2.5.0 | Release estable 2.5.0 | Hecho | Alta | Audiencia programada fija/dinámica, resumen legible de audiencia y LOG2/LOG3 MVP. | `includes/ajax-handlers.php`, `includes/functions-email.php`, `includes/functions-scheduled.php`, `src/`, `build/`, docs, `_dev/` | QA confirmado por usuario; commit/push/tag `v2.5.0` hecho |
-| ZIP-2.5.0 | ZIP runtime limpio | Pendiente | Alta | GitHub Actions debe empaquetar solo runtime y excluir internos. | `.github/workflows/release.yml` | Pendiente comprobar release tras tag |
+| RLS-2.6.0 | Release estable 2.6.0 | Hecho | Alta | Sistema toast React admin estilo AuthGate para mensajes principales, errores y avisos. | `src/admin/App.js`, `src/admin/components/AudienceBuilder.js`, `src/admin/components/ScheduledLogsPanel.js`, `assets/css/admin.css`, `build/`, docs, `_dev/` | QA visual confirmado por usuario; commit/push/tag `v2.6.0` hecho |
+| ZIP-2.6.0 | ZIP runtime limpio | Pendiente | Alta | GitHub Actions debe empaquetar solo runtime y excluir internos. | `.github/workflows/release.yml` | Pendiente comprobar release tras tag |
 
 ## Plan A — Bloque técnico mínimo
 
@@ -29,6 +30,7 @@
 | UI2 | TinyMCE avanzado | Hecho | Media | Selector de fuente, tamaño, color de texto y color de fondo. | `woo-broadcast-mailer.php` | `php -l`; QA visual pendiente |
 | UI3 | Toolbar sin duplicado | Hecho | Media | Mantener color texto/fondo juntos y eliminar segunda toolbar separada. | `woo-broadcast-mailer.php` | `php -l`; QA visual pendiente |
 | UI4 | H1/H2 inline | Hecho | Media | Estilos inline para `h1` y `h2` en emails. | `includes/functions-email.php` | `php -l`; QA email real pendiente |
+| UI5 | Toast admin React | Hecho | Media | Mensajes success/error/warning del panel admin con patrón AuthGate adaptado y namespace `.pbm-admin-toast`. | `src/admin/App.js`, `src/admin/components/AudienceBuilder.js`, `src/admin/components/ScheduledLogsPanel.js`, `assets/css/admin.css`, `build/` | Build OK; QA visual confirmado por usuario |
 
 ## Plan AD — Audiencia dinámica programada
 
@@ -51,7 +53,7 @@
 
 ## Urgente
 
-- Confirmar GitHub Release/ZIP tras push de tag.
+- Confirmar GitHub Release/ZIP tras push de tag `v2.6.0`.
 
 ## Recomendado
 
@@ -70,7 +72,9 @@
 
 - Release `2.4.0` publicada.
 - Release `2.5.0` publicada en `devWooBM` con tag `v2.5.0`.
+- Release `2.6.0` publicada en `devWooBM` con tag `v2.6.0`.
 - AD3/AD4 y LOG2/LOG3 consolidados para release `2.5.0` con QA confirmado por usuario.
+- UI5: toast admin React implementado, build generado y QA visual confirmado por usuario.
 
 ## Bloqueado
 

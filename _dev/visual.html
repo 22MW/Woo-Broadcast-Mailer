@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Woo Broadcast Mailer — Release 2.5.0</title>
+  <title>Woo Broadcast Mailer — Release 2.6.0</title>
   <style>
     :root { --bg:#0f1117; --card:#171b24; --soft:#1f2530; --text:#f4f6fb; --muted:#aab3c5; --green:#38d996; --yellow:#ffd166; --red:#ff6b6b; --blue:#7aa2ff; --border:rgba(255,255,255,.1); }
     * { box-sizing:border-box; }
@@ -38,26 +38,25 @@
 <body>
   <main>
     <header>
-      <h1>Woo Broadcast Mailer — Release 2.5.0</h1>
-      <p class="muted">Vista interna post-release — 2026-06-29</p>
+      <h1>Woo Broadcast Mailer — Release 2.6.0</h1>
+      <p class="muted">Vista interna post-release — 2026-07-02</p>
+      <span class="badge"><span class="dot green"></span> Release 2.6.0 publicada</span>
+      <span class="badge"><span class="dot green"></span> QA visual usuario confirmado</span>
+      <span class="badge"><span class="dot blue"></span> Toast admin React</span>
       <span class="badge"><span class="dot green"></span> Release 2.5.0 publicada</span>
-      <span class="badge"><span class="dot green"></span> Release 2.4.0 publicada</span>
-      <span class="badge"><span class="dot green"></span> ZIP limpio por workflow</span>
-      <span class="badge"><span class="dot blue"></span> Audiencia dinámica programada</span>
-      <span class="badge"><span class="dot blue"></span> Logs informativos</span>
-      <span class="badge"><span class="dot green"></span> QA usuario confirmado</span>
+      <span class="badge"><span class="dot yellow"></span> ZIP GitHub pendiente de comprobar</span>
     </header>
 
     <section class="grid cols-2">
       <div class="card ok">
         <h2>Estado actual</h2>
-        <p>La release <code>2.5.0</code> consolida audiencia programada fija/dinámica y logs informativos.</p>
-        <p>La release previa <code>2.4.0</code> consolidó shortcodes de destinatario y mejoras TinyMCE.</p>
+        <p>La release <code>2.6.0</code> consolida el sistema de toasts admin para mensajes principales del panel React.</p>
+        <p>La release previa <code>2.5.0</code> consolidó audiencia programada fija/dinámica y logs informativos.</p>
       </div>
       <div class="card risk">
         <h2>Pendiente real</h2>
         <ul>
-          <li>Confirmar GitHub Release/ZIP en GitHub Actions.</li>
+          <li>Confirmar GitHub Release/ZIP en GitHub Actions tras el tag <code>v2.6.0</code>.</li>
           <li>Prueba del updater en staging.</li>
         </ul>
       </div>
@@ -67,19 +66,20 @@
       <div class="card">
         <h2>Hecho en este ciclo</h2>
         <ul class="checklist">
-          <li><span class="box done"></span><span>Audiencia programada con modo fijo o dinámico.</span></li>
-          <li><span class="box done"></span><span>Recalculo de audiencia dinámica al ejecutar y snapshot final.</span></li>
-          <li><span class="box done"></span><span>Resumen legible de audiencia por envío.</span></li>
-          <li><span class="box done"></span><span>Log básico por destinatario con estado, timestamp, error técnico y lote.</span></li>
-          <li><span class="box done"></span><span>Limpieza de eventos al borrar envíos.</span></li>
+          <li><span class="box done"></span><span>Helper React local para toasts success/error/warning.</span></li>
+          <li><span class="box done"></span><span>Alertas bloqueantes de preview, envío y logs sustituidas por toasts.</span></li>
+          <li><span class="box done"></span><span>CSS propio <code>.pbm-admin-toast</code> con estilo tipo AuthGate.</span></li>
+          <li><span class="box done"></span><span>Accesibilidad básica con <code>aria-live</code>, <code>aria-atomic</code> y <code>role="alert"</code>.</span></li>
+          <li><span class="box done"></span><span>Build React generado.</span></li>
         </ul>
       </div>
       <div class="card">
         <h2>QA / validación</h2>
         <ul class="checklist">
-          <li><span class="box done"></span><span>AD4 confirmado por usuario.</span></li>
-          <li><span class="box done"></span><span>LOG2 confirmado por usuario.</span></li>
-          <li><span class="box done"></span><span>LOG3 confirmado por usuario.</span></li>
+          <li><span class="box done"></span><span>UI5 confirmado por usuario como “QA ok”.</span></li>
+          <li><span class="box done"></span><span>AD4 confirmado por usuario en ciclo 2.5.0.</span></li>
+          <li><span class="box done"></span><span>LOG2 confirmado por usuario en ciclo 2.5.0.</span></li>
+          <li><span class="box done"></span><span>LOG3 confirmado por usuario en ciclo 2.5.0.</span></li>
           <li><span class="box pending"></span><span>Updater pendiente de probar en staging.</span></li>
         </ul>
       </div>
@@ -89,16 +89,15 @@
       <div class="card warn">
         <h2>No prometer todavía</h2>
         <ul>
-          <li>Producción sin QA funcional.</li>
+          <li>Deploy a producción sin staging/backup/rollback.</li>
           <li>Entregabilidad garantizada sin SMTP/configuración real.</li>
-          <li>Compatibilidad visual idéntica en todos los clientes de email.</li>
           <li>Entregas reales, rebotes, aperturas o clics sin integración/tracking específico.</li>
           <li>Uso en producción sin revisar retención/privacidad de logs con emails.</li>
         </ul>
       </div>
       <div class="card ok">
         <h2>Siguiente paso</h2>
-        <p>Confirmar GitHub Release/ZIP de <code>v2.5.0</code> y probar updater en staging.</p>
+        <p>Confirmar GitHub Release/ZIP de <code>v2.6.0</code> y probar updater en staging.</p>
       </div>
     </section>
 

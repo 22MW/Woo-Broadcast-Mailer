@@ -4,7 +4,7 @@ Tags: woocommerce, email, broadcast, scheduler, mailmint
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 2.5.0
+Stable tag: 2.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,6 +45,11 @@ Incluye:
 3. Ve a WooCommerce > Broadcast Mailer.
 
 == Changelog ==
+
+= 2.6.0 =
+* Añadido sistema de toasts en el admin React para mensajes principales de éxito, error y aviso.
+* Sustituidas alertas bloqueantes del panel y logs por notificaciones no intrusivas con accesibilidad básica.
+* Adaptado el estilo visual tipo AuthGate con namespace propio del plugin.
 
 = 2.5.0 =
 * Añadida audiencia programada fija/dinámica para recalcular destinatarios al ejecutar cuando se elige modo dinámico.
@@ -117,6 +122,9 @@ Incluye:
 * Capa extensible de fuentes y primera integración de Mail Mint.
 
 == Upgrade Notice ==
+
+= 2.6.0 =
+Mejora visual del panel admin con toasts no bloqueantes. Recomendado limpiar caché del navegador tras actualizar el admin.
 
 = 2.5.0 =
 Mejora de audiencias programadas y logs informativos. Revisar política de retención si se usan logs con emails en producción.

@@ -4,7 +4,7 @@ Plugin WordPress para WooCommerce que permite enviar avisos puntuales a audienci
 
 ## Estado actual
 
-- Versión estable: `2.5.0`
+- Versión estable: `2.6.0`
 - Panel admin principal en React.
 - Release ZIP limpio generado por GitHub Releases.
 - QA funcional completo de envíos reales pendiente de ejecutar en entorno controlado.
@@ -49,6 +49,7 @@ Funciones principales:
 - Tamaño de lote configurable.
 - Límite de emails por hora.
 - Gestión de envíos y logs con resumen de audiencia y detalle básico por destinatario.
+- Mensajes admin tipo toast para avisos de éxito, error y validación.
 - Compatibilidad HPOS.
 - Compatibilidad WooCommerce Subscriptions.
 - Filtrado por idioma de pedido cuando WPML está disponible.
@@ -155,7 +156,7 @@ Opciones relevantes:
 
 El plugin usa GitHub Releases para distribuir versiones.
 
-La release estable `2.5.0` consolida audiencia programada fija/dinámica, resumen legible de audiencia y logs básicos por destinatario.
+La release estable `2.6.0` consolida el sistema de toasts admin para mensajes principales del panel React.
 
 ## Limitaciones conocidas
 
@@ -167,6 +168,12 @@ La release estable `2.5.0` consolida audiencia programada fija/dinámica, resume
 - El updater debe probarse en staging antes de usarlo como canal crítico de producción.
 
 ## Changelog resumido
+
+### 2.6.0
+
+- Sistema de toasts admin para mensajes principales del panel React.
+- Alertas bloqueantes sustituidas por notificaciones no intrusivas en preview, envío y logs.
+- Estilo visual adaptado tipo AuthGate con namespace propio y accesibilidad básica.
 
 ### 2.5.0
 
