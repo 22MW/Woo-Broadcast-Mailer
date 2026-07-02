@@ -44,6 +44,8 @@ function get_recipient_sources()
 {
     $mailmint_available = is_mailmint_available();
     $mailmint_lists = $mailmint_available ? get_mailmint_lists_for_selector() : array();
+    $mailpoet_available = is_mailpoet_available();
+    $mailpoet_lists = $mailpoet_available ? get_mailpoet_lists_for_selector() : array();
     $broadcast_lists = get_broadcast_lists();
 
     $sources = array(
@@ -59,6 +61,10 @@ function get_recipient_sources()
             'label' => __('Lista Mail Mint', 'wc-pbm'),
             'enabled' => $mailmint_available && ! empty($mailmint_lists),
         ),
+        'mailpoet' => array(
+            'label' => __('Lista MailPoet', 'wc-pbm'),
+            'enabled' => $mailpoet_available && ! empty($mailpoet_lists),
+        ),
         'broadcast_list' => array(
             'label' => __('Broadcast List', 'wc-pbm'),
             'enabled' => ! empty($broadcast_lists),
@@ -66,6 +72,180 @@ function get_recipient_sources()
     );
 
     return apply_filters('pbm_recipient_sources', $sources);
+}
+
+/**
+ * Obtiene instancia de API pública MailPoet.
+ *
+ * @return object|null
+ */
+function get_mailpoet_api()
+{
+    if (! class_exists('\\MailPoet\\API\\API')) {
+        return null;
+    }
+
+    try {
+        return \MailPoet\API\API::MP('v1');
+    } catch (\Throwable $e) {
+        return null;
+    }
+}
+
+/**
+ * Comprueba si MailPoet está disponible.
+ *
+ * @return bool
+ */
+function is_mailpoet_available()
+{
+    return null !== get_mailpoet_api();
+}
+
+/**
+ * Obtiene listas de MailPoet para selector.
+ *
+ * @return array
+ */
+function get_mailpoet_lists_for_selector()
+{
+    $api = get_mailpoet_api();
+    if (! $api || ! method_exists($api, 'getLists')) {
+        return array();
+    }
+
+    try {
+        $lists = $api->getLists();
+    } catch (\Throwable $e) {
+        return array();
+    }
+
+    $result = array();
+    $seen_ids = array();
+    foreach ((array) $lists as $list) {
+        $id = absint(get_mailpoet_item_value($list, 'id'));
+        $name = sanitize_text_field((string) get_mailpoet_item_value($list, 'name'));
+        if ($id < 1 || '' === $name) {
+            continue;
+        }
+
+        $result[] = array(
+            'id'   => $id,
+            'name' => $name,
+        );
+        $seen_ids[$id] = true;
+    }
+
+    foreach (get_mailpoet_default_segments_for_selector() as $segment) {
+        $id = absint($segment['id'] ?? 0);
+        if ($id < 1 || isset($seen_ids[$id])) {
+            continue;
+        }
+
+        $result[] = $segment;
+        $seen_ids[$id] = true;
+    }
+
+    return $result;
+}
+
+/**
+ * Descubre segmentos internos activos de MailPoet ocultos en getLists().
+ *
+ * @return array
+ */
+function get_mailpoet_default_segments_for_selector()
+{
+    global $wpdb;
+
+    $segments_table = $wpdb->prefix . 'mailpoet_segments';
+    $exists = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $segments_table));
+    if (! $exists) {
+        return array();
+    }
+
+    $rows = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT id, name, type
+             FROM {$segments_table}
+             WHERE type IN (%s, %s)
+               AND deleted_at IS NULL
+             ORDER BY id ASC",
+            'wp_users',
+            'woocommerce_users'
+        ),
+        ARRAY_A
+    );
+
+    if (! is_array($rows)) {
+        return array();
+    }
+
+    $segments = array();
+    foreach ($rows as $row) {
+        $id = absint($row['id'] ?? 0);
+        $name = sanitize_text_field((string) ($row['name'] ?? ''));
+        $type = sanitize_key((string) ($row['type'] ?? ''));
+        if ($id < 1 || '' === $name) {
+            continue;
+        }
+
+        $segments[] = array(
+            'id'   => $id,
+            'name' => get_mailpoet_default_segment_label($name, $type),
+            'type' => $type,
+        );
+    }
+
+    return $segments;
+}
+
+/**
+ * Etiqueta segmentos predeterminados/globales de MailPoet.
+ *
+ * @param string $name Nombre base.
+ * @param string $type Tipo de segmento.
+ * @return string
+ */
+function get_mailpoet_default_segment_label($name, $type)
+{
+    if ('wp_users' === $type) {
+        return sprintf(
+            /* translators: %s: segment name. */
+            __('%s (predeterminada/global WordPress)', 'wc-pbm'),
+            $name
+        );
+    }
+
+    if ('woocommerce_users' === $type) {
+        return sprintf(
+            /* translators: %s: segment name. */
+            __('%s (predeterminada/global WooCommerce)', 'wc-pbm'),
+            $name
+        );
+    }
+
+    return $name;
+}
+
+/**
+ * Extrae un valor de array/objeto MailPoet.
+ *
+ * @param mixed  $item Datos.
+ * @param string $key  Clave.
+ * @return mixed
+ */
+function get_mailpoet_item_value($item, $key)
+{
+    if (is_array($item) && isset($item[$key])) {
+        return $item[$key];
+    }
+
+    if (is_object($item) && isset($item->{$key})) {
+        return $item->{$key};
+    }
+
+    return '';
 }
 
 /**
@@ -529,7 +709,7 @@ function get_users_by_role($role)
 /**
  * Resuelve destinatarios según la fuente seleccionada.
  *
- * @param string $source Fuente (product|role|mailmint|broadcast_list).
+ * @param string $source Fuente (product|role|mailmint|mailpoet|broadcast_list).
  * @param array  $args   Parámetros de la fuente.
  * @return array
  */
@@ -545,6 +725,10 @@ function get_recipients_by_source($source, $args = array())
 
     if ('mailmint' === $source) {
         return get_recipients_from_mailmint_list(absint($args['mailmint_list_id'] ?? 0));
+    }
+
+    if ('mailpoet' === $source) {
+        return get_recipients_from_mailpoet_list(absint($args['mailpoet_list_id'] ?? 0));
     }
 
     if ('broadcast_list' === $source) {
@@ -735,6 +919,88 @@ function get_recipients_from_mailmint_list($list_id)
     }
 
     return $recipients;
+}
+
+/**
+ * Obtiene destinatarios suscritos desde una lista de MailPoet.
+ *
+ * @param int $list_id ID de lista.
+ * @return array
+ */
+function get_recipients_from_mailpoet_list($list_id)
+{
+    $api = get_mailpoet_api();
+    if (! $api || ! $list_id || ! method_exists($api, 'getSubscribers')) {
+        return array();
+    }
+
+    $recipients = array();
+    $limit = 500;
+    $offset = 0;
+
+    do {
+        try {
+            $subscribers = $api->getSubscribers(
+                array(
+                    'listId' => $list_id,
+                    'status' => 'subscribed',
+                ),
+                $limit,
+                $offset
+            );
+        } catch (\Throwable $e) {
+            return $recipients;
+        }
+
+        foreach ((array) $subscribers as $subscriber) {
+            $email = sanitize_email((string) get_mailpoet_item_value($subscriber, 'email'));
+            if (! is_email($email)) {
+                continue;
+            }
+
+            $first_name = sanitize_text_field((string) get_mailpoet_item_value($subscriber, 'firstName'));
+            $last_name = sanitize_text_field((string) get_mailpoet_item_value($subscriber, 'lastName'));
+            if ('' === $first_name && '' === $last_name) {
+                $first_name = sanitize_text_field((string) get_mailpoet_item_value($subscriber, 'first_name'));
+                $last_name = sanitize_text_field((string) get_mailpoet_item_value($subscriber, 'last_name'));
+            }
+
+            if (! isset($recipients[$email])) {
+                $recipients[$email] = array(
+                    'email' => $email,
+                    'name'  => trim($first_name . ' ' . $last_name),
+                );
+            }
+        }
+
+        $count = is_array($subscribers) ? count($subscribers) : 0;
+        $offset += $limit;
+    } while ($count === $limit);
+
+    return $recipients;
+}
+
+/**
+ * Obtiene conteo de suscriptores suscritos de MailPoet.
+ *
+ * @param int $list_id ID de lista.
+ * @return int
+ */
+function get_mailpoet_subscribers_count($list_id)
+{
+    $api = get_mailpoet_api();
+    if (! $api || ! $list_id || ! method_exists($api, 'getSubscribersCount')) {
+        return 0;
+    }
+
+    try {
+        return absint($api->getSubscribersCount(array(
+            'listId' => $list_id,
+            'status' => 'subscribed',
+        )));
+    } catch (\Throwable $e) {
+        return 0;
+    }
 }
 
 /**

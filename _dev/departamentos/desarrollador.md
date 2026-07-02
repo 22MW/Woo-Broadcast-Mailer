@@ -2,11 +2,11 @@
 
 ## Última actualización
 
-2026-07-01
+2026-07-02
 
 ## Resumen humano
 
-Sistema toast React admin implementado con patrón AuthGate adaptado, namespace propio y sin tocar el cambio ajeno de arquitectura.
+Fix mínimo MailPoet aplicado: el selector une listas de API pública con segmentos internos predeterminados/globales activos, sin cambiar resolución ni conteo por API pública.
 
 ## Descubierto
 
@@ -17,6 +17,7 @@ Sistema toast React admin implementado con patrón AuthGate adaptado, namespace 
 - El flujo React de envío ya usaba vista previa obligatoria, exclusiones temporales y snapshot para programaciones.
 - `pbm_delivery_meta_{id}` permite guardar `audience_mode` y `audience_config` sin migración de base de datos.
 - `pbm_scheduled_logs` mantiene totales por lote; el detalle por destinatario queda separado en `pbm_delivery_events_{id}`.
+- MailPoet se puede resolver con `\MailPoet\API\API::MP('v1')`, `getLists()`, `getSubscribers()` y `getSubscribersCount()` sin tocar tablas.
 
 ## Hecho
 
@@ -50,6 +51,14 @@ Sistema toast React admin implementado con patrón AuthGate adaptado, namespace 
 - Sustituidos `window.alert()` de error en `ScheduledLogsPanel` por toast compartido.
 - `AudienceBuilder` ya no renderiza `Notice` local para esos mensajes.
 - Añadido CSS `.pbm-admin-toasts` / `.pbm-admin-toast` en `assets/css/admin.css` y build React generado.
+- Añadida fuente `mailpoet` en `get_recipient_sources()` con detección segura por `class_exists()` y captura de excepciones.
+- Añadido listado de listas MailPoet para selector/search mediante `getLists()`.
+- Añadida resolución de destinatarios MailPoet paginada con `getSubscribers(['listId' => id, 'status' => 'subscribed'], limit, offset)`.
+- Añadido conteo MailPoet mediante `getSubscribersCount()` cuando se pide count.
+- Integrados `mailpoet_list_id`, labels y conteos en preview, count, resolve item, send, audiencia global y dinámica programada.
+- Añadida fuente MailPoet en selector React y build generado.
+- MP1B: `get_mailpoet_lists_for_selector()` ahora complementa `getLists()` con lectura interna mínima de `mailpoet_segments` para `wp_users` y `woocommerce_users` no borrados.
+- MP1B: merge por ID sin duplicados; las etiquetas indican segmentos predeterminados/globales WordPress o WooCommerce.
 
 ## Pendiente
 
@@ -59,6 +68,8 @@ Sistema toast React admin implementado con patrón AuthGate adaptado, namespace 
 - QA AD4 pendiente: rol dinámico, Broadcast List dinámica, manuales, exclusiones y logs en entorno controlado.
 - QA controlado LOG2/LOG3 pendiente porque requiere crear/ejecutar envíos y logs reales.
 - QA visual/manual del toast confirmado por usuario para release `2.6.0`.
+- QA MailPoet pendiente en entorno con MailPoet activo y listas reales: selector, búsqueda, conteo, preview, envío, dinámica programada y MailPoet desactivado.
+- QA MP1B pendiente: confirmar en navegador que aparecen segmentos `wp_users` y `woocommerce_users`, y que el conteo/preview usa solo suscriptores `subscribed`.
 
 ## No volver a investigar
 
@@ -69,6 +80,9 @@ Sistema toast React admin implementado con patrón AuthGate adaptado, namespace 
 - LOG2/LOG3 no añade migración: usa `audience_snapshot` dentro de `pbm_delivery_meta_{id}` y `pbm_delivery_events_{id}` como option no autoload.
 - Toast admin usa namespace propio `.pbm-admin-toast` / `.pbm-admin-toasts`; no se copió `22mw-back.js` completo.
 - QA UI5 fue confirmado por usuario el 2026-07-02; no fue ejecutado por el agente.
+- MailPoet debe mantenerse vía API pública; no usar SQL directo a tablas MailPoet.
+- La fuente MailPoet solo incluye estado `subscribed`; no incluir bounced, inactive, unconfirmed ni unsubscribed.
+- La lectura interna MailPoet queda limitada a descubrir segmentos activos `wp_users` y `woocommerce_users`; conteo y destinatarios siguen por API pública.
 
 ## Riesgos o bloqueos
 
@@ -77,7 +91,9 @@ Sistema toast React admin implementado con patrón AuthGate adaptado, namespace 
 - Si una fuente dinámica queda vacía o no disponible al ejecutar, el envío se cancela usando el log de error existente.
 - `pbm_delivery_events_{id}` guarda emails destinatarios; sigue pendiente definir política de retención/privacidad antes de uso real en producción.
 - El éxito de envío recarga la página tras 900 ms; validar si ese tiempo es suficiente en navegador real.
+- Si MailPoet está desactivado o la API falla, la fuente queda deshabilitada/oculta por el selector y AJAX devuelve 0 o fuente no disponible sin fatal.
+- Si MailPoet cambia el esquema de `mailpoet_segments`, el selector puede no mostrar esos segmentos internos, pero no debe afectar envíos existentes por API.
 
 ## Próximo paso recomendado
 
-- Pasar a release `2.6.0`; para envíos reales, pedir permiso porque puede crear acciones programadas y logs.
+- Pasar a QA MailPoet controlado de MP1B; para envíos reales, pedir permiso porque puede crear acciones programadas y logs.

@@ -41,6 +41,14 @@
 | AD3 | Implementación MVP | Hecho | Alta | UI fija/dinámica, persistencia de metadatos, recalcular al ejecutar. | `src/admin/App.js`, `includes/ajax-handlers.php`, `includes/functions-scheduled.php`, `build/` | Build OK; `php -l` OK; `git diff --check` OK | Ninguno |
 | AD4 | QA funcional | Hecho | Alta | Probar rol dinámico, manuales, exclusiones, fuente no disponible y logs. | Admin + Action Scheduler | QA confirmado por usuario; no ejecutado por agente | Ninguno |
 
+## Plan MP — Integración MailPoet
+
+| Código | Nombre | Estado | Prioridad | Qué contiene | Áreas/archivos probables | Validación prevista | Bloqueos |
+|---|---|---|---|---|---|---|---|
+| MP1 | Fuente MailPoet mínima | Hecho | Alta | Fuente `mailpoet`, detección por API pública, listas, conteo y destinatarios solo `subscribed`, sin SQL directo. | `includes/functions-products.php`, `includes/ajax-handlers.php`, `includes/functions-scheduled.php`, `src/admin/`, `build/` | `php -l` OK; build OK; `git diff --check` OK | QA funcional con MailPoet real pendiente |
+| MP1B | Segmentos privados MailPoet en selector | Hecho | Alta | Complementar `getLists()` con lectura interna mínima de segmentos activos `wp_users` y `woocommerce_users`, merge sin duplicados y labels claros; conteo/resolución siguen por API pública con `status = subscribed`. | `includes/functions-products.php` | `php -l` OK; `git diff --check` OK; QA funcional pendiente | Depende de estructura interna MailPoet para descubrimiento |
+| MP2 | QA MailPoet real | Pendiente | Alta | Probar selector, búsqueda, conteo, preview, audiencia global, dinámica programada, segmentos privados/predeterminados y MailPoet desactivado. | Admin WordPress + MailPoet | Entorno con MailPoet y listas reales | Requiere pruebas con efecto controladas |
+
 ## Plan LOG — Audiencia legible y logs informativos
 
 | Código | Nombre | Estado | Prioridad | Qué contiene | Áreas/archivos probables | Validación prevista | Bloqueos |
@@ -58,6 +66,7 @@
 ## Recomendado
 
 - Probar updater en staging.
+- MP2: validar integración MailPoet en entorno controlado con MailPoet activo y con MailPoet desactivado.
 - LOG4: evaluar aperturas/clics como mejora futura si se acepta tracking y privacidad.
 
 ## Futuro
@@ -75,6 +84,7 @@
 - Release `2.6.0` publicada en `devWooBM` con tag `v2.6.0`.
 - AD3/AD4 y LOG2/LOG3 consolidados para release `2.5.0` con QA confirmado por usuario.
 - UI5: toast admin React implementado, build generado y QA visual confirmado por usuario.
+- MP1B: selector MailPoet complementa API pública con segmentos internos activos `wp_users` y `woocommerce_users`, sin duplicar IDs.
 
 ## Bloqueado
 

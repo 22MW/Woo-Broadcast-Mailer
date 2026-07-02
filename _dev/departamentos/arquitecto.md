@@ -2,43 +2,59 @@
 
 ## Última actualización
 
-2026-07-01
+2026-07-02
 
 ## Relevo breve
 
-Arquitectura para portar mensajes tipo toast desde AuthGate a Woo Broadcast Mailer. No se implementó código. Adaptación mínima recomendada: crear helper React local `showToast(message, type)` en `src/admin/App.js`, renderizar toasts dentro de `.pbm-react-shell` y copiar solo los estilos necesarios de `.mw22-back-toast` adaptados a `.pbm-admin .pbm-back-toast`.
+Arquitectura del fix mínimo MailPoet tras diagnóstico confirmado: WooBM debe seguir usando la API pública MailPoet para contar/resolver suscriptores, pero debe complementar el selector con una lectura interna mínima de segmentos activos `wp_users` y `woocommerce_users` porque `API::MP('v1')->getLists()` solo devuelve segmentos `default`.
 
 ## Hecho en esta tarea
 
-- AuthGate confirmado:
-  - `assets/js/22mw-back.js` define `showToast(root, message, type)` y lo usa para `updated=1`.
-  - `assets/js/authgate-back.js` duplica `showToast()` y lo usa en formularios AJAX.
-  - `assets/css/22mw-back.css` contiene la base visual `.mw22-back-toast`, `.is-error`, `.is-hiding` y `@keyframes mw22-back-toast-in`.
-  - `assets/css/authgate-back.css` reposiciona el toast en admin con `.authgate-back > .mw22-back-toast` y oculta notices clásicas.
-- Woo Broadcast Mailer confirmado:
-  - React vive en `src/admin/App.js`, `src/admin/components/AudienceBuilder.js`, `src/admin/email-editor/EmailStringEditorApp.js` y build en `build/`.
-  - Mensajes actuales: `setMessage()` + `<Notice>` en `AudienceBuilder`, `setBroadcastListMessage()` + `pbm-react-notice`, y `window.alert()` en preview/envío/logs.
-  - CSS admin principal: `assets/css/admin.css`; `src/admin/styles.css` solo importa comentario y genera build.
-- Recomendación técnica mínima:
-  - No copiar `22mw-back.js` completo: trae tema, switches y subnav no usados por Woo Broadcast Mailer.
-  - Copiar solo la idea de `showToast`: cola/estado React o helper local, timeout 2800/3200, tipos `success`, `error`, opcional `warning`.
-  - Sustituir mensajes principales de `App.js` por toast; dejar el cambio del Email String Editor como opcional si el usuario quiere “todo React/admin”.
+- Revisado diagnóstico en `_dev/departamentos/debugger.md`.
+- Revisado flujo real en `includes/functions-products.php`, `includes/ajax-handlers.php` y `includes/functions-scheduled.php`.
+- Confirmado punto de cambio mínimo: `get_mailpoet_lists_for_selector()` alimenta disponibilidad, búsqueda AJAX y labels de snapshots.
+- Confirmado que conteo y resolución ya pasan por API pública:
+  - `get_mailpoet_subscribers_count()` usa `getSubscribersCount()` con `listId` y `status = subscribed`.
+  - `get_recipients_from_mailpoet_list()` usa `getSubscribers()` con `listId` y `status = subscribed`.
+
+## Scope exacto para Desarrollador
+
+1. En `includes/functions-products.php`, mantener `get_mailpoet_api()` y la API pública como fuente principal.
+2. Añadir helper mínimo para obtener segmentos internos MailPoet activos de tipo `wp_users` y `woocommerce_users`:
+   - Opción preferida si existe en el entorno: usar clase/repositorio interno de MailPoet para listar segmentos, sin instanciar sistemas paralelos.
+   - Fallback aceptado: lectura `$wpdb` solo de `{$wpdb->prefix}mailpoet_segments`, con `SHOW TABLES LIKE`, tipos permitidos cerrados, `deleted_at IS NULL`, `ORDER BY name ASC` y valores sanitizados.
+   - No consultar ni contar suscriptores por SQL.
+3. Modificar `get_mailpoet_lists_for_selector()` para:
+   - Leer primero `$api->getLists()`.
+   - Normalizar cada item a estructura común: `id`, `name`, opcional `type`.
+   - Añadir segmentos internos privados/predeterminados solo si no existen ya por ID.
+   - Evitar duplicados con mapa por ID.
+   - Devolver nombres claros para UI, por ejemplo:
+     - `Usuarios de WordPress (MailPoet predeterminada)`
+     - `Clientes de WooCommerce (MailPoet predeterminada)`
+     o incluir `type` para que el label se construya después.
+4. Mantener intactos:
+   - `get_recipients_from_mailpoet_list()`.
+   - `get_mailpoet_subscribers_count()`.
+   - Validación `absint()` de IDs en AJAX.
+5. Ajustar labels si hace falta en:
+   - `search_mailpoet_selectors()` para mostrar nombre claro + `#ID`.
+   - `get_delivery_audience_selector_label()` si se decide no guardar el sufijo directamente en `name`.
 
 ## Pendiente / riesgos
 
-- Requiere build con `npm run build` porque afecta `src/admin/App.js` y probablemente `build/index.js`/`build/index.css`.
-- Riesgo de conflicto si se reutiliza `.mw22-back-toast`: mejor namespace `.pbm-back-toast` o `.pbm-admin-toast`.
-- Si se quitan todos los `<Notice>`, revisar accesibilidad: añadir `role="status"`/`aria-live="polite"` y `role="alert"` para errores.
-- `window.alert()` bloquea flujo; sustituirlo por toast cambia comportamiento UX pero no backend.
-- Text domain confirmado para textos nuevos: `wc-pbm`.
+- Riesgo principal: depender de estructura interna de MailPoet. Mitigación: limitar la lectura a descubrir segmentos, encapsularla en helper único y devolver `array()` si la tabla/clase no existe.
+- Riesgo de envío accidental: labels deben dejar claro que son listas predeterminadas/globales de MailPoet, no listas públicas creadas manualmente.
+- Si MailPoet cambia nombre de tabla o entidad interna, el selector perderá esas listas, pero conteo/resolución por API seguirá aislado.
+- No cambiar el modelo de permisos: las acciones AJAX ya usan nonce y `manage_woocommerce`.
 
 ## No volver a investigar
 
-- AuthGate `showToast` está en `assets/js/22mw-back.js` y `assets/js/authgate-back.js`.
-- Estilos base del toast AuthGate están en `assets/css/22mw-back.css` líneas 388-426; override admin en `assets/css/authgate-back.css` líneas 157-162.
-- Woo Broadcast Mailer usa React compilado con `@wordpress/scripts`; cambiar `src/admin/*` requiere regenerar `build/`.
-- Text domain de Woo Broadcast Mailer: `wc-pbm`.
+- `get_mailpoet_lists_for_selector()` es el punto mínimo para ampliar el selector MailPoet.
+- `search_mailpoet_selectors()` y `get_delivery_audience_selector_label()` consumen `get_mailpoet_lists_for_selector()`.
+- Conteo y resolución MailPoet ya usan API pública con `status = subscribed`; no deben migrarse a SQL.
+- Segmentos privados confirmados: ID 1 `Usuarios de WordPress` (`wp_users`) e ID 2 `Clientes de WooCommerce` (`woocommerce_users`).
 
 ## Relevo para
 
-→ Desarrollador: implementar adaptación mínima en `src/admin/App.js`, `src/admin/components/AudienceBuilder.js` si se elimina el Notice actual, `assets/css/admin.css` y regenerar `build/index.js`/`build/index.css` con `npm run build`. Opcional: extender el mismo patrón a `src/admin/email-editor/EmailStringEditorApp.js` y `src/admin/components/ScheduledLogsPanel.js` si el alcance aprobado incluye todas las pantallas React/admin.
+→ Desarrollador: implementar solo el helper interno mínimo + merge sin duplicados en `includes/functions-products.php`; tocar `ajax-handlers.php` y `functions-scheduled.php` solo si se decide separar `name` y `type` para labels. Validar `php -l`, `git diff --check` y prueba manual del selector/conteo con IDs 1 y 2.

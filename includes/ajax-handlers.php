@@ -107,6 +107,7 @@ function resolve_global_recipients($audience_items, $manual_emails)
             'product_id'       => 0,
             'role'             => '',
             'mailmint_list_id' => 0,
+            'mailpoet_list_id' => 0,
             'broadcast_list_id' => '',
         );
 
@@ -123,6 +124,11 @@ function resolve_global_recipients($audience_items, $manual_emails)
         } elseif ('mailmint' === $source) {
             $args['mailmint_list_id'] = absint($selector_value);
             if (! $args['mailmint_list_id']) {
+                continue;
+            }
+        } elseif ('mailpoet' === $source) {
+            $args['mailpoet_list_id'] = absint($selector_value);
+            if (! $args['mailpoet_list_id']) {
                 continue;
             }
         } elseif ('broadcast_list' === $source) {
@@ -191,6 +197,7 @@ function build_global_audience_meta($audience_items, $manual_emails)
         'product' => 0,
         'role'    => 0,
         'mailmint' => 0,
+        'mailpoet' => 0,
         'broadcast_list' => 0,
         'manual'  => 0,
     );
@@ -232,6 +239,7 @@ function ajax_preview_recipients()
         $product_id = absint($_POST['product_id'] ?? 0);
         $role = sanitize_text_field($_POST['role'] ?? '');
         $mailmint_list_id = absint($_POST['mailmint_list_id'] ?? 0);
+        $mailpoet_list_id = absint($_POST['mailpoet_list_id'] ?? 0);
         $excluded_emails = get_json_array_from_post('excluded_emails');
 
         if (! isset($available_sources[$source])) {
@@ -258,6 +266,10 @@ function ajax_preview_recipients()
             if ('mailmint' === $source && ! $mailmint_list_id) {
                 wp_send_json_error(array('message' => __('Lista de Mail Mint inválida', 'wc-pbm')));
             }
+
+            if ('mailpoet' === $source && ! $mailpoet_list_id) {
+                wp_send_json_error(array('message' => __('Lista de MailPoet inválida', 'wc-pbm')));
+            }
         }
 
         if ($is_global_audience) {
@@ -267,6 +279,7 @@ function ajax_preview_recipients()
                 'product_id'       => $product_id,
                 'role'             => $role,
                 'mailmint_list_id' => $mailmint_list_id,
+                'mailpoet_list_id' => $mailpoet_list_id,
             ));
         }
 
@@ -315,6 +328,7 @@ function ajax_count_recipients()
     $product_id = absint($_POST['product_id'] ?? 0);
     $role = sanitize_text_field($_POST['role'] ?? '');
     $mailmint_list_id = absint($_POST['mailmint_list_id'] ?? 0);
+    $mailpoet_list_id = absint($_POST['mailpoet_list_id'] ?? 0);
     $broadcast_list_id = sanitize_text_field($_POST['broadcast_list_id'] ?? '');
 
     if (! isset($available_sources[$source])) {
@@ -337,14 +351,25 @@ function ajax_count_recipients()
         wp_send_json_success(array('total' => 0));
     }
 
+    if ('mailpoet' === $source && ! $mailpoet_list_id) {
+        wp_send_json_success(array('total' => 0));
+    }
+
     if ('broadcast_list' === $source && ! $broadcast_list_id) {
         wp_send_json_success(array('total' => 0));
+    }
+
+    if ('mailpoet' === $source) {
+        wp_send_json_success(array(
+            'total' => get_mailpoet_subscribers_count($mailpoet_list_id),
+        ));
     }
 
     $recipients = get_recipients_by_source($source, array(
         'product_id'       => $product_id,
         'role'             => $role,
         'mailmint_list_id' => $mailmint_list_id,
+        'mailpoet_list_id' => $mailpoet_list_id,
         'broadcast_list_id' => $broadcast_list_id,
     ));
 
@@ -382,6 +407,7 @@ function ajax_resolve_audience_item()
         'product_id'       => 0,
         'role'             => '',
         'mailmint_list_id' => 0,
+        'mailpoet_list_id' => 0,
         'broadcast_list_id' => '',
     );
 
@@ -398,6 +424,11 @@ function ajax_resolve_audience_item()
     } elseif ('mailmint' === $source) {
         $args['mailmint_list_id'] = absint($selector_value);
         if (! $args['mailmint_list_id']) {
+            wp_send_json_success(array('total' => 0, 'emails' => array()));
+        }
+    } elseif ('mailpoet' === $source) {
+        $args['mailpoet_list_id'] = absint($selector_value);
+        if (! $args['mailpoet_list_id']) {
             wp_send_json_success(array('total' => 0, 'emails' => array()));
         }
     } elseif ('broadcast_list' === $source) {
@@ -449,6 +480,8 @@ function ajax_search_selectors()
         $items = search_role_selectors($query);
     } elseif ('mailmint' === $source) {
         $items = search_mailmint_selectors($query);
+    } elseif ('mailpoet' === $source) {
+        $items = search_mailpoet_selectors($query);
     } elseif ('broadcast_list' === $source) {
         $items = search_broadcast_list_selectors($query);
     }
@@ -772,6 +805,31 @@ function search_mailmint_selectors($query)
 }
 
 /**
+ * Busca listas MailPoet para selector.
+ *
+ * @param string $query Texto de búsqueda.
+ * @return array
+ */
+function search_mailpoet_selectors($query)
+{
+    $lists = get_mailpoet_lists_for_selector();
+    $items = array();
+
+    foreach ($lists as $list) {
+        $label = (string) $list['name'] . ' (#' . (int) $list['id'] . ')';
+        if ('' !== $query && false === strpos(strtolower($label), strtolower($query))) {
+            continue;
+        }
+        $items[] = array(
+            'value' => (string) absint($list['id']),
+            'label' => $label,
+        );
+    }
+
+    return array_slice($items, 0, '' === $query ? 10 : 8);
+}
+
+/**
  * AJAX: Enviar broadcast (programa las acciones)
  *
  * @return void
@@ -789,6 +847,7 @@ function ajax_send_broadcast()
     $product_id = absint($_POST['product_id'] ?? 0);
     $role = sanitize_text_field($_POST['role'] ?? '');
     $mailmint_list_id = absint($_POST['mailmint_list_id'] ?? 0);
+    $mailpoet_list_id = absint($_POST['mailpoet_list_id'] ?? 0);
     $subject    = sanitize_text_field($_POST['subject'] ?? '');
     $message    = wp_kses_post($_POST['message'] ?? '');
     $batch_size = absint($_POST['batch_size'] ?? 30);
@@ -836,6 +895,10 @@ function ajax_send_broadcast()
         if ('mailmint' === $source && ! $mailmint_list_id) {
             wp_send_json_error(array('message' => __('Lista de Mail Mint inválida', 'wc-pbm')));
         }
+
+        if ('mailpoet' === $source && ! $mailpoet_list_id) {
+            wp_send_json_error(array('message' => __('Lista de MailPoet inválida', 'wc-pbm')));
+        }
     }
 
     if ($is_global_audience) {
@@ -847,8 +910,9 @@ function ajax_send_broadcast()
             'product_id'       => $product_id,
             'role'             => $role,
             'mailmint_list_id' => $mailmint_list_id,
+            'mailpoet_list_id' => $mailpoet_list_id,
         ));
-        $audience_label = get_source_audience_label($source, $product_id, $role, $mailmint_list_id);
+        $audience_label = get_source_audience_label($source, $product_id, $role, $mailmint_list_id, $mailpoet_list_id);
         $global_meta = array();
     }
 
@@ -865,7 +929,7 @@ function ajax_send_broadcast()
     $snapshot_items = $is_global_audience ? $audience_items : array(
         array(
             'source'        => $source,
-            'selectorValue' => get_single_audience_selector_value($source, $product_id, $role, $mailmint_list_id),
+            'selectorValue' => get_single_audience_selector_value($source, $product_id, $role, $mailmint_list_id, $mailpoet_list_id),
         ),
     );
     $audience_snapshot = build_delivery_audience_snapshot($snapshot_items, $manual_emails, $excluded_emails, $recipients, $audience_mode);
@@ -990,9 +1054,10 @@ function ajax_send_broadcast()
  * @param int    $product_id ID producto.
  * @param string $role Rol.
  * @param int    $mailmint_list_id ID lista Mail Mint.
+ * @param int    $mailpoet_list_id ID lista MailPoet.
  * @return string
  */
-function get_single_audience_selector_value($source, $product_id, $role, $mailmint_list_id)
+function get_single_audience_selector_value($source, $product_id, $role, $mailmint_list_id, $mailpoet_list_id = 0)
 {
     if ('product' === $source) {
         return (string) absint($product_id);
@@ -1006,6 +1071,10 @@ function get_single_audience_selector_value($source, $product_id, $role, $mailmi
         return (string) absint($mailmint_list_id);
     }
 
+    if ('mailpoet' === $source) {
+        return (string) absint($mailpoet_list_id);
+    }
+
     return '';
 }
 
@@ -1016,9 +1085,10 @@ function get_single_audience_selector_value($source, $product_id, $role, $mailmi
  * @param int    $product_id ID de producto.
  * @param string $role Rol WP.
  * @param int    $mailmint_list_id ID de lista Mail Mint.
+ * @param int    $mailpoet_list_id ID de lista MailPoet.
  * @return string
  */
-function get_source_audience_label($source, $product_id, $role, $mailmint_list_id)
+function get_source_audience_label($source, $product_id, $role, $mailmint_list_id, $mailpoet_list_id = 0)
 {
     if ('product' === $source && $product_id > 0) {
         return sprintf(__('Producto #%d', 'wc-pbm'), $product_id);
@@ -1030,6 +1100,10 @@ function get_source_audience_label($source, $product_id, $role, $mailmint_list_i
 
     if ('mailmint' === $source && $mailmint_list_id > 0) {
         return sprintf(__('Lista Mail Mint #%d', 'wc-pbm'), $mailmint_list_id);
+    }
+
+    if ('mailpoet' === $source && $mailpoet_list_id > 0) {
+        return sprintf(__('Lista MailPoet #%d', 'wc-pbm'), $mailpoet_list_id);
     }
 
     return __('Audiencia no definida', 'wc-pbm');

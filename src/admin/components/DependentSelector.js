@@ -14,6 +14,10 @@ const SOURCE_CONFIG = {
     title: __('Lista Mail Mint', 'wc-pbm'),
     description: __('Selecciona una o varias listas de Mail Mint.', 'wc-pbm'),
   },
+  mailpoet: {
+    title: __('Lista MailPoet', 'wc-pbm'),
+    description: __('Selecciona una o varias listas de MailPoet con estado subscribed.', 'wc-pbm'),
+  },
 };
 
 function renderItemLabel(item, countByKey, source) {

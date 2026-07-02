@@ -25,7 +25,7 @@ Fuentes disponibles:
 - Compradores de productos WooCommerce.
 - Roles de WordPress.
 - Listas de Mail Mint, si está disponible.
-- Listas disponibles en WordPress desde plugins como AcyMailing, FluentCRM, MailPoet o Newsletter, según integración disponible.
+- Listas disponibles en WordPress desde plugins como AcyMailing, FluentCRM, MailPoet, MailMint o Newsletter, según integración disponible.
 - Broadcast Lists guardadas dentro del plugin.
 - Emails manuales.
 

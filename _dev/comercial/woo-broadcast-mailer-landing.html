@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Woo Broadcast Mailer · emailing sencillo para WooCommerce</title>
-  <meta name="description" content="Woo Broadcast Mailer permite enviar avisos puntuales desde WooCommerce a compradores, productos, listas de plugins de email y emails manuales. También permite adaptar textos de WooCommerce y plugins por idioma.">
+  <title>Woo Broadcast Mailer · avisos operativos y strings de email</title>
+  <meta name="description" content="Woo Broadcast Mailer permite enviar avisos operativos desde WooCommerce y adaptar textos genéricos de emails por idioma. No es una suite completa de marketing automation.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Afacad:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -22,9 +22,11 @@
         <span class="nav__brand-text"><strong>Woo Broadcast Mailer</strong> <span>· by 22MW</span></span>
       </a>
       <nav class="nav__links" aria-label="Principal">
+        <a href="#que-es">Qué es</a>
         <a href="#broadcast">Broadcast</a>
         <a href="#strings">Strings</a>
-        <a href="#faq">FAQs</a>
+        <a href="#novedades">2.5/2.6</a>
+        <a href="#limites">Límites</a>
       </nav>
       <a class="nav__cta" href="#resumen">Resumen</a>
     </div>
@@ -34,33 +36,56 @@
     <section class="hero wbm-hero-simple">
       <div class="wrap hero__grid">
         <div>
-          <div class="hero__eyebrow"><span class="dot"></span> Emailing sencillo para WooCommerce</div>
-          <h1 class="hero__title">Envía avisos puntuales a clientes reales sin montar una campaña entera.</h1>
-          <p class="hero__body">Woo Broadcast Mailer está pensado para tiendas, cursos, eventos y proyectos WooCommerce que necesitan escribir a grupos concretos: compradores de un producto, listas de plugins de email, clientes guardados en una lista propia o emails manuales.</p>
+          <div class="hero__eyebrow"><span class="dot"></span> Avisos operativos para WooCommerce</div>
+          <h1 class="hero__title">Un plugin para avisar a clientes reales y ajustar textos de email sin montar una suite de marketing.</h1>
+          <p class="hero__body">Woo Broadcast Mailer une dos tareas frecuentes en tiendas WooCommerce: enviar mensajes puntuales a audiencias concretas y adaptar textos genéricos de emails por idioma desde el admin.</p>
           <div class="hero__ctas">
             <a class="btn btn--primary" href="#broadcast">Ver Broadcast Mailer</a>
             <a class="btn btn--ghost" href="#strings">Ver Email String Editor</a>
           </div>
           <div class="wbm-mini-grid wbm-hero-pills">
-            <span class="wbm-pill">Compradores</span>
-            <span class="wbm-pill">Productos</span>
-            <span class="wbm-pill">Mail Mint</span>
-            <span class="wbm-pill">AcyMailing</span>
-            <span class="wbm-pill">FluentCRM</span>
-            <span class="wbm-pill">MailPoet</span>
-            <span class="wbm-pill">Newsletter</span>
-            <span class="wbm-pill">Emails manuales</span>
+            <span class="wbm-pill">Broadcasts</span>
+            <span class="wbm-pill">Strings de email</span>
+            <span class="wbm-pill">Deduplicación</span>
+            <span class="wbm-pill">Preview</span>
+            <span class="wbm-pill">Lotes</span>
+            <span class="wbm-pill">Logs</span>
+            <span class="wbm-pill">HPOS</span>
+            <span class="wbm-pill">React admin</span>
           </div>
         </div>
         <aside class="wbm-flow-card" aria-hidden="true">
-          <span class="wbm-shot__label">idea principal</span>
+          <span class="wbm-shot__label">en una frase</span>
           <div class="wbm-flow-steps">
-            <div>Eliges a quién escribir</div>
-            <div>Preparas el mensaje</div>
-            <div>Revisas destinatarios</div>
-            <div>Envías o programas</div>
+            <div>Seleccionas una audiencia real</div>
+            <div>Preparas un mensaje simple</div>
+            <div>Revisas preview y deduplicación</div>
+            <div>Envías ahora o por lotes</div>
           </div>
         </aside>
+      </div>
+    </section>
+
+    <section class="section" id="que-es">
+      <div class="wrap">
+        <div class="section__head">
+          <div>
+            <div class="section__idx">00 / Qué es</div>
+            <h2 class="section__title">Dos herramientas en un mismo plugin: broadcast operativo y editor de strings.</h2>
+          </div>
+          <p class="section__sub">No intenta ser una plataforma de automatización completa. Resuelve avisos útiles y ajustes de copy donde realmente hacen falta.</p>
+        </div>
+
+        <div class="wbm-feature-grid">
+          <article class="wbm-feature">
+            <h3>Broadcast Mailer</h3>
+            <p>Para enviar mensajes puntuales a compradores, productos, roles, listas existentes como Mail Mint, Broadcast Lists o emails manuales con preview, exclusión temporal, deduplicación y programación por lotes.</p>
+          </article>
+          <article class="wbm-feature">
+            <h3>Email String Editor</h3>
+            <p>Para localizar y adaptar textos genéricos de emails WooCommerce o plugins relacionados por idioma, sin tocar plantillas ni mantener overrides manuales.</p>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -69,26 +94,26 @@
         <div class="section__head">
           <div>
             <div class="section__idx">01 / Broadcast Mailer</div>
-            <h2 class="section__title">Para enviar mensajes sencillos a listas, compradores y grupos concretos.</h2>
+            <h2 class="section__title">Para avisar a grupos concretos sin convertir cada mensaje en una campaña completa.</h2>
           </div>
-          <p class="section__sub">Esta es la parte de emailing. Sirve cuando necesitas avisar a personas concretas desde WooCommerce sin exportar clientes ni crear una campaña completa en otra herramienta.</p>
+          <p class="section__sub">Sirve cuando necesitas comunicar algo operativo a una audiencia real de WooCommerce con control de destinatarios y sin salir a otra plataforma.</p>
         </div>
 
         <div class="wbm-media-block">
           <div>
             <h3>Qué problema resuelve</h3>
-            <p>Muchas veces solo necesitas mandar un aviso: un cambio de fecha, una actualización de producto, una instrucción importante o un mensaje operativo. El problema es reunir bien a los destinatarios sin copiar y pegar listas de un lado a otro.</p>
+            <p>Muchas veces solo necesitas mandar un aviso: un cambio de fecha, una actualización de producto, una incidencia o una instrucción importante. El problema es reunir bien a los destinatarios sin copiar y pegar listas de un lado a otro.</p>
           </div>
-          <div class="wbm-shot__placeholder wbm-shot__placeholder--medium">Espacio para vídeo o pantallazos<br>flujo de envío + vista previa + plantillas</div>
+          <div class="wbm-shot__placeholder wbm-shot__placeholder--medium">Espacio para vídeo o pantallazos<br>audiencia + preview + logs</div>
         </div>
 
         <div class="wbm-path-grid">
-          <article class="wbm-card"><strong>01</strong><h3>Seleccionas destinatarios</h3><p>Compradores de productos WooCommerce, roles, emails manuales, Broadcast Lists propias y las listas que ya tienes en tu WordPress desde Mail Mint, AcyMailing, FluentCRM, MailPoet o Newsletter.</p></article>
+          <article class="wbm-card"><strong>01</strong><h3>Seleccionas destinatarios</h3><p>Compradores de productos WooCommerce, roles, emails manuales, Broadcast Lists propias y listas que ya existen en tu WordPress.</p></article>
           <article class="wbm-card"><strong>02</strong><h3>Combinas fuentes</h3><p>Puedes mezclar varias fuentes en un solo envío y el plugin deduplica emails para no escribir dos veces a la misma persona.</p></article>
-          <article class="wbm-card"><strong>03</strong><h3>Revisas antes de enviar</h3><p>La vista previa muestra destinatarios únicos. Si alguien no debe recibir ese aviso, puedes quitarlo solo para ese envío.</p></article>
+          <article class="wbm-card"><strong>03</strong><h3>Revisas antes de enviar</h3><p>La vista previa muestra una audiencia legible y única. Si alguien no debe recibir ese aviso, puedes excluirlo solo para ese envío.</p></article>
           <article class="wbm-card"><strong>04</strong><h3>Preparas el mensaje</h3><p>Escribes el body, insertas imagen, botón, bloque destacado o separador, y puedes enviar HTML sin plantilla global si no quieres wrappers externos.</p></article>
-          <article class="wbm-card"><strong>05</strong><h3>Guardas para reutilizar</h3><p>Las Broadcast Lists guardan destinatarios. Las plantillas guardan solo el body del mensaje, sin asunto ni configuración de envío.</p></article>
-          <article class="wbm-card"><strong>06</strong><h3>Envías o programas</h3><p>Puedes enviar ahora o programar por lotes para controlar mejor el ritmo y revisar logs después.</p></article>
+          <article class="wbm-card"><strong>05</strong><h3>Guardas para reutilizar</h3><p>Las Broadcast Lists guardan destinatarios. Las plantillas guardan solo el asunto y el body del mensaje.</p></article>
+          <article class="wbm-card"><strong>06</strong><h3>Envías o programas</h3><p>Puedes enviar ahora o programar por lotes para controlar mejor el ritmo y revisar logs básicos después.</p></article>
         </div>
 
         <div class="section__head wbm-inner-head">
@@ -100,10 +125,27 @@
         <div class="wbm-case-grid">
           <article class="wbm-case"><h3>Aviso a compradores</h3><p>Vendiste un curso, producto o evento y necesitas avisar solo a quienes lo compraron.</p></article>
           <article class="wbm-case"><h3>Lista recurrente</h3><p>Tienes un grupo al que escribes a menudo. Lo guardas como Broadcast List y lo reutilizas.</p></article>
-          <article class="wbm-case"><h3>Listas que ya existen en tu WP</h3><p>Ya tienes listas creadas en Mail Mint, AcyMailing, FluentCRM, MailPoet o Newsletter, y quieres seleccionarlas directamente como fuente del envío.</p></article>
+          <article class="wbm-case"><h3>Listas ya creadas en tu WP</h3><p>Ya tienes listas guardadas en WordPress, como Mail Mint, y quieres seleccionarlas directamente como fuente del envío.</p></article>
           <article class="wbm-case"><h3>Mensaje operativo</h3><p>Un cambio, una incidencia, una instrucción o un recordatorio que no necesita una campaña de marketing.</p></article>
           <article class="wbm-case"><h3>Mensaje visual simple</h3><p>Necesitas una imagen, un botón y una caja destacada, pero no un constructor de newsletters.</p></article>
           <article class="wbm-case"><h3>Body reutilizable</h3><p>Guardas una estructura de mensaje y la vuelves a cargar cuando necesitas mandar algo parecido.</p></article>
+        </div>
+
+        <div class="section__head wbm-inner-head">
+          <div>
+            <div class="section__idx">Qué no es Broadcast</div>
+            <h2 class="section__title">No es una plataforma de marketing automation ni una newsletter completa.</h2>
+          </div>
+        </div>
+        <div class="wbm-feature-grid">
+          <article class="wbm-feature">
+            <h3>No es automation suite</h3>
+            <p>No pretende crear flujos complejos por comportamiento, embudos ni segmentación avanzada por campañas.</p>
+          </article>
+          <article class="wbm-feature">
+            <h3>No es newsletter builder completo</h3>
+            <p>Los bloques rápidos ayudan a componer un email simple, pero no sustituyen un constructor profesional de newsletters.</p>
+          </article>
         </div>
       </div>
     </section>
@@ -113,9 +155,9 @@
         <div class="section__head">
           <div>
             <div class="section__idx">02 / Email String Editor</div>
-            <h2 class="section__title">Para adaptar textos genéricos de WooCommerce y sus plugins a tu negocio.</h2>
+            <h2 class="section__title">Para adaptar textos genéricos de WooCommerce y plugins a tu tono y a tu idioma.</h2>
           </div>
-          <p class="section__sub">Esta parte no sirve para enviar un broadcast. Sirve para controlar frases que ya aparecen en emails automáticos de WooCommerce o plugins relacionados.</p>
+          <p class="section__sub">No sirve para enviar avisos. Sirve para controlar frases que ya aparecen en emails automáticos de WooCommerce o de extensiones relacionadas.</p>
         </div>
 
         <div class="wbm-media-block">
@@ -152,19 +194,71 @@
       </div>
     </section>
 
+    <section class="section" id="novedades">
+      <div class="wrap">
+        <div class="section__head">
+          <div>
+            <div class="section__idx">03 / Novedades 2.5 y 2.6</div>
+            <h2 class="section__title">La propuesta actual ya incluye mejoras de control, claridad y feedback en el panel.</h2>
+          </div>
+          <p class="section__sub">Estas son las mejoras recientes que conviene mencionar sin prometer tracking que no existe.</p>
+        </div>
+
+        <div class="wbm-feature-grid">
+          <article class="wbm-feature">
+            <h3>Audiencia dinámica en programados</h3>
+            <p>Para envíos programados se puede recalcular la audiencia al ejecutar, manteniendo también el modo fijo cuando conviene congelar el público.</p>
+          </article>
+          <article class="wbm-feature">
+            <h3>Audiencia legible</h3>
+            <p>El resumen guarda una descripción clara de la audiencia para entender rápido a quién se va a escribir sin tener que reconstruir la lógica.</p>
+          </article>
+          <article class="wbm-feature">
+            <h3>Logs por destinatario</h3>
+            <p>Hay eventos básicos por destinatario para revisar qué pasó en cada envío, con información suficiente para soporte y revisión operativa.</p>
+          </article>
+          <article class="wbm-feature">
+            <h3>Toasts admin React</h3>
+            <p>El panel muestra feedback visual claro con toasts tipo AuthGate para errores, avisos y confirmaciones del flujo principal.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="limites">
+      <div class="wrap">
+        <div class="section__head">
+          <div>
+            <div class="section__idx">04 / Límites honestos</div>
+            <h2 class="section__title">Lo que hace bien y lo que no debes prometer todavía.</h2>
+          </div>
+        </div>
+
+        <div class="wbm-limits">
+          <ul class="wbm-limit-list">
+            <li>No incluye tracking de aperturas ni de clics.</li>
+            <li>No mide rebotes ni entrega real como sistema propio.</li>
+            <li>No es una plataforma de email marketing completa.</li>
+            <li>La entregabilidad depende de `wp_mail()`, SMTP o proveedor real del sitio.</li>
+            <li>Las integraciones con listas externas deben presentarse solo cuando estén verificadas.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
     <section class="section" id="faq">
       <div class="wrap">
         <div class="section__head">
           <div>
-            <div class="section__idx">03 / FAQs</div>
+            <div class="section__idx">05 / FAQs</div>
             <h2 class="section__title">Preguntas básicas antes de entender el plugin.</h2>
           </div>
         </div>
         <div class="wbm-faq-grid">
           <article class="wbm-faq"><h3>¿Es una newsletter?</h3><p>No. Es para avisos puntuales desde WooCommerce. No sustituye una plataforma de marketing.</p></article>
-          <article class="wbm-faq"><h3>¿Puedo usar listas que ya tengo?</h3><p>Sí. Puedes seleccionar las listas disponibles en tu WordPress desde plugins como Mail Mint, AcyMailing, FluentCRM, MailPoet o Newsletter, además de Broadcast Lists propias y emails manuales.</p></article>
+          <article class="wbm-faq"><h3>¿Puedo usar listas que ya tengo?</h3><p>Sí. Puedes seleccionar listas ya existentes en tu WordPress, como Mail Mint, además de Broadcast Lists propias y emails manuales.</p></article>
           <article class="wbm-faq"><h3>¿Puedo guardar listas propias?</h3><p>Sí. Las Broadcast Lists permiten guardar grupos de emails para reutilizarlos.</p></article>
-          <article class="wbm-faq"><h3>¿Puedo guardar mensajes?</h3><p>Sí. Las plantillas guardan solo el body del mensaje, no la audiencia ni la programación.</p></article>
+          <article class="wbm-faq"><h3>¿Puedo guardar mensajes?</h3><p>Sí. Las plantillas guardan asunto y body, no la audiencia ni la programación.</p></article>
           <article class="wbm-faq"><h3>¿Diseña emails completos?</h3><p>No es un constructor complejo, pero permite crear un diseño sencillo con imagen, botón, bloque destacado y separador, y guardar ese body como plantilla para reutilizarlo.</p></article>
           <article class="wbm-faq"><h3>¿Qué hace el editor de strings?</h3><p>Permite adaptar textos genéricos de emails WooCommerce y plugins relacionados, incluso por idioma.</p></article>
         </div>
@@ -175,18 +269,18 @@
       <div class="wrap">
         <div class="section__head">
           <div>
-            <div class="section__idx">04 / Resumen</div>
-            <h2 class="section__title">Woo Broadcast Mailer sirve cuando necesitas comunicar algo real, a gente real, sin convertir cada aviso en una campaña entera.</h2>
+            <div class="section__idx">06 / Resumen</div>
+            <h2 class="section__title">Woo Broadcast Mailer sirve cuando necesitas comunicar algo real a gente real y mantener coherentes los emails automáticos.</h2>
           </div>
-          <p class="section__sub">Y cuando además quieres que los emails automáticos de WooCommerce hablen con el tono correcto de tu negocio.</p>
+          <p class="section__sub">Avisos operativos por un lado. Textos de email por idioma por el otro. Sin vender tracking que no existe.</p>
         </div>
         <div class="wbm-mini-grid">
-          <span class="wbm-pill">Compradores</span>
-          <span class="wbm-pill">Productos</span>
-          <span class="wbm-pill">Listas externas</span>
+          <span class="wbm-pill">Audiencia real</span>
+          <span class="wbm-pill">Broadcasts</span>
           <span class="wbm-pill">Broadcast Lists</span>
           <span class="wbm-pill">Plantillas body</span>
           <span class="wbm-pill">Strings multiidioma</span>
+          <span class="wbm-pill">Logs básicos</span>
         </div>
       </div>
     </section>

@@ -149,6 +149,7 @@ async function fetchRecipientCount(source, selectorValue, nonce) {
   params.append('product_id', source === 'product' ? selectorValue : '');
   params.append('role', source === 'role' ? selectorValue : '');
   params.append('mailmint_list_id', source === 'mailmint' ? selectorValue : '');
+  params.append('mailpoet_list_id', source === 'mailpoet' ? selectorValue : '');
   params.append('broadcast_list_id', source === 'broadcast_list' ? selectorValue : '');
   params.append('nonce', nonce || '');
 
@@ -240,10 +241,10 @@ export default function App() {
   }, []);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [topItemsBySource, setTopItemsBySource] = useState({ product: [], role: [], mailmint: [], broadcast_list: [] });
+  const [topItemsBySource, setTopItemsBySource] = useState({ product: [], role: [], mailmint: [], mailpoet: [], broadcast_list: [] });
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedBySource, setSelectedBySource] = useState({ product: [], role: [], mailmint: [], broadcast_list: [] });
-  const [labelsBySource, setLabelsBySource] = useState({ product: {}, role: {}, mailmint: {}, broadcast_list: {} });
+  const [selectedBySource, setSelectedBySource] = useState({ product: [], role: [], mailmint: [], mailpoet: [], broadcast_list: [] });
+  const [labelsBySource, setLabelsBySource] = useState({ product: {}, role: {}, mailmint: {}, mailpoet: {}, broadcast_list: {} });
 
   const rawSourceOptions = useMemo(() => mapOptionsFromSelect('pbm_recipient_source'), []);
   const sourceOptions = useMemo(() => rawSourceOptions.filter((item) => {
@@ -653,6 +654,7 @@ export default function App() {
     params.append('product_id', '');
     params.append('role', '');
     params.append('mailmint_list_id', '');
+    params.append('mailpoet_list_id', '');
     params.append('audience_items', JSON.stringify(globalAudience.map((item) => ({ source: item.source, selectorValue: item.selectorValue }))));
     params.append('manual_emails', JSON.stringify(manualEmails));
     params.append('excluded_emails', JSON.stringify(excludedPreviewEmails));
@@ -939,6 +941,7 @@ export default function App() {
     params.append('product_id', '');
     params.append('role', '');
     params.append('mailmint_list_id', '');
+    params.append('mailpoet_list_id', '');
     params.append('audience_items', JSON.stringify(globalAudience.map((item) => ({ source: item.source, selectorValue: item.selectorValue }))));
     params.append('manual_emails', JSON.stringify(manualEmails));
     params.append('excluded_emails', JSON.stringify(excludedPreviewEmails));

@@ -6,11 +6,11 @@
 
 ## Resumen humano
 
-Woo Broadcast Mailer queda en release estable `2.6.0` sobre rama `devWooBM`, con tag `v2.6.0`. La versión consolida el sistema toast React admin estilo AuthGate para mensajes principales del panel.
+Woo Broadcast Mailer queda en rama `devWooBM` con integración MailPoet ajustada para mostrar listas API y segmentos predeterminados/globales activos. Release estable vigente documentada: `2.6.0`.
 
 ## Estado general
 
-Release `2.6.0` preparada como release publicada en rama `devWooBM` con commit, push y tag autorizados por el usuario. QA visual de toasts confirmado por usuario como “QA ok”; no fue ejecutado por el agente. Pendiente confirmar GitHub Actions/GitHub Release/ZIP porque `gh` no está instalado localmente.
+Integración MailPoet implementada y fix MP1B aplicado. QA funcional en WordPress queda pendiente porque probar preview/envío requiere entorno con MailPoet y acciones con efecto. Release `2.6.0` sigue como última release publicada.
 
 ## Hecho
 
@@ -21,15 +21,18 @@ Release `2.6.0` preparada como release publicada en rama `devWooBM` con commit, 
 - LOG2 hecho: snapshot descriptivo de audiencia en `pbm_delivery_meta_{id}`; QA confirmado por usuario.
 - LOG3 hecho: eventos básicos por destinatario en `pbm_delivery_events_{id}`; QA confirmado por usuario.
 - Cambio previo de arquitectura de toasts preservado en `_dev/departamentos/arquitecto.md`.
+- MP1 hecho: fuente `mailpoet` mínima usando API pública MailPoet, sin SQL directo y solo estado `subscribed`.
+- MP1B hecho técnicamente: selector complementa `getLists()` con segmentos internos activos `wp_users` y `woocommerce_users`, sin duplicar IDs.
 
 ## En curso
 
-- Confirmación externa de GitHub Actions/GitHub Release/ZIP para `v2.6.0`.
+- QA funcional de MailPoet en entorno con listas reales.
 
 ## Bloqueado
 
 - Prueba del updater en staging pendiente.
 - Confirmación de GitHub Release `v2.6.0` pendiente por falta de `gh` local.
+- Validación funcional de MailPoet pendiente si no hay MailPoet activo/listas en el entorno.
 
 ## Riesgos visibles
 
@@ -52,11 +55,13 @@ Release `2.6.0` preparada como release publicada en rama `devWooBM` con commit, 
 
 - Confirmar GitHub Actions/GitHub Release/ZIP generado para `v2.6.0` desde GitHub.
 - Probar updater en staging antes de usarlo como canal crítico.
+- QA controlado de fuente MailPoet: selector, conteo, preview, envío programado dinámico y MailPoet desactivado.
 
 ## Pendiente de validar
 
 - Updater desde GitHub Release en staging.
 - GitHub Release/ZIP tras push de tag `v2.6.0`.
+- MailPoet con listas reales y segmentos privados/predeterminados: selector, conteo, preview, audiencia global, envío y dinámica programada.
 
 ## No volver a investigar
 
@@ -68,3 +73,6 @@ Release `2.6.0` preparada como release publicada en rama `devWooBM` con commit, 
 - Node local disponible en `/Users/22mw/.local/node-install/node-v22.11.0-darwin-arm64/bin`.
 - Toast admin usa namespace propio `.pbm-admin-toast` / `.pbm-admin-toasts`; no se copió `22mw-back.js` completo.
 - QA de UI5 confirmado por usuario el 2026-07-02; no ejecutado por el agente.
+- MailPoet se integra por API pública `\MailPoet\API\API::MP('v1')`; no usar SQL directo a tablas MailPoet.
+- Fuente MailPoet incluye únicamente suscriptores `subscribed`.
+- Descubrimiento interno MailPoet aprobado solo para segmentos activos `wp_users` y `woocommerce_users`; no resolver suscriptores por SQL.

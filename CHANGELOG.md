@@ -2,6 +2,13 @@
 
 Todos los cambios relevantes del proyecto se documentan en este archivo.
 
+## Unreleased
+
+- Añadida fuente de audiencia MailPoet usando la API pública de MailPoet.
+- Incluidas listas MailPoet normales y listas predeterminadas/privadas de usuarios WordPress y clientes WooCommerce.
+- Limitada la resolución de destinatarios MailPoet a suscriptores con estado `subscribed`.
+- Integrada MailPoet en selector, búsqueda, conteo, preview, audiencia global y envíos dinámicos.
+
 ## 2.6.0
 
 - Añadido sistema de toasts en el admin React para mensajes principales del panel.

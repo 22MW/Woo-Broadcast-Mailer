@@ -345,6 +345,9 @@ function get_delivery_audience_label($email, $delivery_meta)
         if (! empty($sources['mailmint'])) {
             $parts[] = sprintf(__('Listas: %d', 'wc-pbm'), (int) $sources['mailmint']);
         }
+        if (! empty($sources['mailpoet'])) {
+            $parts[] = sprintf(__('MailPoet: %d', 'wc-pbm'), (int) $sources['mailpoet']);
+        }
         if (! empty($sources['manual'])) {
             $parts[] = sprintf(__('Manuales: %d', 'wc-pbm'), (int) $sources['manual']);
         }
@@ -474,6 +477,15 @@ function get_delivery_audience_selector_label($source, $selector_value)
         return sprintf(__('Lista Mail Mint #%d', 'wc-pbm'), absint($selector_value));
     }
 
+    if ('mailpoet' === $source) {
+        foreach (get_mailpoet_lists_for_selector() as $list) {
+            if ((string) ($list['id'] ?? '') === (string) $selector_value) {
+                return (string) $list['name'] . ' (#' . absint($list['id']) . ')';
+            }
+        }
+        return sprintf(__('Lista MailPoet #%d', 'wc-pbm'), absint($selector_value));
+    }
+
     if ('broadcast_list' === $source) {
         $lists = get_broadcast_lists();
         if (! empty($lists[$selector_value]['name'])) {
@@ -497,8 +509,13 @@ function get_delivery_audience_item_count($source, $selector_value)
         'product_id'        => 'product' === $source ? absint($selector_value) : 0,
         'role'              => 'role' === $source ? $selector_value : '',
         'mailmint_list_id'  => 'mailmint' === $source ? absint($selector_value) : 0,
+        'mailpoet_list_id'  => 'mailpoet' === $source ? absint($selector_value) : 0,
         'broadcast_list_id' => 'broadcast_list' === $source ? $selector_value : '',
     );
+
+    if ('mailpoet' === $source) {
+        return get_mailpoet_subscribers_count(absint($selector_value));
+    }
 
     $recipients = get_recipients_by_source($source, $args);
     return is_array($recipients) ? count($recipients) : 0;

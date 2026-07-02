@@ -42,7 +42,7 @@
       <p class="muted">Vista interna post-release — 2026-07-02</p>
       <span class="badge"><span class="dot green"></span> Release 2.6.0 publicada</span>
       <span class="badge"><span class="dot green"></span> QA visual usuario confirmado</span>
-      <span class="badge"><span class="dot blue"></span> Toast admin React</span>
+      <span class="badge"><span class="dot blue"></span> MailPoet API mínima implementada</span>
       <span class="badge"><span class="dot green"></span> Release 2.5.0 publicada</span>
       <span class="badge"><span class="dot yellow"></span> ZIP GitHub pendiente de comprobar</span>
     </header>
@@ -50,7 +50,7 @@
     <section class="grid cols-2">
       <div class="card ok">
         <h2>Estado actual</h2>
-        <p>La release <code>2.6.0</code> consolida el sistema de toasts admin para mensajes principales del panel React.</p>
+        <p>La integración MailPoet mínima está implementada para listas con suscriptores <code>subscribed</code>, usando API pública y sin SQL directo.</p>
         <p>La release previa <code>2.5.0</code> consolidó audiencia programada fija/dinámica y logs informativos.</p>
       </div>
       <div class="card risk">
@@ -58,6 +58,7 @@
         <ul>
           <li>Confirmar GitHub Release/ZIP en GitHub Actions tras el tag <code>v2.6.0</code>.</li>
           <li>Prueba del updater en staging.</li>
+          <li>QA funcional de MailPoet con listas reales y MailPoet desactivado.</li>
         </ul>
       </div>
     </section>
@@ -71,6 +72,7 @@
           <li><span class="box done"></span><span>CSS propio <code>.pbm-admin-toast</code> con estilo tipo AuthGate.</span></li>
           <li><span class="box done"></span><span>Accesibilidad básica con <code>aria-live</code>, <code>aria-atomic</code> y <code>role="alert"</code>.</span></li>
           <li><span class="box done"></span><span>Build React generado.</span></li>
+          <li><span class="box done"></span><span>Fuente <code>mailpoet</code> añadida con listas, conteo y destinatarios solo <code>subscribed</code>.</span></li>
         </ul>
       </div>
       <div class="card">
@@ -80,6 +82,7 @@
           <li><span class="box done"></span><span>AD4 confirmado por usuario en ciclo 2.5.0.</span></li>
           <li><span class="box done"></span><span>LOG2 confirmado por usuario en ciclo 2.5.0.</span></li>
           <li><span class="box done"></span><span>LOG3 confirmado por usuario en ciclo 2.5.0.</span></li>
+          <li><span class="box pending"></span><span>MP2 pendiente: selector, conteo, preview, envío y dinámica programada con MailPoet real.</span></li>
           <li><span class="box pending"></span><span>Updater pendiente de probar en staging.</span></li>
         </ul>
       </div>
@@ -97,7 +100,7 @@
       </div>
       <div class="card ok">
         <h2>Siguiente paso</h2>
-        <p>Confirmar GitHub Release/ZIP de <code>v2.6.0</code> y probar updater en staging.</p>
+        <p>Ejecutar QA controlado de MailPoet y después confirmar GitHub Release/ZIP de <code>v2.6.0</code>.</p>
       </div>
     </section>
 
